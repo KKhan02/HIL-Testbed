@@ -1,0 +1,22 @@
+# Weather data — large files, freely downloadable from DWD/ERA5
+data/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.vscode/
+.idea/
+
+# Virtual environments
+venv/
+env/
