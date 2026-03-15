@@ -122,7 +122,7 @@ For networks without pre-placed DER, PV is added deterministically at end-of-fee
 
 | # | Scenario | Description |
 |---|---|---|
-| 1 | Baseline | No voltage regulation, PV scaled ×2 to force violations |
+| 1 | Baseline | No voltage regulation, PV scaled up either x 2 or using hosting capacity analysis to force violations |
 | 2 | OLTC-only | On-load tap changer, no reactive power control |
 | 3 | SVC | Static VAr compensator at MV busbar |
 | 4 | **Rule-based Volt-VAr HIL** | IEEE 1547-2018 Q(V) curve, Arduino in the loop |
