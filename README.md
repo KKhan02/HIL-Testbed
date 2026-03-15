@@ -181,7 +181,7 @@ pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
 
 DWD observation data is downloaded from the [DWD Climate Data Centre](https://cdc.dwd.de/portal/) (CDC). Default station: **Bremen (ID 691)**, 53.05°N 8.80°E.
 
-ERA5 reanalysis data is available via the [Copernicus Climate Data Store](https://cds.climate.copernicus.eu/). Convert downloaded NetCDF files using `era5_to_csv.py` before use.
+ERA5 reanalysis data is available via the [Copernicus Climate Data Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels-timeseries?tab=overview). Convert downloaded singular CSV file to seperate files (solar, wind, temperature) with correct column names and unit conversions expected by profile_builder.py using `era5_to_csv.py`.
 
 **DWD file naming convention expected:**
 ```
