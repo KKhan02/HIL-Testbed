@@ -21,7 +21,7 @@ jobs:
         run: |
           pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
       - name: Run SimBench MVLV rural
-        run: python test_suite.py --section simbench --only "MVLV-rural"
+        run: python test_suite.py --only "MVLV-rural"
 
   simbench_mvlv_semiurb:
     runs-on: ubuntu-latest
@@ -35,7 +35,7 @@ jobs:
         run: |
           pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
       - name: Run SimBench MVLV semiurb
-        run: python test_suite.py --section simbench --only "MVLV-semiurb"
+        run: python test_suite.py --only "MVLV-semiurb"
 
   simbench_mvlv_urban:
     runs-on: ubuntu-latest
@@ -49,7 +49,7 @@ jobs:
         run: |
           pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
       - name: Run SimBench MVLV urban
-        run: python test_suite.py --section simbench --only "MVLV-urban"
+        run: python test_suite.py --only "MVLV-urban"
 
   simbench_mvlv_comm:
     runs-on: ubuntu-latest
@@ -63,7 +63,7 @@ jobs:
         run: |
           pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
       - name: Run SimBench MVLV comm
-        run: python test_suite.py --section simbench --only "MVLV-comm"
+        run: python test_suite.py --only "MVLV-comm"
 
   simbench_mv_single:
     runs-on: ubuntu-latest
@@ -77,7 +77,7 @@ jobs:
         run: |
           pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
       - name: Run SimBench MV single-level
-        run: python test_suite.py --section simbench --only "1-MV-"
+        run: python test_suite.py --only "1-MV-"
 
   simbench_lv_single:
     runs-on: ubuntu-latest
@@ -91,7 +91,7 @@ jobs:
         run: |
           pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
       - name: Run SimBench LV single-level
-        run: python test_suite.py --section simbench --only "1-LV-"
+        run: python test_suite.py --only "1-LV-"
 
   non_simbench:
     runs-on: ubuntu-latest
