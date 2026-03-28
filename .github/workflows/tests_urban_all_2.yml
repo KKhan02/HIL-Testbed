@@ -1,3 +1,11 @@
+name: Run MVLV urban all-2 cases
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+
+jobs:
   simbench_mvlv_urban_all_2_sw:
     runs-on: ubuntu-latest
     timeout-minutes: 90
@@ -15,7 +23,7 @@
       - name: Install dependencies
         run: |
           pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
-      - name: Run SimBench MVLV urban all (2) sw
+      - name: Run MVLV urban all-2 sw
         run: python test_suite.py --only "1-MVLV-urban-all-2-sw" --verbose
 
   simbench_mvlv_urban_all_2_no_sw:
@@ -35,5 +43,5 @@
       - name: Install dependencies
         run: |
           pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
-      - name: Run SimBench MVLV urban all (2) no_sw
+      - name: Run MVLV urban all-2 no_sw
         run: python test_suite.py --only "1-MVLV-urban-all-2-no_sw" --verbose
