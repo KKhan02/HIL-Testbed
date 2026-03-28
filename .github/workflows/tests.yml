@@ -9,17 +9,100 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  test:
+  simbench_mvlv_rural:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
       - name: Install dependencies
         run: |
           pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
-      - name: Run test suite
-        run: python test_suite.py
+      - name: Run SimBench MVLV rural
+        run: python test_suite.py --section simbench --only "MVLV-rural"
+
+  simbench_mvlv_semiurb:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
+      - name: Run SimBench MVLV semiurb
+        run: python test_suite.py --section simbench --only "MVLV-semiurb"
+
+  simbench_mvlv_urban:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
+      - name: Run SimBench MVLV urban
+        run: python test_suite.py --section simbench --only "MVLV-urban"
+
+  simbench_mvlv_comm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
+      - name: Run SimBench MVLV comm
+        run: python test_suite.py --section simbench --only "MVLV-comm"
+
+  simbench_mv_single:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
+      - name: Run SimBench MV single-level
+        run: python test_suite.py --section simbench --only "1-MV-"
+
+  simbench_lv_single:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
+      - name: Run SimBench LV single-level
+        run: python test_suite.py --section simbench --only "1-LV-"
+
+  non_simbench:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
+      - name: Run all non-SimBench cases
+        run: python test_suite.py --only cigre kerber dickert era5 synthetic
