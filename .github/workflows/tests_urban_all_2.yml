@@ -7,7 +7,7 @@ on:
 
 jobs:
   simbench_mvlv_urban_all_2_sw:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 90
     env:
       OMP_NUM_THREADS: "1"
@@ -23,11 +23,18 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
+      - name: Add swap (8 GB)
+        run: |
+          sudo fallocate -l 8G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          free -h
       - name: Run MVLV urban all-2 sw
-        run: python test_suite.py --only "1-MVLV-urban-all-2-sw" --verbose
+        run: /usr/bin/time -v python test_suite.py --only "1-MVLV-urban-all-2-sw" --verbose
 
   simbench_mvlv_urban_all_2_no_sw:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 90
     env:
       OMP_NUM_THREADS: "1"
@@ -43,5 +50,12 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
+      - name: Add swap (8 GB)
+        run: |
+          sudo fallocate -l 8G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          free -h
       - name: Run MVLV urban all-2 no_sw
-        run: python test_suite.py --only "1-MVLV-urban-all-2-no_sw" --verbose
+        run: /usr/bin/time -v python test_suite.py --only "1-MVLV-urban-all-2-no_sw" --verbose
