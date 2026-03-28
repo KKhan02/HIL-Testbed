@@ -148,7 +148,7 @@ jobs:
             fi
           done
 
-  simbench_mvlv_urban_all_2:
+  simbench_mvlv_urban_all_2_sw:
     needs: simbench_mvlv_urban_all_1_no_sw
     runs-on: ubuntu-latest
     timeout-minutes: 90
@@ -160,13 +160,41 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
-      - name: Run SimBench MVLV urban all (2) (retry)
+      - name: Run SimBench MVLV urban all (2) sw (retry)
         run: |
           set -e
           max=3
           for i in $(seq 1 $max); do
             echo "Attempt $i of $max..."
-            python test_suite.py --only "MVLV-urban-all-2" && break
+            python test_suite.py --only "1-MVLV-urban-all-2-sw" && break
+            if [ "$i" -lt "$max" ]; then
+              echo "Retrying in 30s..."
+              sleep 30
+            else
+              echo "All attempts failed."
+              exit 1
+            fi
+          done
+
+  simbench_mvlv_urban_all_2_no_sw:
+    needs: simbench_mvlv_urban_all_2_sw
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
+      - name: Run SimBench MVLV urban all (2) no_sw (retry)
+        run: |
+          set -e
+          max=3
+          for i in $(seq 1 $max); do
+            echo "Attempt $i of $max..."
+            python test_suite.py --only "1-MVLV-urban-all-2-no_sw" && break
             if [ "$i" -lt "$max" ]; then
               echo "Retrying in 30s..."
               sleep 30
@@ -177,7 +205,7 @@ jobs:
           done
 
   simbench_mvlv_urban_5303:
-    needs: simbench_mvlv_urban_all_2
+    needs: simbench_mvlv_urban_all_2_no_sw
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
