@@ -37,7 +37,7 @@ jobs:
       - name: Run SimBench MVLV semiurb
         run: python test_suite.py --only "MVLV-semiurb"
 
-    simbench_mvlv_urban_all:
+  simbench_mvlv_urban_all:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -92,6 +92,7 @@ jobs:
           pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
       - name: Run SimBench MVLV urban (6.309)
         run: python test_suite.py --only "MVLV-urban-6.309"
+
   simbench_mvlv_comm:
     runs-on: ubuntu-latest
     timeout-minutes: 90
