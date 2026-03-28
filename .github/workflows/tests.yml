@@ -8,23 +8,8 @@ concurrency:
   group: test-suite-${{ github.ref }}
   cancel-in-progress: false
 
-jobs:
-  single_case_probe:
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-      - name: Install dependencies
-        run: |
-          pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
-      - name: Run single case (probe)
-        run: python test_suite.py --only "1-MVLV-urban-all-2-sw"
-  
-  simbench_mvlv_rural:
-    needs: single_case_probe
+jobs: 
+ simbench_mvlv_rural:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -50,9 +35,7 @@ jobs:
               exit 1
             fi
           done
-
-  simbench_mvlv_semiurb:
-    needs: simbench_mvlv_rural
+ simbench_mvlv_semiurb:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -78,9 +61,7 @@ jobs:
               exit 1
             fi
           done
-
-  simbench_mvlv_urban_all_0:
-    needs: simbench_mvlv_semiurb
+ simbench_mvlv_urban_all_0:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -106,9 +87,7 @@ jobs:
               exit 1
             fi
           done
-
-  simbench_mvlv_urban_all_1_sw:
-    needs: simbench_mvlv_urban_all_0
+ simbench_mvlv_urban_all_1_sw:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -134,9 +113,7 @@ jobs:
               exit 1
             fi
           done
-
-  simbench_mvlv_urban_all_1_no_sw:
-    needs: simbench_mvlv_urban_all_1_sw
+ simbench_mvlv_urban_all_1_no_sw:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -162,9 +139,7 @@ jobs:
               exit 1
             fi
           done
-
-  simbench_mvlv_urban_all_2_sw:
-    needs: simbench_mvlv_urban_all_1_no_sw
+ simbench_mvlv_urban_all_2_sw:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -190,9 +165,7 @@ jobs:
               exit 1
             fi
           done
-
-  simbench_mvlv_urban_all_2_no_sw:
-    needs: simbench_mvlv_urban_all_2_sw
+ simbench_mvlv_urban_all_2_no_sw:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -218,9 +191,7 @@ jobs:
               exit 1
             fi
           done
-
-  simbench_mvlv_urban_5303:
-    needs: simbench_mvlv_urban_all_2_no_sw
+ simbench_mvlv_urban_5303:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -246,9 +217,7 @@ jobs:
               exit 1
             fi
           done
-
-  simbench_mvlv_urban_6305:
-    needs: simbench_mvlv_urban_5303
+ simbench_mvlv_urban_6305:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -274,9 +243,7 @@ jobs:
               exit 1
             fi
           done
-
-  simbench_mvlv_urban_6309:
-    needs: simbench_mvlv_urban_6305
+ simbench_mvlv_urban_6309:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -302,9 +269,7 @@ jobs:
               exit 1
             fi
           done
-
-  simbench_mvlv_comm:
-    needs: simbench_mvlv_urban_6309
+ simbench_mvlv_comm:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -330,9 +295,7 @@ jobs:
               exit 1
             fi
           done
-
-  simbench_mv_single:
-    needs: simbench_mvlv_comm
+ simbench_mv_single:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -358,9 +321,7 @@ jobs:
               exit 1
             fi
           done
-
-  simbench_lv_single:
-    needs: simbench_mv_single
+ simbench_lv_single:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -386,9 +347,7 @@ jobs:
               exit 1
             fi
           done
-
-  non_simbench:
-    needs: simbench_lv_single
+ non_simbench:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
