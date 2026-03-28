@@ -10,7 +10,7 @@ Current test sections:
                            - 156 in-scope SimBench networks
                              (MVLV coupled + MV single + LV single)
                            - CIGRE MV + LV
-                           - Kerber (6 variants)
+                           - Kerber (17 variants)
                            - Synthetic Voltage Control LV (5 classes)
                            - Dickert LV (all 18 combinations)
                            - ERA5 datasource (CIGRE MV)
@@ -375,12 +375,12 @@ def run_profile_builder_tests(verbose: bool = False, only:list =None) -> list:
     Network coverage:
         156  SimBench (MVLV coupled + MV single + LV single)
           2  CIGRE (MV with DER + LV)
-          6  Kerber variants
+          17  Kerber variants
           5  Synthetic Voltage Control LV classes
          18  Dickert LV (all feeder/customer/line-type combinations)
           1  ERA5 datasource (CIGRE MV)
         ---
-        188  total test cases
+        199  total test cases
     """
     from profile_builder import build_annual_profiles
     import simbench as sb
