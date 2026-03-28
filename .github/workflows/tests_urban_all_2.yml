@@ -25,10 +25,10 @@ jobs:
           pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
       - name: Add swap (8 GB)
         run: |
-          sudo fallocate -l 8G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
+          sudo fallocate -l 8G /swapfile_ci
+          sudo chmod 600 /swapfile_ci
+          sudo mkswap /swapfile_ci
+          sudo swapon /swapfile_ci
           free -h
       - name: Run MVLV urban all-2 sw
         run: /usr/bin/time -v python test_suite.py --only "1-MVLV-urban-all-2-sw" --verbose
