@@ -1,0 +1,39 @@
+  simbench_mvlv_urban_all_2_sw:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      NUMEXPR_NUM_THREADS: "1"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
+      - name: Run SimBench MVLV urban all (2) sw
+        run: python test_suite.py --only "1-MVLV-urban-all-2-sw" --verbose
+
+  simbench_mvlv_urban_all_2_no_sw:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      NUMEXPR_NUM_THREADS: "1"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          pip install pandapower simbench pvlib "oemof-demand>=0.2.2" workalendar
+      - name: Run SimBench MVLV urban all (2) no_sw
+        run: python test_suite.py --only "1-MVLV-urban-all-2-no_sw" --verbose
