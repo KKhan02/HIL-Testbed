@@ -568,13 +568,18 @@ def run_network_plotter_tests(verbose: bool = False, only: list = None) -> list:
         True  — figures appear, press any key to advance (interactive dev)
         False — figures never open (RPi / headless / CI)
     """
-    import matplotlib
-    import matplotlib.figure
-    import matplotlib.pyplot as plt
-    from network_plotter import plot_topology, plot_profiles, plot_day
-    from profile_builder import build_annual_profiles
-    import simbench as sb
-    import pandapower.networks as pn
+    try:
+        import matplotlib
+        import matplotlib.figure
+        import matplotlib.pyplot as plt
+        from network_plotter import plot_topology, plot_profiles, plot_day
+        from profile_builder import build_annual_profiles
+        import simbench as sb
+        import pandapower.networks as pn
+    except ImportError as exc:
+        if verbose:
+            print("Skipping run_network_plotter_tests: missing optional dependency:", exc)
+        return []
  
     # Representative networks: (test_name, loader_fn, net_name, simbench_code)
     REPRESENTATIVE_NETWORKS = [
