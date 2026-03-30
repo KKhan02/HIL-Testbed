@@ -14,6 +14,10 @@ Current test sections:
                            - Synthetic Voltage Control LV (5 classes)
                            - Dickert LV (all 18 combinations)
                            - ERA5 datasource (CIGRE MV)
+    2. network_plotter   — topology and profile visualisation
+                           - 9 representative networks (one per family)
+                           - plot_topology, plot_profiles, plot_day × 4
+                           - SHOW_PLOTS flag controls interactive display
 
 Out of scope (skipped — EHV/HV/HVMV networks exceed project scope
 and require >9 GB RAM per network for profile allocation):
@@ -25,7 +29,6 @@ and require >9 GB RAM per network for profile allocation):
     - HV single           (12 codes)
 
 Planned sections (uncomment and implement as modules are ready):
-    2. network_plotter   — topology and profile visualisation
     3. volt_var_control  — Tier 1 Volt-VAr Q(V) algorithm
     4. baseline_scenario — Scenario 1 baseline timeseries run
     5. oltc_scenario     — Scenario 2 OLTC-only
@@ -58,6 +61,13 @@ import traceback
 import time
 import numpy as np
 import pandas as pd
+
+# ===========================================================================
+# Global display flag
+# Set SHOW_PLOTS = True  to view figures interactively (press any key to advance)
+# Set SHOW_PLOTS = False for RPi / headless / GitHub CI (figures never open)
+# ===========================================================================
+SHOW_PLOTS = False
 
 # ===========================================================================
 # Paths — update if your folder structure differs
@@ -524,16 +534,137 @@ def run_profile_builder_tests(verbose: bool = False, only:list =None) -> list:
 
 
 # ===========================================================================
-# SECTION 2 — network_plotter  (placeholder)
+# SECTION 2 — network_plotter
 # ===========================================================================
-
-# def run_network_plotter_tests(verbose: bool = False) -> list:
-#     from network_plotter import plot_network_and_profiles, plot_day
-#     cases = []
-#     # implement when network_plotter.py is ready
-#     return cases
-
-
+ 
+def run_network_plotter_tests(verbose: bool = False, only: list = None) -> list:
+    """
+    Tests plot_topology(), plot_profiles(), and all four plot_day() calls
+    across a representative subset of networks — one per network family.
+ 
+    Running all 199 networks through the plotter would generate ~1400 figures
+    and take hours. One representative per family exercises the same code paths
+    while keeping the suite practical.
+ 
+    Coverage:
+        1  SimBench MV rural     (primary demonstration network)
+        1  SimBench LV rural     (LV single-level)
+        1  SimBench MVLV coupled (coupled voltage level)
+        1  CIGRE MV with_der     (secondary MV validation)
+        1  CIGRE LV
+        1  Kerber standard       (radial LV, no geodata)
+        1  Kerber extreme
+        1  Synthetic Voltage Control LV
+        1  Dickert LV
+        ---
+        9  total test cases
+ 
+    Each test case runs:
+        - plot_topology()         → topology figure
+        - plot_profiles()         → annual profiles figure
+        - plot_day() × 4          → four extreme day zooms
+    
+    SHOW_PLOTS controls whether figures are displayed:
+        True  — figures appear, press any key to advance (interactive dev)
+        False — figures never open (RPi / headless / CI)
+    """
+    import matplotlib
+    import matplotlib.figure
+    import matplotlib.pyplot as plt
+    from network_plotter import plot_topology, plot_profiles, plot_day
+    from profile_builder import build_annual_profiles
+    import simbench as sb
+    import pandapower.networks as pn
+ 
+    # Representative networks: (test_name, loader_fn, net_name, simbench_code)
+    REPRESENTATIVE_NETWORKS = [
+        ("sb_mv_rural",
+            lambda: sb.get_simbench_net("1-MV-rural--2-sw"),
+            "1-MV-rural--2-sw",      "1-MV-rural--2-sw"),
+        ("sb_lv_rural",
+            lambda: sb.get_simbench_net("1-LV-rural1--0-sw"),
+            "1-LV-rural1--0-sw",     "1-LV-rural1--0-sw"),
+        ("sb_mvlv_rural",
+            lambda: sb.get_simbench_net("1-MVLV-rural-all-0-sw"),
+            "1-MVLV-rural-all-0-sw", "1-MVLV-rural-all-0-sw"),
+        ("cigre_mv",
+            lambda: pn.create_cigre_network_mv(with_der="pv_wind"),
+            "cigre_mv_with_der",     None),
+        ("cigre_lv",
+            lambda: pn.create_cigre_network_lv(),
+            "cigre_lv",              None),
+        ("kerber_standard",
+            lambda: pn.create_kerber_landnetz_kabel_1(),
+            "kerber_landnetz_kabel_1", None),
+        ("kerber_extreme",
+            lambda: pn.kb_extrem_landnetz_kabel(),
+            "kb_extrem_landnetz_kabel", None),
+        ("synthetic_lv",
+            lambda: pn.create_synthetic_voltage_control_lv_network("rural_1"),
+            "synthetic_lv_rural_1",  None),
+        ("dickert",
+            lambda: pn.create_dickert_lv_network("short", "cable", "single", "good"),
+            "dickert_short_cable_single_good", None),
+    ]
+ 
+    cases = []
+    extreme_day_keys = [
+        ("max_der",  "Max DER generation day"),
+        ("min_der",  "Min DER generation day"),
+        ("max_load", "Peak load day"),
+        ("min_load", "Min load day"),
+    ]
+ 
+    for test_name, loader, net_name, sb_code in REPRESENTATIVE_NETWORKS:
+        if only and not any(s in test_name for s in only):
+            continue
+ 
+        tc = TestCase(test_name)
+        t0 = time.time()
+        try:
+            net = loader()
+ 
+            # Build profiles
+            kwargs = dict(data_dir=DWD_DATA_DIR)
+            if sb_code:
+                kwargs["simbench_code"] = sb_code
+            prof = build_annual_profiles(net, net_name, **kwargs)
+ 
+            # --- check 1: plot_topology ---
+            fig_topo = plot_topology(net, net_name, show=SHOW_PLOTS)
+            tc.record("topology_returns_figure",
+                      isinstance(fig_topo, matplotlib.figure.Figure),
+                      "plot_topology did not return a Figure")
+ 
+            # --- check 2: plot_profiles ---
+            fig_prof = plot_profiles(net_name, prof, show=SHOW_PLOTS)
+            tc.record("profiles_returns_figure",
+                      isinstance(fig_prof, matplotlib.figure.Figure),
+                      "plot_profiles did not return a Figure")
+ 
+            # --- checks 3–6: plot_day for all four extreme days ---
+            ed = prof.get("extreme_days", {})
+            for day_key, day_label in extreme_day_keys:
+                day_str = ed.get(day_key)
+                if day_str is None:
+                    # No DER units in network — skip DER day checks gracefully
+                    tc.record(f"plot_day_{day_key}_skipped_no_der", True,
+                              f"No {day_label} — network has no relevant DER")
+                    continue
+                fig_day = plot_day(prof, day_str, net_name,
+                                   day_label=day_label, show=SHOW_PLOTS)
+                tc.record(f"plot_day_{day_key}",
+                          isinstance(fig_day, matplotlib.figure.Figure),
+                          f"plot_day({day_key}) did not return a Figure")
+ 
+        except Exception:
+            tc.error = traceback.format_exc()
+ 
+        tc.duration = time.time() - t0
+        cases.append(tc)
+        print_case(tc, verbose)
+ 
+    return cases
 # ===========================================================================
 # SECTION 3 — volt_var_control  (placeholder)
 # ===========================================================================
@@ -569,7 +700,7 @@ def run_profile_builder_tests(verbose: bool = False, only:list =None) -> list:
 
 SECTIONS = {
     "profile_builder":  run_profile_builder_tests,
-    # "network_plotter":  run_network_plotter_tests,
+    "network_plotter":  run_network_plotter_tests,
     # "volt_var_control": run_volt_var_tests,
     # "baseline":         run_baseline_tests,
     # "oltc":             run_oltc_tests,
