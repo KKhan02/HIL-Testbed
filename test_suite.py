@@ -14,6 +14,13 @@ Current test sections:
                            - Synthetic Voltage Control LV (5 classes)
                            - Dickert LV (all 18 combinations)
                            - ERA5 datasource (CIGRE MV)
+    2. network_plotter   — topology and profile visualisation
+                           - 9 representative networks (one per family)
+                           - plot_topology, plot_profiles, plot_day × 4
+                           - SHOW_PLOTS flag controls interactive display
+    3. violation_detector  - Tests detect_violations() across either one 
+                            representative network per family or the 
+                            entire test suite.
 
 Out of scope (skipped — EHV/HV/HVMV networks exceed project scope
 and require >9 GB RAM per network for profile allocation):
@@ -25,7 +32,6 @@ and require >9 GB RAM per network for profile allocation):
     - HV single           (12 codes)
 
 Planned sections (uncomment and implement as modules are ready):
-    2. network_plotter   — topology and profile visualisation
     3. volt_var_control  — Tier 1 Volt-VAr Q(V) algorithm
     4. baseline_scenario — Scenario 1 baseline timeseries run
     5. oltc_scenario     — Scenario 2 OLTC-only
@@ -58,6 +64,19 @@ import traceback
 import time
 import numpy as np
 import pandas as pd
+import pandapower as pp
+import pandapower.networks as pn
+import simbench as sb
+from violation_detector import ViolationReport, detect_violations
+from violation_detector import V_MAX, V_MIN, LINE_MAX_LOADING, TRAFO_MAX_LOADING
+
+
+# ===========================================================================
+# Global display flag
+# Set SHOW_PLOTS = True  to view figures interactively (press any key to advance)
+# Set SHOW_PLOTS = False for RPi / headless / GitHub CI (figures never open)
+# ===========================================================================
+SHOW_PLOTS = False
 
 # ===========================================================================
 # Paths — update if your folder structure differs
@@ -524,15 +543,635 @@ def run_profile_builder_tests(verbose: bool = False, only:list =None) -> list:
 
 
 # ===========================================================================
-# SECTION 2 — network_plotter  (placeholder)
+# SECTION 2 — network_plotter
 # ===========================================================================
+ 
+def run_network_plotter_tests(verbose: bool = False, only: list = None) -> list:
+    """
+    Tests plot_topology(), plot_profiles(), and all four plot_day() calls
+    across a representative subset of networks — one per network family.
+ 
+    Running all 199 networks through the plotter would generate ~1400 figures
+    and take hours. One representative per family exercises the same code paths
+    while keeping the suite practical.
+ 
+    Coverage:
+        1  SimBench MV rural     (primary demonstration network)
+        1  SimBench LV rural     (LV single-level)
+        1  SimBench MVLV coupled (coupled voltage level)
+        1  CIGRE MV with_der     (secondary MV validation)
+        1  CIGRE LV
+        1  Kerber standard       (radial LV, no geodata)
+        1  Kerber extreme
+        1  Synthetic Voltage Control LV
+        1  Dickert LV
+        ---
+        9  total test cases
+ 
+    Each test case runs:
+        - plot_topology()         → topology figure
+        - plot_profiles()         → annual profiles figure
+        - plot_day() × 4          → four extreme day zooms
+    
+    SHOW_PLOTS controls whether figures are displayed:
+        True  — figures appear, press any key to advance (interactive dev)
+        False — figures never open (RPi / headless / CI)
+    """
+    import matplotlib
+    import matplotlib.figure
+    import matplotlib.pyplot as plt
+    from network_plotter import plot_topology, plot_profiles, plot_day
+    from profile_builder import build_annual_profiles
+    import simbench as sb
+    import pandapower.networks as pn
+ 
+    # Representative networks: (test_name, loader_fn, net_name, simbench_code)
+    REPRESENTATIVE_NETWORKS = [
+        ("sb_mv_rural",
+            lambda: sb.get_simbench_net("1-MV-rural--2-sw"),
+            "1-MV-rural--2-sw",      "1-MV-rural--2-sw"),
+        ("sb_lv_rural",
+            lambda: sb.get_simbench_net("1-LV-rural1--0-sw"),
+            "1-LV-rural1--0-sw",     "1-LV-rural1--0-sw"),
+        ("sb_mvlv_rural",
+            lambda: sb.get_simbench_net("1-MVLV-rural-all-0-sw"),
+            "1-MVLV-rural-all-0-sw", "1-MVLV-rural-all-0-sw"),
+        ("cigre_mv",
+            lambda: pn.create_cigre_network_mv(with_der="pv_wind"),
+            "cigre_mv_with_der",     None),
+        ("cigre_lv",
+            lambda: pn.create_cigre_network_lv(),
+            "cigre_lv",              None),
+        ("kerber_standard",
+            lambda: pn.create_kerber_landnetz_kabel_1(),
+            "kerber_landnetz_kabel_1", None),
+        ("kerber_extreme",
+            lambda: pn.kb_extrem_landnetz_kabel(),
+            "kb_extrem_landnetz_kabel", None),
+        ("synthetic_lv",
+            lambda: pn.create_synthetic_voltage_control_lv_network("rural_1"),
+            "synthetic_lv_rural_1",  None),
+        ("dickert",
+            lambda: pn.create_dickert_lv_network("short", "cable", "single", "good"),
+            "dickert_short_cable_single_good", None),
+    ]
+ 
+    cases = []
+    extreme_day_keys = [
+        ("max_der",  "Max DER generation day"),
+        ("min_der",  "Min DER generation day"),
+        ("max_load", "Peak load day"),
+        ("min_load", "Min load day"),
+    ]
+ 
+    for test_name, loader, net_name, sb_code in REPRESENTATIVE_NETWORKS:
+        if only and not any(s in test_name for s in only):
+            continue
+ 
+        tc = TestCase(test_name)
+        t0 = time.time()
+        try:
+            net = loader()
+ 
+            # Build profiles
+            kwargs = dict(data_dir=DWD_DATA_DIR)
+            if sb_code:
+                kwargs["simbench_code"] = sb_code
+            prof = build_annual_profiles(net, net_name, **kwargs)
+ 
+            # --- check 1: plot_topology ---
+            fig_topo = plot_topology(net, net_name, show=SHOW_PLOTS)
+            tc.record("topology_returns_figure",
+                      isinstance(fig_topo, matplotlib.figure.Figure),
+                      "plot_topology did not return a Figure")
+ 
+            # --- check 2: plot_profiles ---
+            fig_prof = plot_profiles(net_name, prof, show=SHOW_PLOTS)
+            tc.record("profiles_returns_figure",
+                      isinstance(fig_prof, matplotlib.figure.Figure),
+                      "plot_profiles did not return a Figure")
+ 
+            # --- checks 3–6: plot_day for all four extreme days ---
+            ed = prof.get("extreme_days", {})
+            for day_key, day_label in extreme_day_keys:
+                day_str = ed.get(day_key)
+                if day_str is None:
+                    # No DER units in network — skip DER day checks gracefully
+                    tc.record(f"plot_day_{day_key}_skipped_no_der", True,
+                              f"No {day_label} — network has no relevant DER")
+                    continue
+                fig_day = plot_day(prof, day_str, net_name,
+                                   day_label=day_label, show=SHOW_PLOTS)
+                tc.record(f"plot_day_{day_key}",
+                          isinstance(fig_day, matplotlib.figure.Figure),
+                          f"plot_day({day_key}) did not return a Figure")
+ 
+        except Exception:
+            tc.error = traceback.format_exc()
+ 
+        tc.duration = time.time() - t0
+        cases.append(tc)
+        print_case(tc, verbose)
+ 
+    return cases
 
-# def run_network_plotter_tests(verbose: bool = False) -> list:
-#     from network_plotter import plot_network_and_profiles, plot_day
-#     cases = []
-#     # implement when network_plotter.py is ready
-#     return cases
-
+# ===========================================================================
+# SECTION 3 — violation_detector  (representative networks)
+# ===========================================================================
+ 
+def run_violation_detector_tests(verbose: bool = False,
+                                  only: list = None) -> list:
+    """
+    Tests detect_violations() across one representative network per family.
+ 
+    Uses the same nine networks as Section 2 (network_plotter) so results
+    are directly comparable. Each test:
+        - loads the network
+        - runs runpp(net, voltage_depend_loads=False)
+        - calls detect_violations(net)
+        - verifies the report structure and field types
+        - prints violation summary for human inspection
+ 
+    Coverage:
+        1  SimBench MV rural     (primary HIL network)
+        1  SimBench LV rural
+        1  SimBench MVLV coupled
+        1  CIGRE MV with_der     (secondary MV)
+        1  CIGRE LV
+        1  Kerber standard
+        1  Kerber extreme
+        1  Synthetic Voltage Control LV
+        1  Dickert LV
+        ---
+        9  total
+    """
+    import pandapower as pp
+    import pandapower.networks as pn
+    import simbench as sb
+    from violation_detector import ViolationReport, detect_violations
+ 
+    REPRESENTATIVE_NETWORKS = [
+        ("sb_mv_rural",
+            lambda: sb.get_simbench_net("1-MV-rural--2-sw"),
+            "1-MV-rural--2-sw"),
+        ("sb_lv_rural",
+            lambda: sb.get_simbench_net("1-LV-rural1--0-sw"),
+            "1-LV-rural1--0-sw"),
+        ("sb_mvlv_rural",
+            lambda: sb.get_simbench_net("1-MVLV-rural-all-0-sw"),
+            "1-MVLV-rural-all-0-sw"),
+        ("cigre_mv",
+            lambda: pn.create_cigre_network_mv(with_der="pv_wind"),
+            "cigre_mv_with_der"),
+        ("cigre_lv",
+            lambda: pn.create_cigre_network_lv(),
+            "cigre_lv"),
+        ("kerber_standard",
+            lambda: pn.create_kerber_landnetz_kabel_1(),
+            "kerber_landnetz_kabel_1"),
+        ("kerber_extreme",
+            lambda: pn.kb_extrem_landnetz_kabel(),
+            "kb_extrem_landnetz_kabel"),
+        ("synthetic_lv",
+            lambda: pn.create_synthetic_voltage_control_lv_network("rural_1"),
+            "synthetic_lv_rural_1"),
+        ("dickert",
+            lambda: pn.create_dickert_lv_network("short", "cable", "single", "good"),
+            "dickert_short_cable_single_good"),
+    ]
+ 
+    cases = []
+ 
+    for test_name, loader, net_name in REPRESENTATIVE_NETWORKS:
+        if only and not any(s in test_name for s in only):
+            continue
+ 
+        tc = TestCase(test_name)
+        t0 = time.time()
+        try:
+            net = loader()
+            pp.runpp(net, voltage_depend_loads=False)
+            report = detect_violations(net)
+ 
+            # --- Structural checks ---
+            tc.record("returns_violation_report",
+                      isinstance(report, ViolationReport),
+                      "detect_violations() did not return a ViolationReport")
+ 
+            tc.record("converged",
+                      report.converged,
+                      "runpp() did not converge")
+ 
+            tc.record("any_violations_is_bool",
+                      isinstance(report.any_violations, bool),
+                      "any_violations is not bool")
+ 
+            # --- DataFrame column schema checks (safe indexing) ---
+            for attr, col in [
+                ("over_voltage",      "deviation_pu"),
+                ("under_voltage",     "deviation_pu"),
+                ("overloaded_lines",  "loading_percent"),
+                ("overloaded_trafos", "loading_percent"),
+                ("angle_violations",  "va_diff_degree"),
+            ]:
+                df = getattr(report, attr)
+                tc.record(
+                    f"{attr}_has_columns",
+                    col in df.columns,
+                    f"'{col}' column missing from report.{attr} "
+                    f"(DataFrame has columns: {list(df.columns)})"
+                )
+ 
+            # --- Consistency check: any_violations matches frame states ---
+            derived = (
+                not report.over_voltage.empty
+                or not report.under_voltage.empty
+                or not report.overloaded_lines.empty
+                or not report.overloaded_trafos.empty
+                or not report.angle_violations.empty
+            )
+            tc.record("any_violations_consistent",
+                      report.any_violations == derived,
+                      f"any_violations={report.any_violations} but "
+                      f"derived={derived} from frame states")
+ 
+            # Print summary for human inspection (always visible regardless of SHOW_PLOTS)
+            print(f"         {report.summary()}")
+ 
+        except Exception:
+            tc.error = traceback.format_exc()
+ 
+        tc.duration = time.time() - t0
+        cases.append(tc)
+        print_case(tc, verbose)
+ 
+    return cases
+ 
+ 
+# ===========================================================================
+# SECTION 4 — violation_detector_all  (all networks + ranked summary)
+# ===========================================================================
+ 
+def run_violation_detector_all_tests(verbose: bool = False,
+                                      only: list = None) -> list:
+    """
+    Runs detect_violations() across all 199 in-scope networks plus CIGRE,
+    Kerber, Synthetic LV, Dickert, and ERA5. Collects violation statistics
+    and prints a ranked summary at the end showing which networks produce the
+    most severe voltage and transformer violations at nominal operating point.
+ 
+    NOTE: These are results at default loading (no DWD profiles applied).
+    The ranking identifies structurally weak networks, not worst-case
+    operating scenarios. Profile-driven violation studies belong in the
+    scenario test sections (Sections 4–8, placeholders).
+ 
+    Coverage: same as Section 1 (profile_builder) — 199 networks + 18 + 17
+              + 5 + 2 + 1 = 242 total.
+    """
+    cases   = []
+    records = []   # violation statistics per network for ranked summary
+ 
+    def _run_one(tc: TestCase,
+                 net_name: str,
+                 loader_fn) -> dict:
+        """
+        Load, run, detect, record. Returns a stats dict for the summary.
+        Mutates tc with check results.
+        """
+        try:
+            net = loader_fn()
+            pp.runpp(net, voltage_depend_loads=False)
+            report = detect_violations(net)
+ 
+            tc.record("converged",        report.converged,
+                      "runpp() did not converge")
+            tc.record("report_valid",
+                      hasattr(report, "any_violations"),
+                      "ViolationReport malformed")
+            tc.record("angle_check_ran",
+                      hasattr(report, "angle_violations"),
+                      "angle_violations field missing from report")
+ 
+            # Collect statistics even when no violations
+            max_vm   = float(net.res_bus["vm_pu"].max()) if report.converged else None
+            min_vm   = float(net.res_bus["vm_pu"].min()) if report.converged else None
+            max_traf = (
+                float(net.res_trafo["loading_percent"].max())
+                if report.converged
+                and hasattr(net, "res_trafo")
+                and not net.res_trafo.empty
+                and "loading_percent" in net.res_trafo.columns
+                else None
+            )
+            min_traf = (
+                float(net.res_trafo["loading_percent"].min())
+                if report.converged
+                and hasattr(net, "res_trafo")
+                and not net.res_trafo.empty
+                and "loading_percent" in net.res_trafo.columns
+                else None
+            )
+            max_line = (
+                float(net.res_line["loading_percent"].max())
+                if report.converged
+                and hasattr(net, "res_line")
+                and not net.res_line.empty
+                and "loading_percent" in net.res_line.columns
+                else None
+            )
+            min_line = (
+                float(net.res_line["loading_percent"].min())
+                if report.converged
+                and hasattr(net, "res_line")
+                and not net.res_line.empty
+                and "loading_percent" in net.res_line.columns
+                else None
+            )
+            return {
+                "name":               net_name,
+                "n_over_voltage":     report.n_over_voltage,
+                "n_under_voltage":    report.n_under_voltage,
+                "max_vm_pu":          max_vm,
+                "min_vm_pu":          min_vm,
+                "n_overloaded_trafo": report.n_overloaded_trafos,
+                "n_overloaded_line":  report.n_overloaded_lines,
+                "max_trafo_loading":  max_traf,
+                "min_trafo_loading":  min_traf,
+                "max_line_loading":   max_line,
+                "min_line_loading":   min_line,
+                "any_violations":     report.any_violations,
+            }
+        except Exception:
+            tc.error = traceback.format_exc()
+            return {
+                "name": net_name,
+                "n_over_voltage": None,    "n_under_voltage": None,
+                "max_vm_pu": None,         "min_vm_pu": None,
+                "n_overloaded_trafo": None,"n_overloaded_line": None,
+                "max_trafo_loading": None, "min_trafo_loading": None,
+                "max_line_loading": None,  "min_line_loading": None,
+                "any_violations": None,
+            }
+ 
+    # ------------------------------------------------------------------
+    # SimBench — 156 networks
+    # ------------------------------------------------------------------
+    print(f"\n  [1/6] SimBench  ({len(IN_SCOPE_SIMBENCH_CODES)} networks)")
+    for code in IN_SCOPE_SIMBENCH_CODES:
+        if only and not any(s in code for s in only):
+            continue
+        tc = TestCase(code)
+        t0 = time.time()
+        rec = _run_one(tc, code, lambda c=code: sb.get_simbench_net(c))
+        tc.duration = time.time() - t0
+        cases.append(tc)
+        records.append(rec)
+        print_case(tc, verbose)
+ 
+    # ------------------------------------------------------------------
+    # CIGRE MV + LV — 2 networks
+    # ------------------------------------------------------------------
+    print(f"\n  [2/6] CIGRE networks  (2 networks)")
+    for name, loader in [
+        ("cigre_mv_with_der",
+            lambda: pn.create_cigre_network_mv(with_der="pv_wind")),
+        ("cigre_lv",
+            lambda: pn.create_cigre_network_lv()),
+    ]:
+        if only and not any(s in name for s in only):
+            continue
+        tc = TestCase(name)
+        t0 = time.time()
+        rec = _run_one(tc, name, loader)
+        tc.duration = time.time() - t0
+        cases.append(tc)
+        records.append(rec)
+        print_case(tc, verbose)
+ 
+    # ------------------------------------------------------------------
+    # Kerber — 17 variants
+    # ------------------------------------------------------------------
+    print(f"\n  [3/6] Kerber networks  ({len(ALL_KERBER_CASES)} variants)")
+    for name, fn_name in ALL_KERBER_CASES:
+        if only and not any(s in name for s in only):
+            continue
+        tc = TestCase(name)
+        t0 = time.time()
+        fn = getattr(pn, fn_name)
+        rec = _run_one(tc, name, fn)
+        tc.duration = time.time() - t0
+        cases.append(tc)
+        records.append(rec)
+        print_case(tc, verbose)
+ 
+    # ------------------------------------------------------------------
+    # Synthetic Voltage Control LV — 5 classes
+    # ------------------------------------------------------------------
+    print(f"\n  [4/6] Synthetic Voltage Control LV  ({len(ALL_SYNTHETIC_LV_CASES)} classes)")
+    for network_class in ALL_SYNTHETIC_LV_CASES:
+        name = f"synthetic_lv_{network_class}"
+        if only and not any(s in name for s in only):
+            continue
+        tc = TestCase(name)
+        t0 = time.time()
+        rec = _run_one(
+            tc, name,
+            lambda c=network_class: pn.create_synthetic_voltage_control_lv_network(c)
+        )
+        tc.duration = time.time() - t0
+        cases.append(tc)
+        records.append(rec)
+        print_case(tc, verbose)
+ 
+    # ------------------------------------------------------------------
+    # Dickert LV — 18 combinations
+    # ------------------------------------------------------------------
+    print(f"\n  [5/6] Dickert LV  ({len(ALL_DICKERT_CASES)} combinations)")
+    for name, feeders_range, linetype, customer, case in ALL_DICKERT_CASES:
+        if only and not any(s in name for s in only):
+            continue
+        tc = TestCase(name)
+        t0 = time.time()
+        try:
+            net = pn.create_dickert_lv_network(feeders_range, linetype, customer, case)
+            rec = _run_one(tc, name, lambda n=net: n)
+        except ValueError as e:
+            if "no dickert network" in str(e):
+                tc.skipped = True
+                rec = {"name": name, **{k: None for k in [
+                    "n_over_voltage","n_under_voltage","max_vm_pu","min_vm_pu",
+                    "n_overloaded_trafo","n_overloaded_line",
+                    "max_trafo_loading","min_trafo_loading",
+                    "max_line_loading","min_line_loading","any_violations"]}}
+            else:
+                tc.error = traceback.format_exc()
+                rec = {"name": name, **{k: None for k in [
+                    "n_over_voltage","n_under_voltage","max_vm_pu","min_vm_pu",
+                    "n_overloaded_trafo","n_overloaded_line",
+                    "max_trafo_loading","min_trafo_loading",
+                    "max_line_loading","min_line_loading","any_violations"]}}
+        except Exception:
+            tc.error = traceback.format_exc()
+            rec = {"name": name, **{k: None for k in [
+                "n_over_voltage","n_under_voltage","max_vm_pu","min_vm_pu",
+                "n_overloaded_trafo","n_overloaded_line",
+                "max_trafo_loading","min_trafo_loading",
+                "max_line_loading","min_line_loading","any_violations"]}}
+        tc.duration = time.time() - t0
+        cases.append(tc)
+        records.append(rec)
+        print_case(tc, verbose)
+ 
+    # ------------------------------------------------------------------
+    # ERA5 datasource — 1 network
+    # ------------------------------------------------------------------
+    print(f"\n  [6/6] ERA5 datasource  (1 network — runpp only, no profiles)")
+    name = "cigre_mv_era5"
+    if not (only and not any(s in name for s in only)):
+        tc = TestCase(name)
+        t0 = time.time()
+        rec = _run_one(
+            tc, name,
+            lambda: pn.create_cigre_network_mv(with_der="pv_wind")
+        )
+        tc.duration = time.time() - t0
+        cases.append(tc)
+        records.append(rec)
+        print_case(tc, verbose)
+ 
+    # ------------------------------------------------------------------
+    # Ranked summary
+    # ------------------------------------------------------------------
+    _print_violations_summary(records)
+ 
+    return cases
+ 
+ 
+def _print_violations_summary(records: list, top_n: int = 10):
+    """
+    Prints six ranked tables covering all key violation dimensions:
+        1. Highest bus voltage   — overvoltage risk
+        2. Lowest bus voltage    — undervoltage risk
+        3. Highest trafo loading — trafo thermal risk
+        4. Lowest trafo loading  — (informational, identifies lightly loaded trafos)
+        5. Highest line loading  — line thermal risk
+        6. Lowest line loading   — (informational)
+ 
+    Violation flags use thresholds imported directly from violation_detector,
+    so this summary stays in sync if thresholds are ever changed there.
+ 
+    NOTE: Results are at default pandapower loading (no DWD profiles applied).
+    This is a structural network scan — it identifies networks that are close
+    to limits even at nominal operating point. Profile-driven worst-case
+    scenarios belong in the comparison scenario test sections.
+ 
+    Only includes networks with valid (non-None) results.
+    """
+    valid = [r for r in records if r.get("max_vm_pu") is not None]
+    if not valid:
+        print("\n  [violations summary] No valid results to summarise.")
+        return
+ 
+    W = 74  # table width
+ 
+    print(f"\n{'='*W}")
+    print(f"  VIOLATIONS SUMMARY")
+    print(f"  Nominal loading only — no DWD profiles applied.")
+    print(f"  Identifies structurally weak networks, not worst-case scenarios.")
+    print(f"{'='*W}")
+ 
+    def _table(title, rows, val_key, count_key, threshold, higher_is_bad,
+               val_fmt=".4f", val_label="value", count_label="viol. buses"):
+        """Generic ranked table printer."""
+        filtered = [r for r in rows if r.get(val_key) is not None]
+        if not filtered:
+            print(f"\n  {title}: no data available.")
+            return
+        ranked = sorted(filtered,
+                        key=lambda r: r[val_key] or 0.0,
+                        reverse=higher_is_bad)
+        n = min(top_n, len(ranked))
+        print(f"\n  Top {n} — {title}:")
+        print(f"  {'#':<4} {'Network':<44} {val_label:>12} {count_label:>13}")
+        print(f"  {'-'*W}")
+        for i, r in enumerate(ranked[:top_n], 1):
+            val = r[val_key]
+            cnt = r.get(count_key) or 0
+            if higher_is_bad:
+                flag = f"  <-- {'VIOLATION' if val > threshold else ''}"
+            else:
+                flag = f"  <-- {'VIOLATION' if val < threshold else ''}"
+            flag = flag.rstrip()
+            print(
+                f"  {i:<4} {r['name']:<44} "
+                f"{val:{val_fmt}:>12} "
+                f"{cnt:>13}{flag}"
+            )
+ 
+    # Table 1: Highest bus voltage
+    _table(
+        "Highest bus voltage (overvoltage risk)",
+        valid, "max_vm_pu", "n_over_voltage",
+        threshold=V_MAX, higher_is_bad=True,
+        val_fmt=".4f", val_label="max vm_pu", count_label="over-V buses",
+    )
+ 
+    # Table 2: Lowest bus voltage
+    _table(
+        "Lowest bus voltage (undervoltage risk)",
+        valid, "min_vm_pu", "n_under_voltage",
+        threshold=V_MIN, higher_is_bad=False,
+        val_fmt=".4f", val_label="min vm_pu", count_label="under-V buses",
+    )
+ 
+    # Table 3: Highest trafo loading
+    trafo_valid = [r for r in valid if r.get("max_trafo_loading") is not None]
+    _table(
+        "Highest trafo loading (thermal risk)",
+        trafo_valid, "max_trafo_loading", "n_overloaded_trafo",
+        threshold=TRAFO_MAX_LOADING, higher_is_bad=True,
+        val_fmt=".1f", val_label="max trafo %", count_label="overloaded",
+    )
+ 
+    # Table 4: Lowest trafo loading (informational)
+    _table(
+        "Lowest trafo loading (informational)",
+        trafo_valid, "min_trafo_loading", "n_overloaded_trafo",
+        threshold=0.0, higher_is_bad=False,
+        val_fmt=".1f", val_label="min trafo %", count_label="overloaded",
+    )
+ 
+    # Table 5: Highest line loading
+    line_valid = [r for r in valid if r.get("max_line_loading") is not None]
+    _table(
+        "Highest line loading (thermal risk)",
+        line_valid, "max_line_loading", "n_overloaded_line",
+        threshold=LINE_MAX_LOADING, higher_is_bad=True,
+        val_fmt=".1f", val_label="max line %", count_label="overloaded",
+    )
+ 
+    # Table 6: Lowest line loading (informational)
+    _table(
+        "Lowest line loading (informational)",
+        line_valid, "min_line_loading", "n_overloaded_line",
+        threshold=0.0, higher_is_bad=False,
+        val_fmt=".1f", val_label="min line %", count_label="overloaded",
+    )
+ 
+    # --- Quick count summary ---
+    n_any  = sum(1 for r in valid if r.get("any_violations"))
+    n_ov   = sum(1 for r in valid if (r.get("n_over_voltage")  or 0) > 0)
+    n_uv   = sum(1 for r in valid if (r.get("n_under_voltage") or 0) > 0)
+    n_traf = sum(1 for r in valid if (r.get("n_overloaded_trafo") or 0) > 0)
+    n_line = sum(1 for r in valid if (r.get("n_overloaded_line")  or 0) > 0)
+ 
+    print(f"\n  {'Networks with any violation:':<40} {n_any:>4} / {len(valid)}")
+    print(f"  {'  of which overvoltage:':<40} {n_ov:>4}")
+    print(f"  {'  of which undervoltage:':<40} {n_uv:>4}")
+    print(f"  {'  of which trafo overload:':<40} {n_traf:>4}")
+    print(f"  {'  of which line overload:':<40} {n_line:>4}")
+    print(f"{'='*W}\n")
+ 
 
 # ===========================================================================
 # SECTION 3 — volt_var_control  (placeholder)
@@ -569,7 +1208,9 @@ def run_profile_builder_tests(verbose: bool = False, only:list =None) -> list:
 
 SECTIONS = {
     "profile_builder":  run_profile_builder_tests,
-    # "network_plotter":  run_network_plotter_tests,
+    "network_plotter":  run_network_plotter_tests,
+    "violation_detector": run_violation_detector_tests,
+    "violation_detector_all": run_violation_detector_all_tests,
     # "volt_var_control": run_volt_var_tests,
     # "baseline":         run_baseline_tests,
     # "oltc":             run_oltc_tests,
