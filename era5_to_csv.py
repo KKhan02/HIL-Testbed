@@ -66,7 +66,6 @@ def convert(era5_file: str = ERA5_FILE, output_dir: str = OUTPUT_DIR):
     ts = pd.to_datetime(df["valid_time"])
     if ts.dt.tz is None:
         ts = ts.dt.tz_localize("UTC")
-    ts = ts.dt.tz_convert(TIMEZONE)
 
     # ------------------------------------------------------------------
     # Wind speed  [m/s]   sqrt(u10² + v10²)
@@ -98,7 +97,7 @@ def convert(era5_file: str = ERA5_FILE, output_dir: str = OUTPUT_DIR):
 
     def write(series, filename, col_name):
         out = pd.DataFrame({
-            "timestamp": ts.dt.strftime("%Y-%m-%dT%H:%M:%S"),
+            "timestamp": ts.dt.tz_convert("UTC").dt.strftime("%Y-%m-%dT%H:%M:%S"),
             col_name:    series.values
         })
         fpath = os.path.join(output_dir, filename)
