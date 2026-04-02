@@ -1817,6 +1817,7 @@ def run_volt_var_tests(
             print_case(tc, verbose)
         return cases
 
+    return cases
 # ===========================================================================
 # SECTIONS 4–8 — scenario tests  (placeholders)
 # ===========================================================================
