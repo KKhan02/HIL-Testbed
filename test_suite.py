@@ -1938,7 +1938,10 @@ if __name__ == "__main__":
         print(f"\n{'='*70}")
         print(f"  SECTION: {section_name.upper()}")
         print(f"{'='*70}")
-        cases = run_fn(verbose=args.verbose, only=args.only, arduino_port = args.arduino_port, only_hw=args.only_hw)
+        kwargs = {"verbose": args.verbose, "only": args.only}
+        if section_name == "volt_var_control":
+            kwargs.update({"arduino_port": args.arduino_port, "only_hw": args.only_hw})
+        cases = run_fn(**kwargs)
         section_results[section_name] = cases
 
     print_summary(section_results)
