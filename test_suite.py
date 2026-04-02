@@ -1415,81 +1415,81 @@ def run_volt_var_tests(
             cases.append(tc)
             print_case(tc, verbose)
     
-            # -------------------------------------------------------------------
-            # 5.2  VoltVarController dry_run -- 9 representative networks
-            # -------------------------------------------------------------------
+        # -------------------------------------------------------------------
+        # 5.2  VoltVarController dry_run -- 9 representative networks
+        # -------------------------------------------------------------------
 
-            print(f"\n  [2/4] VoltVarController dry_run -- {len(REPRESENTATIVE_NETWORKS_VV)} representative networks")
+        print(f"\n  [2/4] VoltVarController dry_run -- {len(REPRESENTATIVE_NETWORKS_VV)} representative networks")
 
-            for net_name, loader, label in REPRESENTATIVE_NETWORKS_VV:
-                if only and not any(s in net_name for s in only):
+        for net_name, loader, label in REPRESENTATIVE_NETWORKS_VV:
+            if only and not any(s in net_name for s in only):
+                continue
+            tc = TestCase(f"vv_dry_{net_name}")
+            t0 = time.time()
+            rec = {"name": label}
+            try:
+                net  = loader()
+                net.sgen.p_mw   = net.sgen.sn_mva * 0.90
+                net.load.p_mw   = net.load.p_mw   * 0.20
+                net.load.q_mvar = net.load.q_mvar  * 0.20
+                ctrl = VoltVarController(net, interface=None, dry_run=True)
+                ctrl.configure()
+                if ctrl.n_ders == 0:
+                    tc.record("skipped_no_der", True, "No controllable DERs in network")
+                    tc.skipped = True
+                    cases.append(tc)
+                    vv_rep_records.append(rec)
+                    print_case(tc, verbose)
                     continue
-                tc = TestCase(f"vv_dry_{net_name}")
-                t0 = time.time()
-                rec = {"name": label}
-                try:
-                    net  = loader()
-                    net.sgen.p_mw   = net.sgen.sn_mva * 0.90
-                    net.load.p_mw   = net.load.p_mw   * 0.20
-                    net.load.q_mvar = net.load.q_mvar  * 0.20
-                    ctrl = VoltVarController(net, interface=None, dry_run=True)
-                    ctrl.configure()
-                    if ctrl.n_ders == 0:
-                        tc.record("skipped_no_der", True, "No controllable DERs in network")
-                        tc.skipped = True
-                        cases.append(tc)
-                        vv_rep_records.append(rec)
-                        print_case(tc, verbose)
-                        continue
 
-                    tc.record("n_ders_positive", ctrl.n_ders > 0, f"n_ders={ctrl.n_ders}")
-                    runpp_kwargs = {}
-                    if "synthetic" in label or "lv" in label.lower() or "dickert" in label.lower():
-                        runpp_kwargs = {
-                            "algorithm": "bfsw",
-                            "max_iteration": 30,
-                            "init": "flat",
-                        }
+                tc.record("n_ders_positive", ctrl.n_ders > 0, f"n_ders={ctrl.n_ders}")
+                runpp_kwargs = {}
+                if "synthetic" in label or "lv" in label.lower() or "dickert" in label.lower():
+                    runpp_kwargs = {
+                        "algorithm": "bfsw",
+                        "max_iteration": 30,
+                        "init": "flat",
+                    }
 
-                    result = ctrl.run_timestep(runpp_kwargs=runpp_kwargs)
-                    if not result.converged_pre:
-                        tc.record("pre_converged", False, "runpp() did not converge")
-                        tc.skipped = True
-                        cases.append(tc)
-                        vv_rep_records.append(rec)
-                        print_case(tc, verbose)
-                        continue
+                result = ctrl.run_timestep(runpp_kwargs=runpp_kwargs)
+                if not result.converged_pre:
+                    tc.record("pre_converged", False, "runpp() did not converge")
+                    tc.skipped = True
+                    cases.append(tc)
+                    vv_rep_records.append(rec)
+                    print_case(tc, verbose)
+                    continue
 
-                    tc.record("pre_converged",  result.converged_pre)
-                    tc.record("post_converged", result.converged_post)
-                    tc.record("q_length",       len(result.q_setpoints) == ctrl.n_ders)
-                    tc.record("q_finite",       np.all(np.isfinite(result.q_setpoints.values)))
-                    tc.record("q_applied",
-                        np.allclose(
-                            net.sgen.loc[ctrl.sgen_indices, "q_mvar"].values,
-                            result.q_setpoints.values))
+                tc.record("pre_converged",  result.converged_pre)
+                tc.record("post_converged", result.converged_post)
+                tc.record("q_length",       len(result.q_setpoints) == ctrl.n_ders)
+                tc.record("q_finite",       np.all(np.isfinite(result.q_setpoints.values)))
+                tc.record("q_applied",
+                    np.allclose(
+                        net.sgen.loc[ctrl.sgen_indices, "q_mvar"].values,
+                        result.q_setpoints.values))
 
-                    rec.update({
-                        "n_ders":             ctrl.n_ders,
-                        "n_ov_pre":           result.report_pre.n_over_voltage,
-                        "n_ov_post":          result.report_post.n_over_voltage if result.report_post else None,
-                        "worst_v_pre":        result.report_pre.worst_over_voltage,
-                        "worst_v_post":       result.report_post.worst_over_voltage if result.report_post else None,
-                        "violations_resolved": result.violations_resolved,
-                        "v_reduced":          result.voltage_violations_reduced,
-                        "q_max":              float(np.abs(result.q_setpoints.values).max()) if ctrl.n_ders > 0 else 0.0,
-                        "q_total":            float(np.abs(result.q_setpoints.values).sum()) if ctrl.n_ders > 0 else 0.0,
-                    })
-                except Exception:
-                    tc.error = traceback.format_exc()
-                    rec.update({"n_ders": None, "n_ov_pre": None, "n_ov_post": None,
-                                "worst_v_pre": None, "worst_v_post": None,
-                                "violations_resolved": None, "v_reduced": None,
-                                "q_max": None, "q_total": None})
-                tc.duration = time.time() - t0
-                cases.append(tc)
-                vv_rep_records.append(rec)
-                print_case(tc, verbose)
+                rec.update({
+                    "n_ders":             ctrl.n_ders,
+                    "n_ov_pre":           result.report_pre.n_over_voltage,
+                    "n_ov_post":          result.report_post.n_over_voltage if result.report_post else None,
+                    "worst_v_pre":        result.report_pre.worst_over_voltage,
+                    "worst_v_post":       result.report_post.worst_over_voltage if result.report_post else None,
+                    "violations_resolved": result.violations_resolved,
+                    "v_reduced":          result.voltage_violations_reduced,
+                    "q_max":              float(np.abs(result.q_setpoints.values).max()) if ctrl.n_ders > 0 else 0.0,
+                    "q_total":            float(np.abs(result.q_setpoints.values).sum()) if ctrl.n_ders > 0 else 0.0,
+                })
+            except Exception:
+                tc.error = traceback.format_exc()
+                rec.update({"n_ders": None, "n_ov_pre": None, "n_ov_post": None,
+                            "worst_v_pre": None, "worst_v_post": None,
+                            "violations_resolved": None, "v_reduced": None,
+                            "q_max": None, "q_total": None})
+            tc.duration = time.time() - t0
+            cases.append(tc)
+            vv_rep_records.append(rec)
+            print_case(tc, verbose)
 
         _print_volt_var_summary(vv_rep_records)
 
