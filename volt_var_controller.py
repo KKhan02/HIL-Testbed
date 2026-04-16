@@ -40,7 +40,7 @@ Sign convention follows pandapower:
 
 Serial Protocol
 ---------------
-Baud rate: 9600. All messages are ASCII, newline-terminated.
+Baud rate: 115200. All messages are ASCII, newline-terminated.
 Framing: prefix token identifies message type; values comma-separated.
 
 Startup handshake (once per session, via configure()):
@@ -144,7 +144,6 @@ class SerialTimeoutError(RuntimeError):
     a truncated message (no terminating newline byte received)."""
     pass
 
-
 class ArduinoProtocolError(RuntimeError):
     """Arduino returned an explicit ERR: response. Distinct from a timeout --
     the Arduino is alive but rejected the message (wrong DER count, invalid
@@ -196,6 +195,8 @@ class QVCharacteristic:
         -------
         float  q_mvar. Positive = injection. Negative = absorption.
         """
+        # Guard 1: non-finite installed capacity
+        # Returns false for NaN, +Inf and -Inf
         if not np.isfinite(p_installed_mw):
             warnings.warn(
                 f"[QVCharacteristic] p_installed_mw={p_installed_mw!r} is not "
@@ -203,14 +204,14 @@ class QVCharacteristic:
                 RuntimeWarning, stacklevel=2,
             )
             return 0.0
-
+        # Guard 2: non-finite voltage
         if not np.isfinite(vm_pu):
             warnings.warn(
                 f"[QVCharacteristic] vm_pu={vm_pu!r} is not finite; returning Q=0.",
                 RuntimeWarning, stacklevel=2,
             )
             return 0.0
-
+        # abs incase somehow a value of p_installed_mw is -ve (due to faulty dataset)
         q_max = Q_RATIO * abs(p_installed_mw)
 
         # Inclusive boundary at saturation points avoids unnecessary
@@ -252,6 +253,8 @@ class QVCharacteristic:
         ------
         ValueError  If indices do not match.
         """
+        # Checks if the index of DER in vm_pu and p_installed_mw are same or not
+        # They are both indexed by sgen so it should be same. If not return an error 
         if not vm_pu.index.equals(p_installed_mw.index):
             raise ValueError(
                 "compute_setpoints: vm_pu and p_installed_mw must have the "
@@ -261,6 +264,8 @@ class QVCharacteristic:
                 "Call p_installed_mw = p_installed_mw.reindex(vm_pu.index) "
                 "if ordering differs."
             )
+        # np.vectorize is a loop wrapper that avoids using a for loop
+        #  otypes tells numpy the return type is float
         q = np.vectorize(QVCharacteristic.compute_setpoint, otypes=[float])(
             vm_pu.values, p_installed_mw.values
         )
@@ -274,7 +279,9 @@ class QVCharacteristic:
     @staticmethod
     def slope_inject() -> float:
         """dQ/dV slope in the injection ramp [U1_PU, U2_PU]. Positive.
-        Units: pu_Q per (pu_V * MW_installed)."""
+        Units: pu_Q per (pu_V * MW_installed).
+        slope_inject() = 16.0 means each 1 MW of installed capacity can 
+        change Q by 16 MVAr per pu of voltage change in the ramp zone"""
         return Q_RATIO / (U2_PU - U1_PU)
 
     @staticmethod
@@ -420,6 +427,8 @@ class ArduinoSerialInterface:
         sending data. reset_input_buffer() discards all boot output
         (including "READY\\n" and any bootloader noise) so configure()
         begins from a clean state.
+        Arduino does Hardware reset (via 100nF Capacitor) when the Data 
+        Terminal Ready line pulses which takes 1-1.5 sec to complete 
         """
         try:
             import serial as _serial
@@ -435,7 +444,7 @@ class ArduinoSerialInterface:
             timeout  = self.timeout_s,
         )
         time.sleep(ARDUINO_RESET_DELAY_S)
-        self._ser.reset_input_buffer()
+        self._ser.reset_input_buffer() # Discard any data received during the wait time
 
     def close(self) -> None:
         if self._ser is not None and self._ser.is_open:
@@ -513,6 +522,8 @@ class ArduinoSerialInterface:
         Consumes at most 5 lines to prevent an infinite loop if the
         Arduino is misbehaving. Raises SerialConfigError on ERR: or if
         no ACK/ERR is found within 5 lines.
+        decode(errors="replace") handles any non-UTF-8 bytes from bootloader 
+        noise by substituting the replacement character instead of raising UnicodeDecodeError.
         """
         for _ in range(5):
             raw  = self._ser.readline()
@@ -762,6 +773,14 @@ class VoltVarController:
     # ------------------------------------------------------------------
 
     def _resolve_p_installed(self) -> np.ndarray:
+        '''
+        The installed capacity (used to compute Q_max) should be the rated apparent power sn_mva, 
+        not the current active power output p_mw. sn_mva represents the inverter’s maximum capability 
+        and is fixed; p_mw varies with solar irradiance and changes every timestep. 
+        use_sn = np.isfinite(sn) & (sn > 0.0) masks rows where sn_mva is NaN, zero, or negative. 
+        For those rows, p_mw is used as a fallback. np.where(use_sn, sn, p_mw) selects 
+        element-wise: sn where the mask is True, p_mw otherwise.
+        '''
         sgens  = self._net.sgen.loc[self._sgen_idx]
         sn     = sgens["sn_mva"].values.astype(float)
         p_mw   = sgens["p_mw"].values.astype(float)
@@ -775,6 +794,8 @@ class VoltVarController:
         Raises RuntimeError if any bus is absent from res_bus -- this would
         otherwise produce a KeyError (pandas) or NaN (older pandas), both of
         which would propagate silently into Q calculations.
+        self._sgen_buses is a NumPy array of bus indices (copied from net.sgen.loc[_sgen_idx, "bus"] in the constructor). 
+        res_bus_set = set(net.res_bus.index) converts the DataFrame index to a Python set for O(1) membership lookup
         """
         res_bus_set = set(self._net.res_bus.index)
         missing = [
@@ -801,13 +822,14 @@ class VoltVarController:
         """
         q_out = q_arr.copy()
         sgens = self._net.sgen
-
+        # Layer 1: explicit min/max_q_mvar columns (where finite)
         if "max_q_mvar" in sgens.columns:
             max_q = sgens.loc[self._sgen_idx, "max_q_mvar"].values.astype(float)
             fin   = np.isfinite(max_q)
             if fin.any():
+                # where the limit is finite, apply it; where it is NaN/Inf (not set for this DER), leave q_out unchanged.
                 q_out = np.where(fin, np.minimum(q_out, max_q), q_out)
-
+        # Layer 2: apparent power limit |Q| <= sqrt(sn_mva^2 - p_mw^2)
         if "min_q_mvar" in sgens.columns:
             min_q = sgens.loc[self._sgen_idx, "min_q_mvar"].values.astype(float)
             fin   = np.isfinite(min_q)
