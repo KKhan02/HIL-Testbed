@@ -1,0 +1,114 @@
+// flow_s4_init.dot
+// Scenario 4 - Volt-Var HIL : Initialization & Teardown
+// Three conceptual lanes (rank-aligned columns):
+//   MASTER  (blue)  scenario_4_volt_var.py control flow
+//   SUBPUB  (teal)  Python sub-modules + publisher
+//   HW      (coral) hardware interface (HIL only)
+//
+// Verified control flow (scenario_4_volt_var.py / volt_var_controller.py):
+//   * DER idx/bus/MW resolved in VoltVarController.__init__ (construct step).
+//   * dry_run? branch AFTER construct:
+//       HIL  -> open() -> configure() handshake INIT/CFG/P
+//       dry  -> configure() is a no-op, local Q(V) via QVCharacteristic
+//     both MERGE, then dynamics.reset() -> per-timestep loop (shared).
+//   * second dry_run? branch AFTER loop:
+//       HIL  -> close()/TX END ; dry -> nothing
+//     both MERGE -> from_records() -> on_scenario_end -> return.
+//
+// Styling: dark filled nodes + white text for projection contrast.
+// splines=polyline (NOT ortho) keeps routing flexible and easy to edit.
+//
+// Render: dot -Tpdf flow_s4_init.dot -o flow_s4_init.pdf
+//         dot -Tsvg flow_s4_init.dot -o flow_s4_init.svg
+//         dot -Tpng -Gdpi=200 flow_s4_init.dot -o flow_s4_init.png
+
+digraph flow_s4_init {
+    rankdir=TB;
+    splines=polyline;
+    nodesep=0.35;
+    ranksep=0.45;
+    bgcolor="transparent";
+    fontname="Helvetica-Bold";
+    fontsize=13;
+
+    node [shape=box, style="rounded,filled", fontname="Helvetica-Bold",
+          fontcolor="white", fontsize=11, margin="0.18,0.10",
+          penwidth=0, height=0.5, width=2.2];
+    edge [fontname="Helvetica", fontsize=9, color="#5F5E5A", penwidth=1.5,
+          arrowsize=0.8];
+
+    // ---- colour aliases ----
+    // master  #0C447C  | subpub-pub #3C3489 | subpub-sub #0F6E56
+    // hw #993C1D | dry #3B6D11 | decision #854F0B | neutral #5F5E5A
+
+    // ===================== MASTER lane =====================
+    m_run   [label="run_scenario_4()\nnet, profiles, port, coord", fillcolor="#0C447C"];
+    m_adapt [label="adapt_profiles(net)\nDER P, load P/Q, times", fillcolor="#0C447C"];
+    m_drop  [label="drop controllers\nreset_results(net)", fillcolor="#0C447C"];
+    m_ctor  [label="construct objects\nctrl resolves DER idx/MW\n+ coordinator + dynamics", fillcolor="#0C447C"];
+    d1      [label="dry_run?", shape=diamond, fillcolor="#854F0B", width=1.4, height=0.9];
+    m_noop  [label="configure() no-op\nlocal Q(V) via QVCharacteristic", fillcolor="#3B6D11"];
+    merge1  [label="", shape=diamond, fillcolor="#5F5E5A", width=0.5, height=0.5];
+    m_reset [label="dynamics.reset()\nq_prev=0, p_prev=P[t0]", fillcolor="#0C447C"];
+    m_loop  [label="per-timestep loop\nDiagram 2", fillcolor="#5F5E5A"];
+    d2      [label="dry_run?", shape=diamond, fillcolor="#854F0B", width=1.4, height=0.9];
+    merge2  [label="", shape=diamond, fillcolor="#5F5E5A", width=0.5, height=0.5];
+    m_ret   [label="return ScenarioResult", fillcolor="#0C447C"];
+
+    // ===================== SUB/PUB lane =====================
+    p_start [label="on_scenario_start\nwrite topology, stream", fillcolor="#3C3489"];
+    s_recs  [label="from_records()\ncoord_rate, VDI", fillcolor="#0F6E56"];
+    p_end   [label="on_scenario_end", fillcolor="#3C3489"];
+
+    // ===================== HARDWARE lane =====================
+    h_open  [label="open() @115200\ncapacitor reset, flush", fillcolor="#993C1D"];
+    h_hand  [label="configure() handshake\nINIT -> CFG -> P (Diagram A)", fillcolor="#993C1D"];
+    h_close [label="close() -> TX END\nfirmware clears configured", fillcolor="#993C1D"];
+
+    // ---- lane alignment (same rank = same row) ----
+    { rank=same; m_adapt; p_start; }
+    { rank=same; d1; }
+    { rank=same; m_noop; h_open; }
+    { rank=same; m_loop; }
+    { rank=same; d2; }
+    { rank=same; m_close_row_pad [style=invis, label="", width=0.01]; h_close; }
+    { rank=same; merge2; s_recs; }
+    { rank=same; m_ret; p_end; }
+
+    // ===================== EDGES =====================
+    // main master spine
+    m_run   -> m_adapt;
+    m_adapt -> m_drop;
+    m_drop  -> m_ctor;
+    m_ctor  -> d1;
+
+    // publisher start hangs off adapt, returns to drop
+    m_adapt -> p_start [color="#5F5E5A"];
+    p_start -> m_drop  [color="#5F5E5A"];
+
+    // dry_run? branch 1
+    d1 -> m_noop [label="yes", color="#639922", fontcolor="#3B6D11", penwidth=2];
+    d1 -> h_open [label="no (HIL)", color="#D85A30", fontcolor="#993C1D", penwidth=2];
+    h_open -> h_hand [color="#D85A30", penwidth=2];
+
+    // merge 1
+    m_noop -> merge1 [color="#639922", penwidth=2];
+    h_hand -> merge1 [color="#D85A30", penwidth=2];
+    merge1 -> m_reset;
+
+    m_reset -> m_loop;
+    m_loop  -> d2;
+
+    // dry_run? branch 2 (teardown)
+    d2 -> h_close [label="no (HIL)", color="#D85A30", fontcolor="#993C1D", penwidth=2];
+    d2 -> merge2  [label="yes", color="#639922", fontcolor="#3B6D11", penwidth=2];
+    h_close -> merge2 [color="#D85A30", penwidth=2];
+
+    // merge 2 -> summary -> end -> return
+    merge2  -> s_recs;
+    s_recs  -> p_end;
+    p_end   -> m_ret [color="#5F5E5A"];
+
+    // keep hw lane pushed right
+    m_ctor -> m_close_row_pad [style=invis];
+}

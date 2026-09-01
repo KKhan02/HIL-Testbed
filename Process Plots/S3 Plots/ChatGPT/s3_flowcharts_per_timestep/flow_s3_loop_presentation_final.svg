@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080"><title>Scenario 3 per-timestep SVC flow - presentation</title>
+<defs>
+<marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+<marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+<marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+<marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+<marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+</defs><style>
+text {font-family:Helvetica,Arial,sans-serif} .node-title{font-weight:700} .node-sub{font-weight:400}
+.edge-dark{fill:none;stroke:#263238;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-hil{fill:none;stroke:#D85A30;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-gate{fill:none;stroke:#7A5C12;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-loop{fill:none;stroke:#3D8FD9;stroke-width:2.6;stroke-dasharray:7 5;stroke-linejoin:round;stroke-linecap:round}
+.edge-assoc{fill:none;stroke:#8A887F;stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round;stroke-linecap:round}
+</style>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#F8FAFC" stroke="none" stroke-width="0"/>
+<polygon points="470,6.0 560.0,24 470,42.0 380.0,24" fill="#5F5E5A"/>
+<text x="470" y="21" text-anchor="middle" class="node-title" font-size="14" fill="#FFFFFF">for each t</text>
+<text x="470" y="33" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">in time_steps</text>
+<rect x="180" y="50" width="580" height="46" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="470.0" y="78.0" text-anchor="middle" class="node-title" font-size="14" fill="#FFFFFF">[1] write load / DER profiles; reset DER Q and SVC Q to 0</text>
+<path d="M470 42 L470 48" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="180" y="120" width="580" height="46" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="470.0" y="140" text-anchor="middle" class="node-title" font-size="14" fill="#FFFFFF">[2] pre-control PF</text>
+<text x="470.0" y="155" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">pp.runpp(voltage_depend_loads=False)</text>
+<path d="M470 96 L470 118" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="470,192.0 590.0,216 470,240.0 350.0,216" fill="#854F0B"/>
+<text x="470" y="220" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">pre-PF converged?</text>
+<path d="M470 166 L470 190" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="60" y="189" width="220" height="54" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="170.0" y="209" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">Pre-PF failure</text>
+<text x="170.0" y="224" text-anchor="middle" class="node-sub" font-size="8.5" fill="#FFFFFF" opacity="0.90">append failed record; no publish; continue</text>
+<path d="M350 216 L282 216" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="340.0" y="208" text-anchor="end" fill="#D85A30" font-size="11" font-weight="700">no</text>
+<rect x="180" y="272" width="580" height="40" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="470.0" y="297.0" text-anchor="middle" class="node-title" font-size="14" fill="#FFFFFF">[3] read vm_svc at fixed SVC bus</text>
+<path d="M470 240 L470 270" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="482" y="256.0" text-anchor="start" fill="#111111" font-size="11" font-weight="700">yes</text>
+<rect x="180" y="336" width="580" height="50" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="470.0" y="356" text-anchor="middle" class="node-title" font-size="13.5" fill="#FFFFFF">_droop_q() -&gt; q_cmd, saturated</text>
+<text x="470.0" y="371" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">deadbanded droop clipped to +/-Q_MAX</text>
+<path d="M470 312 L470 334" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="470,414.0 580.0,438 470,462.0 360.0,438" fill="#854F0B"/>
+<text x="470" y="442" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">|q_cmd| &gt; 0?</text>
+<path d="M470 386 L470 412" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="86" y="476" width="260" height="48" rx="10" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="216.0" y="496" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">Deadband: reuse pre-PF</text>
+<text x="216.0" y="511" text-anchor="middle" class="node-sub" font-size="8.5" fill="#FFFFFF" opacity="0.90">converged_post=True</text>
+<rect x="590" y="476" width="330" height="48" rx="10" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="755.0" y="496" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">[4] write q_cmd + post-PF</text>
+<text x="755.0" y="511" text-anchor="middle" class="node-sub" font-size="8.5" fill="#FFFFFF" opacity="0.90">exception -&gt; converged_post=False</text>
+<path d="M360 438 L216 438 L216 474" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="350.0" y="430" text-anchor="end" fill="#7A5C12" font-size="11" font-weight="700">no</text>
+<path d="M580 438 L755 438 L755 474" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="590.0" y="430" text-anchor="start" fill="#111111" font-size="11" font-weight="700">yes</text>
+<path d="M216 524 L216 552 L455 552" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M755 524 L755 552 L485 552" class="edge-dark" marker-end="url(#arrowDark)"/>
+<circle cx="470" cy="552" r="13" fill="#5F5E5A"/>
+<polygon points="470,587.0 580.0,610 470,633.0 360.0,610" fill="#854F0B"/>
+<text x="470" y="614" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">converged_post?</text>
+<path d="M470 565 L470 585" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="78" y="646" width="270" height="52" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="213.0" y="666" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">Non-converged result</text>
+<text x="213.0" y="681" text-anchor="middle" class="node-sub" font-size="8.5" fill="#FFFFFF" opacity="0.90">empty V/loading; no losses/import</text>
+<rect x="570" y="642" width="360" height="60" rx="10" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="750.0" y="662" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">Extract final state</text>
+<text x="750.0" y="677" text-anchor="middle" class="node-sub" font-size="8.5" fill="#FFFFFF" opacity="0.90">V/loading; violations; losses + grid import</text>
+<path d="M360 610 L213 610 L213 644" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="350.0" y="602" text-anchor="end" fill="#D85A30" font-size="11" font-weight="700">no</text>
+<path d="M580 610 L750 610 L750 640" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="590.0" y="602" text-anchor="start" fill="#111111" font-size="11" font-weight="700">yes</text>
+<path d="M213 698 L213 736 L455 736" class="edge-hil" marker-end="url(#arrowHil)"/>
+<path d="M750 702 L750 736 L485 736" class="edge-dark" marker-end="url(#arrowDark)"/>
+<circle cx="470" cy="736" r="13" fill="#5F5E5A"/>
+<rect x="150" y="764" width="640" height="52" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="470.0" y="784" text-anchor="middle" class="node-title" font-size="12.5" fill="#FFFFFF">[5] build record -&gt; publish -&gt; append</text>
+<text x="470.0" y="799" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">publish_fn.on_timestep(rec) occurs before records.append(rec)</text>
+<path d="M470 749 L470 762" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="470,843.0 580.0,866 470,889.0 360.0,866" fill="#854F0B"/>
+<text x="470" y="870" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">t % 96 == 0?</text>
+<path d="M470 816 L470 841" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="690" y="839" width="340" height="54" rx="10" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="860.0" y="859" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">Periodic progress</text>
+<text x="860.0" y="874" text-anchor="middle" class="node-sub" font-size="8.5" fill="#FFFFFF" opacity="0.90">optional partial result -&gt; live CSV; logger.info</text>
+<path d="M580 866 L688 866" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="590.0" y="858" text-anchor="start" fill="#7A5C12" font-size="11" font-weight="700">yes</text>
+<path d="M470 889 L470 915" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="482" y="906.0" text-anchor="start" fill="#111111" font-size="11" font-weight="700">no</text>
+<path d="M860 893 L860 930 L485 930" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M60 216 L42 216" class="edge-hil"/>
+<path d="M42 216 L42 930" class="edge-hil"/>
+<path d="M42 930 L455 930" class="edge-hil" marker-end="url(#arrowHil)"/>
+<circle cx="470" cy="930" r="13" fill="#5F5E5A"/>
+<polygon points="760,962.0 860.0,984 760,1006.0 660.0,984" fill="#854F0B"/>
+<text x="760" y="988" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">more timesteps?</text>
+<path d="M470 943 L470 984 L658 984" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="900" y="962" width="180" height="44" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="990.0" y="989.0" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">loop complete</text>
+<path d="M860 984 L898 984" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="870.0" y="976" text-anchor="start" fill="#111111" font-size="11" font-weight="700">no</text>
+<path d="M760 1006 L760 1045 L18 1045 L18 24 L378 24" class="edge-loop" marker-end="url(#arrowLoop)"/>
+<text x="774" y="1024.0" text-anchor="start" fill="#3D8FD9" font-size="11" font-weight="700">yes - next t</text>
+<rect x="1120" y="24" width="760" height="276" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1120" y="322" width="760" height="286" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1120" y="630" width="760" height="392" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1142" y="54" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Deadbanded droop law</text>
+<text x="1142" y="88" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">error = 1.00 - vm_svc; deadband = 0.01 pu.</text>
+<text x="1142" y="120" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">|error| &lt;= 0.01 -&gt; q_cmd=0, saturated=False.</text>
+<text x="1142" y="152" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">Undervoltage: q_raw = k_q*(error - 0.01), positive Q injection.</text>
+<text x="1142" y="184" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">Overvoltage: q_raw = k_q*(error + 0.01), negative Q absorption.</text>
+<text x="1142" y="216" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">q_cmd = clip(q_raw, -Q_MAX, +Q_MAX); saturated when |q_raw| &gt;= Q_MAX.</text>
+<text x="1142" y="248" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">Q_MAX = 0.20*sum(trafo sn_mva); k_q = Q_MAX/0.03.</text>
+<text x="1142" y="354" text-anchor="start" fill="#111111" font-size="17" font-weight="700">PF and result semantics</text>
+<text x="1142" y="390" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">Pre-PF always starts with DER Q=0 and SVC Q=0.</text>
+<text x="1142" y="427" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">q_cmd=0 skips the second runpp and reuses the valid pre-PF result tables.</text>
+<text x="1142" y="464" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">A post-PF exception does not abort the scenario; the timestep is recorded converged=False.</text>
+<text x="1142" y="501" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">Converged records threshold V, line loading, and trafo loading directly from result tables.</text>
+<text x="1142" y="538" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">There is no active-P curtailment and no DER reactive-power control in Scenario 3.</text>
+<text x="1142" y="662" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Publisher / failure semantics and legend</text>
+<text x="1142" y="700" text-anchor="start" fill="#111111" font-size="12.1" font-weight="600">Normal path: build rec -&gt; publish_fn.on_timestep(rec) -&gt; records.append(rec).</text>
+<text x="1142" y="736" text-anchor="start" fill="#111111" font-size="12.1" font-weight="600">PublishHandle checkpoints every normal-path timestep; dashboard live frames use update_every_k.</text>
+<text x="1142" y="772" text-anchor="start" fill="#111111" font-size="12.1" font-weight="600">Pre-PF failure path is different: records.append(failed_record) then continue.</text>
+<text x="1142" y="808" text-anchor="start" fill="#111111" font-size="12.1" font-weight="600">Therefore pre-PF failures skip on_timestep(), checkpoint/live publishing, and the t%96 branch.</text>
+<text x="1142" y="844" text-anchor="start" fill="#111111" font-size="12.1" font-weight="600">The red failure bypass rail and the blue next-timestep loopback rail are separate.</text>
+<text x="1142" y="880" text-anchor="start" fill="#111111" font-size="12.1" font-weight="600">After the loop, top-level finally removes the temporary SVC before final aggregation.</text>
+<path d="M1150 940 L1212 940" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="1228" y="944" text-anchor="start" fill="#111111" font-size="10.5" font-weight="600">normal execution</text>
+<path d="M1150 962 L1212 962" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="1228" y="966" text-anchor="start" fill="#D85A30" font-size="10.5" font-weight="600">failure / non-converged path</text>
+<path d="M1150 984 L1212 984" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="1228" y="988" text-anchor="start" fill="#7A5C12" font-size="10.5" font-weight="600">optional / deadband branch</text>
+<path d="M1150 1006 L1212 1006" class="edge-loop" marker-end="url(#arrowLoop)"/>
+<text x="1228" y="1010" text-anchor="start" fill="#3D8FD9" font-size="10.5" font-weight="600">next-timestep return</text>
+</svg>

@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080"><title>Scenario 1 annual sweep and post-processing - presentation</title>
+<defs>
+<marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+<marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+<marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+<marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+<marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+</defs><style>
+text {font-family:Helvetica,Arial,sans-serif} .node-title{font-weight:700} .node-sub{font-weight:400}
+.edge-dark{fill:none;stroke:#263238;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-hil{fill:none;stroke:#D85A30;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-gate{fill:none;stroke:#7A5C12;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-loop{fill:none;stroke:#3D8FD9;stroke-width:2.6;stroke-dasharray:7 5;stroke-linejoin:round;stroke-linecap:round}
+.edge-assoc{fill:none;stroke:#8A887F;stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round;stroke-linecap:round}
+</style>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#F8FAFC" stroke="none" stroke-width="0"/>
+<rect x="76" y="36" width="900" height="390" rx="18" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="94" y="60" text-anchor="start" fill="#111111" font-size="14" font-weight="700">Phase A - run_timeseries owns the power-flow sweep</text>
+<rect x="210" y="72" width="540" height="42" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="480.0" y="98.0" text-anchor="middle" class="node-title" font-size="12.5" fill="#FFFFFF">ts.run_timeseries(... continue_on_divergence=True, run=_timed_runpp)</text>
+<polygon points="480,133.0 570.0,150 480,167.0 390.0,150" fill="#5F5E5A"/>
+<text x="480" y="147" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">for each engine t</text>
+<path d="M480 114 L480 131" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="210" y="190" width="540" height="42" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="480.0" y="216.0" text-anchor="middle" class="node-title" font-size="12.3" fill="#FFFFFF">ConstControl: sgen P + load P/Q &lt;- DFData[t]</text>
+<path d="M480 167 L480 188" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="210" y="258" width="540" height="44" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="480.0" y="278" text-anchor="middle" class="node-title" font-size="11.8" fill="#FFFFFF">_timed_runpp() -&gt; pp.runpp()</text>
+<text x="480.0" y="293" text-anchor="middle" class="node-sub" font-size="8.2" fill="#FFFFFF" opacity="0.90">store t_total_ms by OutputWriter time_step</text>
+<path d="M480 232 L480 256" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="210" y="328" width="540" height="48" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="480.0" y="357.0" text-anchor="middle" class="node-title" font-size="12.0" fill="#FFFFFF">OutputWriter logs V / loading / losses / ext_grid P</text>
+<path d="M480 302 L480 326" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="480,381.0 575.0,398 480,415.0 385.0,398" fill="#854F0B"/>
+<text x="480" y="402" text-anchor="middle" class="node-title" font-size="11.3" fill="#FFFFFF">more engine timesteps?</text>
+<path d="M480 376 L480 379" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M385 398 L38 398 L38 150 L388 150" class="edge-loop" marker-end="url(#arrowLoop)"/>
+<text x="377.0" y="392" text-anchor="end" fill="#3D8FD9" font-size="9.5" font-weight="700">yes</text>
+<rect x="210" y="454" width="540" height="44" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="480.0" y="481.0" text-anchor="middle" class="node-title" font-size="12.2" fill="#FFFFFF">Sweep complete -&gt; read OutputWriter tables</text>
+<path d="M480 415 L480 452" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="490" y="429.0" text-anchor="start" fill="#111111" font-size="9.5" font-weight="700">no</text>
+<rect x="76" y="528" width="900" height="494" rx="18" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="94" y="552" text-anchor="start" fill="#111111" font-size="14" font-weight="700">Phase B - run_scenario_1() converts logged rows to records</text>
+<polygon points="480,557.0 570.0,574 480,591.0 390.0,574" fill="#5F5E5A"/>
+<text x="480" y="571" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">for each logged t</text>
+<path d="M480 498 L480 555" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="480,630.0 590.0,650 480,670.0 370.0,650" fill="#854F0B"/>
+<text x="480" y="654" text-anchor="middle" class="node-title" font-size="11.4" fill="#FFFFFF">logged timestep converged?</text>
+<path d="M480 591 L480 628" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="88" y="624" width="230" height="52" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="203.0" y="644" text-anchor="middle" class="node-title" font-size="10.2" fill="#FFFFFF">Non-converged row</text>
+<text x="203.0" y="659" text-anchor="middle" class="node-sub" font-size="7.8" fill="#FFFFFF" opacity="0.90">append failed record; no on_timestep()</text>
+<path d="M370 650 L320 650" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="362.0" y="643" text-anchor="end" fill="#D85A30" font-size="9.5" font-weight="700">no</text>
+<rect x="210" y="704" width="540" height="54" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="480.0" y="724" text-anchor="middle" class="node-title" font-size="11.4" fill="#FFFFFF">Read row + threshold V / line / trafo violations</text>
+<text x="480.0" y="739" text-anchor="middle" class="node-sub" font-size="8.2" fill="#FFFFFF" opacity="0.90">derive losses, import, DER generation, load</text>
+<path d="M480 670 L480 702" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="490" y="685.0" text-anchor="start" fill="#111111" font-size="9.5" font-weight="700">yes</text>
+<rect x="210" y="786" width="540" height="52" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="480.0" y="806" text-anchor="middle" class="node-title" font-size="11.3" fill="#FFFFFF">Build record -&gt; publish -&gt; append</text>
+<text x="480.0" y="821" text-anchor="middle" class="node-sub" font-size="8.2" fill="#FFFFFF" opacity="0.90">t_total_ms from _RUNPP_TIMING[t]</text>
+<path d="M480 758 L480 784" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M480 838 L480 860" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M88 650 L56 650 L56 874 L466 874" class="edge-hil" marker-end="url(#arrowHil)"/>
+<circle cx="480" cy="874" r="12" fill="#5F5E5A"/>
+<polygon points="480,912.0 575.0,930 480,948.0 385.0,930" fill="#854F0B"/>
+<text x="480" y="934" text-anchor="middle" class="node-title" font-size="11.2" fill="#FFFFFF">more logged timesteps?</text>
+<path d="M480 886 L480 910" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="630" y="912" width="250" height="36" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="755.0" y="935.0" text-anchor="middle" class="node-title" font-size="10.8" fill="#FFFFFF">post-process complete</text>
+<path d="M575 930 L628 930" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="583.0" y="924" text-anchor="start" fill="#111111" font-size="9.5" font-weight="700">no</text>
+<path d="M480 948 L480 988 L30 988 L30 574 L388 574" class="edge-loop" marker-end="url(#arrowLoop)"/>
+<text x="492" y="962.0" text-anchor="start" fill="#3D8FD9" font-size="9.5" font-weight="700">yes - next row</text>
+<rect x="1040" y="34" width="840" height="270" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1040" y="326" width="840" height="286" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1040" y="634" width="840" height="352" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1062" y="64" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Phase A semantics</text>
+<text x="1062" y="100" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">ConstControl is the only per-step state writer in the annual sweep.</text>
+<text x="1062" y="134" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">run_timeseries forwards voltage_depend_loads=False to the internal run function.</text>
+<text x="1062" y="168" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">continue_on_divergence=True keeps the annual sweep moving after a failed PF timestep.</text>
+<text x="1062" y="202" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">_timed_runpp measures only runpp wall time; it does not include post-processing cost.</text>
+<text x="1062" y="236" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">OutputWriter is the handoff boundary: violation decisions are not made during this phase.</text>
+<text x="1062" y="358" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Phase B record semantics</text>
+<text x="1062" y="394" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">Convergence is inferred from the logged vm_pu row: present and not all-NaN.</text>
+<text x="1062" y="430" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">Converged rows are re-thresholded against V/load limits during post-processing.</text>
+<text x="1062" y="466" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">Losses require both line and trafo loss logs for that timestep; otherwise losses_mw=None.</text>
+<text x="1062" y="502" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">Grid import is taken from res_ext_grid.p_mw when the row is available.</text>
+<text x="1062" y="538" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">Failed rows get empty result series and are appended immediately without publisher.on_timestep().</text>
+<text x="1062" y="666" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Publisher / implementation notes</text>
+<text x="1062" y="704" text-anchor="start" fill="#111111" font-size="11.7" font-weight="600">No get_resume_records() call exists in Scenario 1, so the runner cannot resume from its checkpoint.</text>
+<text x="1062" y="743" text-anchor="start" fill="#111111" font-size="11.7" font-weight="600">live_csv_rewrite_fn is accepted but never called; there is no t%96 progress branch.</text>
+<text x="1062" y="782" text-anchor="start" fill="#111111" font-size="11.7" font-weight="600">on_timestep() occurs only after the annual sweep, while converged rows are being post-processed.</text>
+<text x="1062" y="821" text-anchor="start" fill="#111111" font-size="11.7" font-weight="600">The runner does not explicitly force sgen q_mvar to zero; it only drives DER p_mw via ConstControl.</text>
+<text x="1062" y="860" text-anchor="start" fill="#111111" font-size="11.7" font-weight="600">The source comment says _RUNPP_TIMING is cleared per run, but no clear() call appears in run_scenario_1().</text>
+<text x="1062" y="899" text-anchor="start" fill="#111111" font-size="11.7" font-weight="600">These are implementation-faithful notes, not corrections introduced by the diagram.</text>
+</svg>

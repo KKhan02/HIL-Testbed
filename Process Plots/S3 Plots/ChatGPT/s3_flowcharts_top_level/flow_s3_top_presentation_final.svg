@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<title>Scenario 3 top-level SVC flow - presentation</title>
+<defs>
+  <marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+  <marker id="arrowWhite" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#FFFFFF"/></marker>
+  <marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+  <marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+  <marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+  <marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+</defs>
+<style>
+text { font-family: Helvetica, Arial, sans-serif; }
+.node-title { font-weight:700; } .node-sub { font-weight:400; }
+.edge-dark { fill:none; stroke:#263238; stroke-width:2.8; stroke-linejoin:round; stroke-linecap:round; }
+.edge-white { fill:none; stroke:#FFFFFF; stroke-width:3.0; stroke-linejoin:round; stroke-linecap:round; }
+.edge-hil { fill:none; stroke:#D85A30; stroke-width:3.0; stroke-linejoin:round; stroke-linecap:round; }
+.edge-gate { fill:none; stroke:#7A5C12; stroke-width:2.8; stroke-linejoin:round; stroke-linecap:round; }
+.edge-loop { fill:none; stroke:#3D8FD9; stroke-width:2.8; stroke-dasharray:7 5; stroke-linejoin:round; stroke-linecap:round; }
+.edge-assoc { fill:none; stroke:#8A887F; stroke-width:2.0; stroke-dasharray:6 4; stroke-linejoin:round; stroke-linecap:round; }
+</style>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#F8FAFC" stroke="none" stroke-width="0"/>
+<rect x="28" y="24" width="1070" height="1032" rx="24" fill="#F4F8FB" stroke="#D9E1E8" stroke-width="1.5"/>
+<rect x="140.0" y="42" width="720" height="62" rx="14" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="70" text-anchor="middle" class="node-title" font-size="25" fill="#FFFFFF">run_scenario_3()</text>
+<text x="500.0" y="89" text-anchor="middle" class="node-sub" font-size="17" fill="#FFFFFF" opacity="0.90">network, profiles, voltage limits</text>
+<rect x="140.0" y="132" width="720" height="72" rx="14" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="160" text-anchor="middle" class="node-title" font-size="23" fill="#FFFFFF">Prepare simulation</text>
+<text x="500.0" y="179" text-anchor="middle" class="node-sub" font-size="16" fill="#FFFFFF" opacity="0.90">adapt_profiles(); on_scenario_start()</text>
+<text x="500.0" y="196" text-anchor="middle" class="node-sub" font-size="16" fill="#FFFFFF" opacity="0.90">get_resume_records() -&gt; start_t</text>
+<polygon points="500,223.0 650.0,264 500,305.0 350.0,264" fill="#854F0B"/>
+<text x="500" y="269" text-anchor="middle" class="node-title" font-size="21" fill="#FFFFFF">checkpoint covers all T?</text>
+<rect x="140.0" y="340" width="720" height="92" rx="14" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="500.0" y="368" text-anchor="middle" class="node-title" font-size="22" fill="#FFFFFF">Prepare SVC</text>
+<text x="500.0" y="387" text-anchor="middle" class="node-sub" font-size="15" fill="#FFFFFF" opacity="0.90">reset controllers/results; compute Q_MAX + k_q</text>
+<text x="500.0" y="404" text-anchor="middle" class="node-sub" font-size="15" fill="#FFFFFF" opacity="0.90">select fixed MV bus; create temporary SVC sgen</text>
+<rect x="140.0" y="466" width="720" height="76" rx="14" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="500.0" y="494" text-anchor="middle" class="node-title" font-size="22" fill="#FFFFFF">Per-timestep SVC loop</text>
+<text x="500.0" y="513" text-anchor="middle" class="node-sub" font-size="15" fill="#FFFFFF" opacity="0.90">pre-PF -&gt; droop -&gt; optional post-PF -&gt; record</text>
+<rect x="140.0" y="576" width="720" height="68" rx="14" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="500.0" y="604" text-anchor="middle" class="node-title" font-size="21" fill="#FFFFFF">finally: remove temporary SVC</text>
+<text x="500.0" y="623" text-anchor="middle" class="node-sub" font-size="15" fill="#FFFFFF" opacity="0.90">drop svc_idx; pp.reset_results(net)</text>
+<rect x="875" y="225" width="190" height="78" rx="14" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="970.0" y="253" text-anchor="middle" class="node-title" font-size="16" fill="#FFFFFF">Skip branch metadata</text>
+<text x="970.0" y="272" text-anchor="middle" class="node-sub" font-size="11" fill="#FFFFFF" opacity="0.90">compute Q_MAX + k_q</text>
+<text x="970.0" y="289" text-anchor="middle" class="node-sub" font-size="11" fill="#FFFFFF" opacity="0.90">select SVC bus again</text>
+<circle cx="500" cy="700" r="15" fill="#5F5E5A"/>
+<rect x="140.0" y="740" width="720" height="70" rx="14" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="500.0" y="768" text-anchor="middle" class="node-title" font-size="21" fill="#FFFFFF">ScenarioResult.from_records()</text>
+<text x="500.0" y="787" text-anchor="middle" class="node-sub" font-size="14" fill="#FFFFFF" opacity="0.90">resumed + newly simulated records; svc_bus / svc_q_max</text>
+<rect x="140.0" y="844" width="720" height="62" rx="14" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="500.0" y="872" text-anchor="middle" class="node-title" font-size="20" fill="#FFFFFF">on_scenario_end()</text>
+<text x="500.0" y="891" text-anchor="middle" class="node-sub" font-size="14" fill="#FFFFFF" opacity="0.90">close checkpoint; persist elapsed; final live event</text>
+<rect x="140.0" y="944" width="720" height="50" rx="14" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="975.0" text-anchor="middle" class="node-title" font-size="20" fill="#FFFFFF">return ScenarioResult</text>
+<path d="M500 104 L500 130" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 204 L500 221" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 305 L500 338" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="518" y="328.0" text-anchor="start" fill="#111111" font-size="15" font-weight="700">no / resume</text>
+<path d="M500 432 L500 464" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 542 L500 574" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 644 L500 683" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M650 264 L873 264" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="668.0" y="252" text-anchor="start" fill="#7A5C12" font-size="15" font-weight="700">yes - skip loop</text>
+<path d="M970 303 L970 700 L517 700" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M500 715 L500 738" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 810 L500 842" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 906 L500 942" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="1135" y="36" width="750" height="300" rx="18" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1135" y="358" width="750" height="250" rx="18" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1135" y="630" width="750" height="390" rx="18" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1159" y="66" text-anchor="start" fill="#111111" font-size="18" font-weight="700">Fixed SVC bus selection</text>
+<text x="1159" y="100" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">Eligible buses: in-service buses at the dominant MV level, excluding ext_grid slack.</text>
+<text x="1159" y="134" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">Primary: deepcopy(net) -&gt; apply_overvoltage_stress() -&gt; runpp().</text>
+<text x="1159" y="168" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">Stress state: sgen P = 0.90*sn_mva; load P and Q = 0.20*nominal; sgen Q=0.</text>
+<text x="1159" y="202" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">Primary result: choose the eligible MV bus with minimum vm_pu in that stress snapshot.</text>
+<text x="1159" y="236" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">Fallback 1: scan up to 7*24*6 profile steps; choose worst violated MV bus at first violation.</text>
+<text x="1159" y="270" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">Fallback 2: use mv_buses[-1].</text>
+<text x="1159" y="390" text-anchor="start" fill="#111111" font-size="18" font-weight="700">SVC parameter / lifecycle semantics</text>
+<text x="1159" y="426" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">Q_MAX = 0.20 * sum(net.trafo.sn_mva).</text>
+<text x="1159" y="462" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">k_q = Q_MAX / (0.04 - 0.01) = Q_MAX / 0.03.</text>
+<text x="1159" y="498" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">The SVC is created only on the simulation branch, after bus selection.</text>
+<text x="1159" y="534" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">Its sgen is removed in finally, so cleanup also runs if an uncaught loop exception escapes.</text>
+<text x="1159" y="662" text-anchor="start" fill="#111111" font-size="18" font-weight="700">Checkpoint and failure semantics</text>
+<text x="1159" y="700" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">on_scenario_start() runs before get_resume_records().</text>
+<text x="1159" y="738" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">A complete checkpoint skips SVC creation and the timestep loop, but still recomputes Q_MAX and bus selection.</text>
+<text x="1159" y="776" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">Partial resume creates a new SVC and continues at start_t using resumed_records as the prefix.</text>
+<text x="1159" y="814" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">Selection / setup exceptions occur before the loop try/finally and therefore propagate without SVC cleanup.</text>
+<text x="1159" y="852" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">Loop exceptions after SVC creation execute the finally cleanup before propagating.</text>
+<text x="1159" y="890" text-anchor="start" fill="#111111" font-size="12.5" font-weight="600">on_scenario_end() closes the checkpoint handle and appends the scenario_complete live event.</text>
+</svg>

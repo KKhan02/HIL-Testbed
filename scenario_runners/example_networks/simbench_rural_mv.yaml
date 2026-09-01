@@ -1,0 +1,36 @@
+# ============================================================================
+# simbench_rural_mv.yaml — json source + simbench_native profiles
+# ============================================================================
+# Demonstrates running the benchmark on a SimBench network exported to a
+# portable pandapower JSON file — no simbench_code needed at run time.
+#
+# One-time export step (in any Python session with simbench installed):
+#
+#     import simbench as sb
+#     import pandapower as pp
+#     net = sb.get_simbench_net("1-MV-rural--2-sw")
+#     pp.to_json(net, "networks/my_net.json")
+#
+# pp.to_json preserves ALL element tables AND SimBench's net.profiles
+# metadata dict, so sb.get_absolute_values() works on the reloaded net.
+# If the metadata is missing (non-SimBench export), the plugin warns and
+# falls back to the dwd_pvlib strategy automatically.
+#
+# Run:
+#     python run_benchmark_script.py --network example_networks/simbench_rural_mv.yaml
+# ============================================================================
+
+name: simbench_rural_mv_export
+label: "SimBench 1-MV-rural--2-sw (JSON export, native profiles)"
+source: json
+path: networks/simbench_1_mv_rural_2_sw.json    # relative to this YAML's folder
+
+profiles:
+  strategy: simbench_native
+  year: 2016            # SimBench reference year (leap year, 35136 steps)
+
+voltage_limits:
+  v_min: 0.95
+  v_max: 1.05
+
+notes: "Primary MV HIL network exported via pp.to_json for portable reuse."

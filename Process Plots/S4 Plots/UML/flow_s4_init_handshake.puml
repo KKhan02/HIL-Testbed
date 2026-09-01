@@ -1,0 +1,53 @@
+@startuml flow_s4_init_handshake
+' Scenario 4 - Volt-Var HIL : startup handshake + teardown
+' Verified against volt_var_controller.py (ArduinoSerialInterface.open /
+' configure / close). Three-message handshake: INIT -> CFG -> P, each ACKed.
+' Arduino capacitor reset happens at open(); END (at close) clears the
+' firmware 'configured' flag before the port is closed.
+'
+' Render: plantuml -tsvg flow_s4_init_handshake.puml
+'         plantuml -tpdf flow_s4_init_handshake.puml   (vector, for IEEE)
+
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam defaultFontSize 12
+skinparam sequenceMessageAlign center
+skinparam sequence {
+    ArrowColor #1B1B1A
+    LifeLineBorderColor #8A887F
+    ParticipantBorderColor #1B1B1A
+    ParticipantFontStyle bold
+}
+
+participant "RPi host\n(configure())" as RPi
+participant "Arduino firmware\n(Uno R3, 115200)" as FW
+
+== Open (open()) ==
+RPi -> FW : serial open on /dev/ttyACM0
+note over FW : capacitor reset\n(ARDUINO_RESET_DELAY_S wait)\ninput buffer flushed
+
+== Handshake (configure()) ==
+RPi -> FW : INIT:<n>
+FW --> RPi : ACK:INIT
+
+RPi -> FW : CFG:q_ratio,u1,u2,u3,u4
+FW --> RPi : ACK:CFG
+note right of FW : stores Q(V) curve\nP: rejected as ERR:CFG_BEFORE_P\nuntil CFG received
+
+RPi -> FW : P:<p1,p2,...>
+FW --> RPi : ACK:P
+note right of FW : stores installed P[]\nconfigured = true
+
+== Per-timestep loop (Diagram 2) ==
+loop each timestep
+    RPi -> FW : V:<vm>   (4-decimal ASCII)
+    FW --> RPi : Q:<q>
+end
+
+== Teardown (close()) ==
+RPi -> FW : END
+note over FW : firmware clears configured
+RPi -> RPi : port closed
+
+@enduml

@@ -1,0 +1,25 @@
+# Example plugin config — deadband Q(V) controller with configurable
+# breakpoints.
+#
+# Run with:
+#     python run_benchmark_script.py --custom example_plugins/deadband_controller.yaml
+#
+# With the default breakpoints below (VDE-AR-N 4110 values) and
+# gate_clean_timesteps: true, this plugin closely tracks Scenario 4A
+# (local Q(V), dry-run) minus the PT1 dynamics and curtailment backstop —
+# a good end-to-end plumbing check before sweeping custom curves.
+
+name: my_deadband_controller
+label: "Deadband Q(V) Controller (custom)"
+module: deadband_controller.py
+function: compute_setpoints
+hardware: false
+kwargs:
+  v_sat_low: 0.94        # full +Q injection at or below, DEFAULT 0.96
+  v_db_low: 0.985         # deadband lower edge, DEFAULT 0.99
+  v_db_high: 1.015        # deadband upper edge, DEFAULT 1.01
+  v_sat_high: 1.30       # full -Q absorption at or above, DEFAULT 1.04
+  q_ratio: 0.42          # mirror Q_RATIO in volt_var_controller.py, DEFAULT 0.25
+
+gate_clean_timesteps: true   # mirror Scenario 4's gate for a fair comparison
+# clamp_to_net_limits: true  # default

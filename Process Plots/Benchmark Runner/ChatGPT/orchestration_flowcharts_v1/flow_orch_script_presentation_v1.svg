@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<title>Direct benchmark script orchestration - presentation</title>
+<defs>
+<marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+<marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+<marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+<marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+<marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+<marker id="arrowDry" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#6B9E26"/></marker>
+</defs>
+<style>
+text {font-family:Helvetica,Arial,sans-serif}
+.node-title {font-weight:700}
+.node-sub {font-weight:400}
+.edge-dark {fill:none;stroke:#263238;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-hil {fill:none;stroke:#D85A30;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-gate {fill:none;stroke:#7A5C12;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-loop {fill:none;stroke:#3D8FD9;stroke-width:2.6;stroke-dasharray:7 5;stroke-linejoin:round;stroke-linecap:round}
+.edge-assoc {fill:none;stroke:#8A887F;stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round;stroke-linecap:round}
+.edge-dry {fill:none;stroke:#6B9E26;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+</style>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#F8FAFC" stroke="none" stroke-width="0"/>
+<rect x="160" y="18" width="680" height="44" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="35.808" text-anchor="middle" class="node-title" font-size="11.2" fill="#FFFFFF">run_benchmark_script.py: logging + CLI arguments</text>
+<text x="500.0" y="51.808" text-anchor="middle" class="node-sub" font-size="7.5" fill="#FFFFFF" opacity="0.92">network/controller YAML and Q(V)/limit overrides</text>
+<rect x="160" y="82" width="680" height="46" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="500.0" y="100.57" text-anchor="middle" class="node-title" font-size="10.5" fill="#FFFFFF">Apply controller and violation-limit overrides</text>
+<text x="500.0" y="116.57" text-anchor="middle" class="node-sub" font-size="7.2" fill="#FFFFFF" opacity="0.92">values are set before any controller/scenario is constructed</text>
+<path d="M500 62 L500 80" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="500,159.0 615.0,180 500,201.0 385.0,180" fill="#854F0B"/>
+<text x="500" y="183.536" text-anchor="middle" class="node-title" font-size="10.4" fill="#FFFFFF">--network supplied?</text>
+<path d="M500 128 L500 157" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="50" y="155" width="300" height="50" rx="9" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="200.0" y="175.094" text-anchor="middle" class="node-title" font-size="9.1" fill="#FFFFFF">Hardcoded network + annual profiles</text>
+<text x="200.0" y="191.094" text-anchor="middle" class="node-sub" font-size="6.5" fill="#FFFFFF" opacity="0.92">SimBench/pandapower selector + build_annual_profiles</text>
+<rect x="650" y="153" width="330" height="54" rx="9" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="815.0" y="175.06" text-anchor="middle" class="node-title" font-size="9.0" fill="#FFFFFF">Network plugin -&gt; net + profiles</text>
+<text x="815.0" y="191.06" text-anchor="middle" class="node-sub" font-size="6.5" fill="#FFFFFF" opacity="0.92">network_plugin resolves both according to YAML strategy</text>
+<path d="M385 180 L352 180" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="367.5" y="173" text-anchor="middle" fill="#111111" font-size="8.0" font-weight="700">no</text>
+<path d="M615 180 L648 180" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="632.5" y="173" text-anchor="middle" fill="#7A5C12" font-size="8.0" font-weight="700">yes</text>
+<polygon points="815,233.0 940.0,255 815,277.0 690.0,255" fill="#854F0B"/>
+<text x="815" y="251.23" text-anchor="middle" class="node-title" font-size="9.5" fill="#FFFFFF">validation warnings AND</text>
+<text x="815" y="265.23" text-anchor="middle" class="node-sub" font-size="7.2" fill="#FFFFFF" opacity="0.92">-y not supplied?</text>
+<path d="M815 207 L815 231" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="815,300.0 930.0,320 815,340.0 700.0,320" fill="#854F0B"/>
+<text x="815" y="323.264" text-anchor="middle" class="node-title" font-size="9.6" fill="#FFFFFF">user confirms?</text>
+<path d="M815 277 L815 298" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="826" y="288.0" text-anchor="start" fill="#7A5C12" font-size="7.5" font-weight="700">yes</text>
+<rect x="690" y="355" width="250" height="44" rx="8" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="815.0" y="371.89" text-anchor="middle" class="node-title" font-size="8.5" fill="#FFFFFF">Abort before benchmark</text>
+<text x="815.0" y="387.89" text-anchor="middle" class="node-sub" font-size="6.2" fill="#FFFFFF" opacity="0.92">sys.exit(1)</text>
+<path d="M815 340 L815 353" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="826" y="351.0" text-anchor="start" fill="#D85A30" font-size="7.4" font-weight="700">no</text>
+<circle cx="650" cy="320" r="8" fill="#5F5E5A"/>
+<path d="M690 255 L650 255 L650 310" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="674.0" y="248" text-anchor="end" fill="#7A5C12" font-size="7.4" font-weight="700">no</text>
+<path d="M700 320 L660 320" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="679.0" y="313" text-anchor="middle" fill="#7A5C12" font-size="7.4" font-weight="700">yes</text>
+<circle cx="500" cy="400" r="9" fill="#5F5E5A"/>
+<path d="M200 205 L200 400 L489 400" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M650 328 L650 400 L511 400" class="edge-gate" marker-end="url(#arrowGate)"/>
+<polygon points="500,451.0 605.0,470 500,489.0 395.0,470" fill="#854F0B"/>
+<text x="500" y="473.298" text-anchor="middle" class="node-title" font-size="9.7" fill="#FFFFFF">OVERSIZE_FACTOR set?</text>
+<path d="M500 409 L500 449" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="55" y="447" width="300" height="46" rx="8" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="205.0" y="464.856" text-anchor="middle" class="node-title" font-size="8.4" fill="#FFFFFF">Copy + scale sgen P/sn_mva + PV/wind profiles</text>
+<text x="205.0" y="480.856" text-anchor="middle" class="node-sub" font-size="6.1" fill="#FFFFFF" opacity="0.92">matching profile columns use the same factor</text>
+<rect x="690" y="449" width="275" height="42" rx="8" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="827.5" y="464.992" text-anchor="middle" class="node-title" font-size="8.8" fill="#FFFFFF">Use original net</text>
+<text x="827.5" y="480.992" text-anchor="middle" class="node-sub" font-size="6.4" fill="#FFFFFF" opacity="0.92">current default</text>
+<path d="M395 470 L357 470" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="375.0" y="464" text-anchor="middle" fill="#7A5C12" font-size="7.8" font-weight="700">yes</text>
+<path d="M605 470 L688 470" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="647.5" y="464" text-anchor="middle" fill="#111111" font-size="7.8" font-weight="700">no</text>
+<circle cx="500" cy="540" r="8" fill="#5F5E5A"/>
+<path d="M205 493 L205 540 L490 540" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M827.5 491 L827.5 540 L510 540" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="155" y="575" width="690" height="58" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="599.434" text-anchor="middle" class="node-title" font-size="10.1" fill="#FFFFFF">Apply load scale; create PublishHandles + BenchmarkConfig</text>
+<text x="500.0" y="615.434" text-anchor="middle" class="node-sub" font-size="7.0" fill="#FFFFFF" opacity="0.92">configure outer benchmark, HC and optional stressed re-benchmark</text>
+<rect x="155" y="660" width="690" height="50" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="500.0" y="680.264" text-anchor="middle" class="node-title" font-size="9.6" fill="#FFFFFF">Publish topology + profiles before benchmark</text>
+<text x="500.0" y="696.264" text-anchor="middle" class="node-sub" font-size="6.8" fill="#FFFFFF" opacity="0.92">also print sgen scaling check</text>
+<path d="M500 548 L500 573" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 633 L500 658" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="500,744.0 615.0,765 500,786.0 385.0,765" fill="#854F0B"/>
+<text x="500" y="768.4" text-anchor="middle" class="node-title" font-size="10.0" fill="#FFFFFF">--controller supplied?</text>
+<path d="M500 710 L500 742" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="55" y="740" width="310" height="50" rx="9" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="210.0" y="760.06" text-anchor="middle" class="node-title" font-size="9.0" fill="#FFFFFF">register_and_run(plugin YAML)</text>
+<text x="210.0" y="776.06" text-anchor="middle" class="node-sub" font-size="6.6" fill="#FFFFFF" opacity="0.92">plugin scenario joins configured benchmark</text>
+<rect x="690" y="742" width="275" height="46" rx="9" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="827.5" y="760.128" text-anchor="middle" class="node-title" font-size="9.2" fill="#FFFFFF">run_benchmark(...)</text>
+<text x="827.5" y="776.128" text-anchor="middle" class="node-sub" font-size="6.8" fill="#FFFFFF" opacity="0.92">standard orchestration</text>
+<path d="M385 765 L367 765" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="375.0" y="758" text-anchor="middle" fill="#7A5C12" font-size="8.0" font-weight="700">yes</text>
+<path d="M615 765 L688 765" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="652.5" y="758" text-anchor="middle" fill="#111111" font-size="8.0" font-weight="700">no</text>
+<circle cx="500" cy="835" r="9" fill="#5F5E5A"/>
+<path d="M210 790 L210 835 L489 835" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M827.5 788 L827.5 835 L511 835" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="155" y="865" width="690" height="50" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="500.0" y="885.264" text-anchor="middle" class="node-title" font-size="9.6" fill="#FFFFFF">Publish outer benchmark + HC comparison artefacts</text>
+<text x="500.0" y="901.264" text-anchor="middle" class="node-sub" font-size="6.8" fill="#FFFFFF" opacity="0.92">publish_hc_and_comparison(result)</text>
+<path d="M500 844 L500 863" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="500,935.0 635.0,955 500,975.0 365.0,955" fill="#854F0B"/>
+<text x="500" y="958.128" text-anchor="middle" class="node-title" font-size="9.2" fill="#FFFFFF">hc_benchmark AND net_hc available?</text>
+<path d="M500 915 L500 933" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="710" y="932" width="290" height="46" rx="8" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="855.0" y="949.89" text-anchor="middle" class="node-title" font-size="8.5" fill="#FFFFFF">Publish HC-stressed outputs</text>
+<text x="855.0" y="965.89" text-anchor="middle" class="node-sub" font-size="6.2" fill="#FFFFFF" opacity="0.92">write recursive benchmark comparison artefacts</text>
+<path d="M635 955 L708 955" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="672.5" y="948" text-anchor="middle" fill="#7A5C12" font-size="7.8" font-weight="700">yes</text>
+<circle cx="500" cy="1015" r="8" fill="#5F5E5A"/>
+<path d="M500 975 L500 1005" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="510" y="986.0" text-anchor="start" fill="#111111" font-size="7.6" font-weight="700">no</text>
+<path d="M855 978 L855 1015 L510 1015" class="edge-gate" marker-end="url(#arrowGate)"/>
+<rect x="155" y="1036" width="690" height="40" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="500.0" y="1059.128" text-anchor="middle" class="node-title" font-size="9.2" fill="#FFFFFF">Print final comparison / CSV / HC / error summaries</text>
+<path d="M500 1023 L500 1034" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="1080" y="24" width="800" height="250" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1080" y="296" width="800" height="330" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1080" y="648" width="800" height="390" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1104" y="57" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Entry configuration</text>
+<text x="1104" y="92" text-anchor="start" fill="#111111" font-size="11.2" font-weight="600">The direct script configures logging, parses optional network/controller YAML paths and accepts runtime Q(V) and planning-limit overrides.</text>
+<text x="1104" y="126" text-anchor="start" fill="#111111" font-size="11.2" font-weight="600">Q(V) breakpoints and q-ratio are applied before any controller is constructed, so software and Arduino configuration use the same values.</text>
+<text x="1104" y="160" text-anchor="start" fill="#111111" font-size="11.2" font-weight="600">Voltage and thermal limits are updated in violation_detector before benchmark dispatch.</text>
+<text x="1104" y="194" text-anchor="start" fill="#111111" font-size="11.2" font-weight="600">The script creates separate publisher handles for the outer network and an optional HC-stressed network.</text>
+<text x="1104" y="228" text-anchor="start" fill="#111111" font-size="11.2" font-weight="600">BenchmarkConfig carries scenario selection, dry-run/serial settings, HC controls, profile factory, checkpointing and publishing handles.</text>
+<text x="1104" y="329" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Network and profile resolution</text>
+<text x="1104" y="364" text-anchor="start" fill="#111111" font-size="11.1" font-weight="600">With --network, network_plugin loads both the network and profiles according to the YAML strategy, then validation warnings are reported.</text>
+<text x="1104" y="406" text-anchor="start" fill="#111111" font-size="11.1" font-weight="600">If validation warnings require confirmation and -y is absent, the user can abort before any benchmark execution.</text>
+<text x="1104" y="448" text-anchor="start" fill="#111111" font-size="11.1" font-weight="600">Without --network, the selected built-in network is loaded and build_annual_profiles creates the annual profile set.</text>
+<text x="1104" y="490" text-anchor="start" fill="#111111" font-size="11.1" font-weight="600">Generation oversizing is conditional; sgen P/sn_mva and matching PV/wind profile columns use the same scale factor.</text>
+<text x="1104" y="532" text-anchor="start" fill="#111111" font-size="11.1" font-weight="600">LOAD_SCALE is then applied consistently to network loads and the load profile before topology/profile publication.</text>
+<text x="1104" y="681" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Benchmark dispatch and outputs</text>
+<text x="1104" y="716" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">Topology and profiles are published once before the benchmark so the saved model corresponds to the network entering orchestration.</text>
+<text x="1104" y="763" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">With --controller, plugin_runner temporarily registers the custom controller and runs it alongside BenchmarkConfig.scenarios.</text>
+<text x="1104" y="810" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">Without --controller, the script calls benchmark_runner.run_benchmark directly.</text>
+<text x="1104" y="857" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">After execution, publish_hc_and_comparison writes the outer comparison/HC artefacts.</text>
+<text x="1104" y="904" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">If hc_benchmark and net_hc are available, the recursive benchmark artefacts are written to the separate HC-stressed output directory.</text>
+<text x="1104" y="951" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">The script finally prints comparison, CSV, hosting-capacity, error and HC-stressed summaries when those result sections are available.</text>
+</svg>

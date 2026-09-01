@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<title>Network plugin loader - presentation</title>
+<defs>
+<marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+<marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+<marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+<marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+<marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+<marker id="arrowDry" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#6B9E26"/></marker>
+</defs>
+<style>
+text {font-family:Helvetica,Arial,sans-serif}
+.node-title {font-weight:700}
+.node-sub {font-weight:400}
+.edge-dark {fill:none;stroke:#263238;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-hil {fill:none;stroke:#D85A30;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-gate {fill:none;stroke:#7A5C12;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-loop {fill:none;stroke:#3D8FD9;stroke-width:2.6;stroke-dasharray:7 5;stroke-linejoin:round;stroke-linecap:round}
+.edge-assoc {fill:none;stroke:#8A887F;stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round;stroke-linecap:round}
+.edge-dry {fill:none;stroke:#6B9E26;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+</style>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#F8FAFC" stroke="none" stroke-width="0"/>
+<rect x="150" y="22" width="730" height="48" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="515.0" y="41.876" text-anchor="middle" class="node-title" font-size="11.4" fill="#FFFFFF">load_network_from_yaml(yaml_path)</text>
+<text x="515.0" y="57.876" text-anchor="middle" class="node-sub" font-size="7.7" fill="#FFFFFF" opacity="0.92">portable YAML entry point for a benchmark-ready network + profiles</text>
+<rect x="130" y="98" width="770" height="64" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="515.0" y="125.57" text-anchor="middle" class="node-title" font-size="10.5" fill="#FFFFFF">Parse and validate YAML configuration</text>
+<text x="515.0" y="141.57" text-anchor="middle" class="node-sub" font-size="7.2" fill="#FFFFFF" opacity="0.92">source/path or loader function; strategy/year/data hooks; voltage limits</text>
+<path d="M515 70 L515 96" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="515,204.0 630.0,225 515,246.0 400.0,225" fill="#854F0B"/>
+<text x="515" y="228.332" text-anchor="middle" class="node-title" font-size="9.8" fill="#FFFFFF">source == json?</text>
+<path d="M515 162 L515 202" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="45" y="202" width="300" height="46" rx="8" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="195.0" y="219.992" text-anchor="middle" class="node-title" font-size="8.8" fill="#FFFFFF">pp.from_json(path)</text>
+<text x="195.0" y="235.992" text-anchor="middle" class="node-sub" font-size="6.3" fill="#FFFFFF" opacity="0.92">pandapower JSON</text>
+<path d="M400 225 L347 225" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="372.5" y="218" text-anchor="middle" fill="#7A5C12" font-size="7.6" font-weight="700">yes</text>
+<polygon points="515,284.0 630.0,305 515,326.0 400.0,305" fill="#854F0B"/>
+<text x="515" y="308.264" text-anchor="middle" class="node-title" font-size="9.6" fill="#FFFFFF">source == pickle?</text>
+<path d="M515 246 L515 282" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="525" y="257.0" text-anchor="start" fill="#111111" font-size="7.5" font-weight="700">no</text>
+<rect x="45" y="282" width="300" height="46" rx="8" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="195.0" y="299.924" text-anchor="middle" class="node-title" font-size="8.6" fill="#FFFFFF">pp.from_pickle(path)</text>
+<text x="195.0" y="315.924" text-anchor="middle" class="node-sub" font-size="6.2" fill="#FFFFFF" opacity="0.92">pandapower-managed pickle</text>
+<rect x="700" y="279" width="310" height="52" rx="8" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="855.0" y="299.89" text-anchor="middle" class="node-title" font-size="8.5" fill="#FFFFFF">Import loader file -&gt; call function()</text>
+<text x="855.0" y="315.89" text-anchor="middle" class="node-sub" font-size="6.1" fill="#FFFFFF" opacity="0.92">file-location import; zero-arg loader</text>
+<path d="M400 305 L347 305" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="372.5" y="298" text-anchor="middle" fill="#7A5C12" font-size="7.5" font-weight="700">yes</text>
+<path d="M630 305 L698 305" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="665.0" y="298" text-anchor="middle" fill="#7A5C12" font-size="7.1" font-weight="700">no -&gt; function</text>
+<circle cx="515" cy="395" r="9" fill="#5F5E5A"/>
+<path d="M45 225 L20 225 L20 395 L504 395" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M195 328 L195 365 L515 365 L515 384" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M855 331 L855 395 L526 395" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="515,445.0 625.0,465 515,485.0 405.0,465" fill="#854F0B"/>
+<text x="515" y="468.23" text-anchor="middle" class="node-title" font-size="9.5" fill="#FFFFFF">pandapowerNet?</text>
+<path d="M515 404 L515 443" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="740" y="443" width="250" height="44" rx="8" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="865.0" y="459.822" text-anchor="middle" class="node-title" font-size="8.3" fill="#FFFFFF">Raise TypeError</text>
+<text x="865.0" y="475.822" text-anchor="middle" class="node-sub" font-size="6.0" fill="#FFFFFF" opacity="0.92">invalid network result</text>
+<path d="M625 465 L738 465" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="682.5" y="458" text-anchor="middle" fill="#D85A30" font-size="7.5" font-weight="700">no</text>
+<rect x="220" y="525" width="590" height="54" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="515.0" y="547.23" text-anchor="middle" class="node-title" font-size="9.5" fill="#FFFFFF">Build profiles using configured strategy</text>
+<text x="515.0" y="563.23" text-anchor="middle" class="node-sub" font-size="6.7" fill="#FFFFFF" opacity="0.92">simbench_native / dwd_pvlib / flat / custom; fallback handled in Diagram 2</text>
+<path d="M515 485 L515 523" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="525" y="496.0" text-anchor="start" fill="#7A5C12" font-size="7.5" font-weight="700">yes</text>
+<rect x="190" y="610" width="650" height="58" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="515.0" y="634.23" text-anchor="middle" class="node-title" font-size="9.5" fill="#FFFFFF">Attach plugin_meta with requested + actual strategy</text>
+<text x="515.0" y="650.23" text-anchor="middle" class="node-sub" font-size="6.7" fill="#FFFFFF" opacity="0.92">name/label/source/year/limits/notes/yaml_path</text>
+<rect x="250" y="700" width="530" height="48" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="515.0" y="719.332" text-anchor="middle" class="node-title" font-size="9.8" fill="#FFFFFF">return (net, profiles)</text>
+<text x="515.0" y="735.332" text-anchor="middle" class="node-sub" font-size="6.9" fill="#FFFFFF" opacity="0.92">consumed unchanged by benchmark orchestration</text>
+<path d="M515 579 L515 608" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M515 668 L515 698" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="150" y="900" width="350" height="50" rx="8" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="325.0" y="919.924" text-anchor="middle" class="node-title" font-size="8.6" fill="#FFFFFF">validate_network_plugin(net, profiles)</text>
+<text x="325.0" y="935.924" text-anchor="middle" class="node-sub" font-size="6.1" fill="#FFFFFF" opacity="0.92">separate public API; caller chooses whether to proceed</text>
+<rect x="540" y="882" width="450" height="86" rx="8" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="765.0" y="911.89" text-anchor="middle" class="node-title" font-size="8.5" fill="#FFFFFF">Return compatibility warnings</text>
+<text x="765.0" y="927.89" text-anchor="middle" class="node-sub" font-size="6.0" fill="#FFFFFF" opacity="0.92">DER/type, distribution voltage level, transformer and ZIP-load checks</text>
+<text x="765.0" y="943.89" text-anchor="middle" class="node-sub" font-size="6.0" fill="#FFFFFF" opacity="0.92">profile/net alignment, missing DER profile columns and NaN checks</text>
+<path d="M500 925 L538 925" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M250 724 L110 724 L110 925 L148 925" class="edge-assoc" marker-end="url(#arrowAssoc)"/>
+<text x="118" y="825" text-anchor="start" fill="#8A887F" font-size="7.6" font-weight="700">optional caller validation</text>
+<rect x="1080" y="24" width="800" height="280" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1080" y="326" width="800" height="320" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1080" y="668" width="800" height="370" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1104" y="57" text-anchor="start" fill="#111111" font-size="17" font-weight="700">YAML configuration</text>
+<text x="1104" y="94" text-anchor="start" fill="#111111" font-size="10.8" font-weight="600">The YAML defines a unique name/label, one network source and one profile strategy.</text>
+<text x="1104" y="133" text-anchor="start" fill="#111111" font-size="10.8" font-weight="600">JSON/pickle paths, function modules and optional profile data directories resolve relative to the YAML folder.</text>
+<text x="1104" y="172" text-anchor="start" fill="#111111" font-size="10.8" font-weight="600">Valid strategies are simbench_native, dwd_pvlib, flat and custom; custom requires file_map hooks.</text>
+<text x="1104" y="211" text-anchor="start" fill="#111111" font-size="10.8" font-weight="600">The configured year is checked and optional voltage limits default to 0.95/1.05 pu.</text>
+<text x="1104" y="250" text-anchor="start" fill="#111111" font-size="10.8" font-weight="600">Invalid fields, missing files or import errors propagate before a benchmark-ready network is returned.</text>
+<text x="1104" y="359" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Network loading and output</text>
+<text x="1104" y="396" text-anchor="start" fill="#111111" font-size="10.7" font-weight="600">JSON uses pandapower.from_json; pickle uses pandapower.from_pickle; function sources import a configured Python file and call a zero-argument loader.</text>
+<text x="1104" y="439" text-anchor="start" fill="#111111" font-size="10.7" font-weight="600">Every source must ultimately produce a pandapowerNet before profile construction can proceed.</text>
+<text x="1104" y="482" text-anchor="start" fill="#111111" font-size="10.7" font-weight="600">Profile construction returns both the profile dictionary and the strategy actually used after any fallback.</text>
+<text x="1104" y="525" text-anchor="start" fill="#111111" font-size="10.7" font-weight="600">plugin_meta records both requested_strategy and actual strategy, keeping fallback behavior visible to downstream consumers.</text>
+<text x="1104" y="568" text-anchor="start" fill="#111111" font-size="10.7" font-weight="600">The public loader returns only (net, profiles); it does not itself invoke the compatibility validator.</text>
+<text x="1104" y="701" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Separate compatibility validator</text>
+<text x="1104" y="738" text-anchor="start" fill="#111111" font-size="10.7" font-weight="600">validate_network_plugin is a separate caller-invoked API and returns warning strings rather than raising for compatibility findings.</text>
+<text x="1104" y="788" text-anchor="start" fill="#111111" font-size="10.7" font-weight="600">Checks cover DER presence/type, MV/LV distribution levels and transformer availability for the benchmark scenarios.</text>
+<text x="1104" y="838" text-anchor="start" fill="#111111" font-size="10.7" font-weight="600">ZIP-load shares are flagged because framework power-flow calls disable voltage-dependent load behavior.</text>
+<text x="1104" y="888" text-anchor="start" fill="#111111" font-size="10.7" font-weight="600">The validator also checks load-profile column alignment, missing PV/wind profile coverage and NaN values.</text>
+<text x="1104" y="938" text-anchor="start" fill="#111111" font-size="10.7" font-weight="600">The orchestration script decides whether warnings require user confirmation before benchmark execution.</text>
+</svg>

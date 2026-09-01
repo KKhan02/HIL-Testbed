@@ -1,0 +1,35 @@
+# ============================================================================
+# custom_lv_flat.yaml — json source + flat profiles (worst-case testing)
+# ============================================================================
+# Demonstrates a user-supplied LV feeder with CONSTANT profiles at rated
+# capacity: every load runs at net.load.p_mw and every PV/wind sgen at
+# net.sgen.p_mw on every 15-min timestep of the configured year.  This is
+# the simultaneous-peak snapshot repeated all year — useful for worst-case
+# voltage-rise screening without any weather data.
+#
+# Export your own network first, e.g.:
+#
+#     import pandapower as pp
+#     pp.to_json(net, "networks/my_lv_feeder.json")   # recommended format
+#
+# Tip: for a fast run, slice to a single day in run_benchmark_script.py —
+# flat profiles are identical on every day anyway.
+#
+# Run:
+#     python run_benchmark_script.py --network example_networks/custom_lv_flat.yaml
+# ============================================================================
+
+name: my_lv_feeder_flat
+label: "My Custom LV Feeder (flat worst-case profiles)"
+source: json
+path: networks/my_lv_feeder.json                # relative to this YAML's folder
+
+profiles:
+  strategy: flat
+  year: 2016
+
+voltage_limits:
+  v_min: 0.95
+  v_max: 1.05
+
+notes: "Real LV feeder from Stadtwerke Oldenburg, anonymised. Worst-case flat dispatch."

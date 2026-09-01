@@ -1,0 +1,8 @@
+# Editor / cache
+__pycache__/
+.vscode/
+
+# Heavy, regenerable run artifacts (excluded)
+/outputs/
+/runs/
+/outputs (RPi)/

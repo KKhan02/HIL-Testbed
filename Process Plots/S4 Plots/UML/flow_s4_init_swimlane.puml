@@ -1,0 +1,86 @@
+@startuml flow_s4_init_swimlane
+' Scenario 4 - Volt-Var HIL : Initialization & Teardown (swimlane form)
+' Verified against scenario_4_volt_var.py (run_scenario_4 / _run_loop) and
+' volt_var_controller.py (VoltVarController.__init__ / configure, and
+' ArduinoSerialInterface.open / configure / close).
+'
+' Control-flow facts encoded here:
+'   * DER sgen idx / buses / installed MW are resolved in
+'     VoltVarController.__init__ (the "construct control objects" step),
+'     NOT in configure().
+'   * VoltVarController.configure() is a NO-OP in dry-run and performs the
+'     INIT/CFG/P serial handshake only in HIL -> it lives INSIDE the HIL
+'     branch, after open().
+'   * _run_loop (configure -> dynamics.reset -> per-timestep loop) is the
+'     body that the `if dry_run` dispatch wraps. In HIL it is wrapped by
+'     the ArduinoSerialInterface context manager: open() on enter,
+'     close()/END on exit (after the loop, before from_records()).
+'   * Both branches merge and run ScenarioResult.from_records() ONCE.
+'
+' Render: plantuml -tsvg flow_s4_init_swimlane.puml
+'         plantuml -tpdf flow_s4_init_swimlane.puml
+
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam defaultFontSize 11
+skinparam ActivityBorderColor #8A887F
+skinparam ActivityDiamondBorderColor #8A887F
+skinparam ArrowColor #1B1B1A
+
+|Master · scenario_4_volt_var.py|
+start
+:run_scenario_4(net, profiles, port,
+dry_run, coordination, v_min/v_max);
+:adapt_profiles(net)
+-> ap : DER P, load P/Q, times, dt_s;
+
+|Publisher|
+:on_scenario_start
+write topology, open stream;
+
+|Master · scenario_4_volt_var.py|
+:drop stale controllers
+reset_results(net);
+:construct control objects
+VoltVarController(...) resolves DER idx / buses / MW
++ SensitivityCoordinator + DERDynamics;
+
+if (dry_run?) then (no - HIL)
+  |Hardware interface (HIL only)|
+  :open() /dev/ttyACM0 @115200
+  capacitor reset, flush buffer;
+  :configure(): handshake INIT -> CFG -> P
+  (see sequence diagram); configured = true;
+else (yes - dry-run)
+  |Master · scenario_4_volt_var.py|
+  :configure() is a no-op
+  Q computed locally via QVCharacteristic;
+endif
+
+|Master · scenario_4_volt_var.py|
+:dynamics.reset()
+seed q_prev=0, p_prev=P[t0];
+:== per-timestep loop ==
+(Diagram 2);
+
+if (dry_run?) then (no - HIL)
+  |Hardware interface (HIL only)|
+  :close() -> TX END
+  firmware clears configured, port closed;
+else (yes - dry-run)
+endif
+
+|Python sub-modules|
+:ScenarioResult.from_records()
+reduce per-step records -> summary;
+
+|Publisher|
+:on_scenario_end
+flush summary frame;
+
+|Master · scenario_4_volt_var.py|
+:return ScenarioResult;
+stop
+
+@enduml

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1340" viewBox="0 0 900 1340"><title>Publisher static export lifecycle - IEEE</title>
+<defs>
+<marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+<marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+<marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+<marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+<marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+</defs><style>
+text {font-family:Helvetica,Arial,sans-serif} .node-title{font-weight:700} .node-sub{font-weight:400}
+.edge-dark{fill:none;stroke:#263238;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-hil{fill:none;stroke:#D85A30;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.edge-gate{fill:none;stroke:#7A5C12;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-loop{fill:none;stroke:#3D8FD9;stroke-width:2.8;stroke-dasharray:7 5;stroke-linejoin:round;stroke-linecap:round}
+.edge-assoc{fill:none;stroke:#8A887F;stroke-width:2;stroke-dasharray:6 4;stroke-linejoin:round;stroke-linecap:round}
+</style>
+<rect x="22" y="22" width="856" height="1296" rx="18" fill="#F8FAFC" stroke="#D9E1E8" stroke-width="1.8"/>
+<text x="450.0" y="54" text-anchor="middle" fill="#111111" font-size="21" font-weight="700">Publisher - Static JSON Export Lifecycle</text>
+<rect x="130.0" y="82" width="500" height="62" rx="14" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="380.0" y="109.5" text-anchor="middle" class="node-title" font-size="16" fill="#FFFFFF">Network + profiles ready</text>
+<text x="380.0" y="128.5" text-anchor="middle" class="node-sub" font-size="11" fill="#FFFFFF" opacity="0.90">run_benchmark_script before scenario execution</text>
+<rect x="130.0" y="180" width="500" height="82" rx="14" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="380.0" y="209.0" text-anchor="middle" class="node-title" font-size="15" fill="#FFFFFF">publish_topology_and_profiles()</text>
+<text x="380.0" y="228.0" text-anchor="middle" class="node-sub" font-size="10.5" fill="#FFFFFF" opacity="0.90">build_topology(net) -&gt; topology.json</text>
+<text x="380.0" y="245.0" text-anchor="middle" class="node-sub" font-size="10.5" fill="#FFFFFF" opacity="0.90">build_profiles_payload() -&gt; profiles.json</text>
+<rect x="665" y="178" width="190" height="86" rx="10" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="760.0" y="209.0" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">System files</text>
+<text x="760.0" y="228.0" text-anchor="middle" class="node-sub" font-size="10" fill="#FFFFFF" opacity="0.90">topology.json</text>
+<text x="760.0" y="245.0" text-anchor="middle" class="node-sub" font-size="10" fill="#FFFFFF" opacity="0.90">profiles.json</text>
+<rect x="130.0" y="310" width="500" height="66" rx="14" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="380.0" y="339.5" text-anchor="middle" class="node-title" font-size="15" fill="#FFFFFF">Each scenario finishes</text>
+<text x="380.0" y="358.5" text-anchor="middle" class="node-sub" font-size="10.5" fill="#FFFFFF" opacity="0.90">benchmark_runner receives ScenarioResult</text>
+<rect x="130.0" y="412" width="500" height="78" rx="14" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="380.0" y="447.5" text-anchor="middle" class="node-title" font-size="15" fill="#FFFFFF">publish_scenario_result()</text>
+<text x="380.0" y="466.5" text-anchor="middle" class="node-sub" font-size="10.5" fill="#FFFFFF" opacity="0.90">one scenario at a time; compact JSON</text>
+<polygon points="380,514.0 495.0,550 380,586.0 265.0,550" fill="#854F0B"/>
+<text x="380" y="555.0" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">more scenarios?</text>
+<rect x="665" y="415" width="190" height="72" rx="10" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="760.0" y="447.5" text-anchor="middle" class="node-title" font-size="12.5" fill="#FFFFFF">Scenario file</text>
+<text x="760.0" y="466.5" text-anchor="middle" class="node-sub" font-size="9.5" fill="#FFFFFF" opacity="0.90">scenarios/&lt;sid&gt;.json</text>
+<rect x="130.0" y="624" width="500" height="66" rx="14" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="380.0" y="653.5" text-anchor="middle" class="node-title" font-size="15" fill="#FFFFFF">Scenario loop + HC complete</text>
+<text x="380.0" y="672.5" text-anchor="middle" class="node-sub" font-size="10.5" fill="#FFFFFF" opacity="0.90">post-run summary stage</text>
+<rect x="130.0" y="730" width="500" height="80" rx="14" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="380.0" y="766.5" text-anchor="middle" class="node-title" font-size="15" fill="#FFFFFF">publish_hc_and_comparison()</text>
+<text x="380.0" y="785.5" text-anchor="middle" class="node-sub" font-size="10.5" fill="#FFFFFF" opacity="0.90">writes only payloads that are available</text>
+<polygon points="380,841.0 485.0,874 380,907.0 275.0,874" fill="#854F0B"/>
+<text x="380" y="879.0" text-anchor="middle" class="node-title" font-size="12.5" fill="#FFFFFF">hc_results present?</text>
+<rect x="30" y="842" width="190" height="64" rx="10" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="125.0" y="870.5" text-anchor="middle" class="node-title" font-size="12.5" fill="#FFFFFF">HC file</text>
+<text x="125.0" y="889.5" text-anchor="middle" class="node-sub" font-size="9.5" fill="#FFFFFF" opacity="0.90">hc.json</text>
+<polygon points="380,937.0 495.0,970 380,1003.0 265.0,970" fill="#854F0B"/>
+<text x="380" y="975.0" text-anchor="middle" class="node-title" font-size="12.5" fill="#FFFFFF">comparison_df nonempty?</text>
+<rect x="665" y="938" width="190" height="64" rx="10" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="760.0" y="966.5" text-anchor="middle" class="node-title" font-size="12.5" fill="#FFFFFF">Comparison file</text>
+<text x="760.0" y="985.5" text-anchor="middle" class="node-sub" font-size="9.5" fill="#FFFFFF" opacity="0.90">comparison.json</text>
+<rect x="130.0" y="1058" width="500" height="82" rx="14" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="380.0" y="1087.0" text-anchor="middle" class="node-title" font-size="14" fill="#FFFFFF">Return written paths</text>
+<text x="380.0" y="1106.0" text-anchor="middle" class="node-sub" font-size="10" fill="#FFFFFF" opacity="0.90">system/final functions return {logical name: Path}</text>
+<text x="380.0" y="1123.0" text-anchor="middle" class="node-sub" font-size="10" fill="#FFFFFF" opacity="0.90">scenario function returns Path or None</text>
+<rect x="130.0" y="1180" width="500" height="100" rx="14" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="380.0" y="1218.0" text-anchor="middle" class="node-title" font-size="14" fill="#FFFFFF">Static output set</text>
+<text x="380.0" y="1237.0" text-anchor="middle" class="node-sub" font-size="10.5" fill="#FFFFFF" opacity="0.90">topology.json | profiles.json | scenarios/&lt;sid&gt;.json</text>
+<text x="380.0" y="1254.0" text-anchor="middle" class="node-sub" font-size="10.5" fill="#FFFFFF" opacity="0.90">hc.json if available | comparison.json if available</text>
+<path d="M380 144 L380 178" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M630 221 L663 221" class="edge-assoc" marker-end="url(#arrowAssoc)"/>
+<path d="M380 262 L380 308" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M380 376 L380 410" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M380 490 L380 512" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M630 451 L663 451" class="edge-assoc" marker-end="url(#arrowAssoc)"/>
+<path d="M265 550 L84 550 L84 343 L128 343" class="edge-loop" marker-end="url(#arrowLoop)"/>
+<text x="257.0" y="542" text-anchor="end" fill="#3D8FD9" font-size="10" font-weight="700">yes</text>
+<path d="M380 586 L380 622" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="390" y="602.0" text-anchor="start" fill="#111111" font-size="10" font-weight="700">no</text>
+<path d="M380 690 L380 728" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M380 810 L380 839" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M275 874 L222 874" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="267.0" y="866" text-anchor="end" fill="#7A5C12" font-size="10" font-weight="700">yes</text>
+<path d="M380 907 L380 935" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="390" y="923.0" text-anchor="start" fill="#111111" font-size="10" font-weight="700">no</text>
+<path d="M495 970 L663 970" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="503.0" y="962" text-anchor="start" fill="#7A5C12" font-size="10" font-weight="700">yes</text>
+<path d="M380 1003 L380 1036 L380 1056" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="390" y="1019.0" text-anchor="start" fill="#111111" font-size="10" font-weight="700">no</text>
+<path d="M105 906 L105 1099 L128 1099" class="edge-assoc" marker-end="url(#arrowAssoc)"/>
+<path d="M760 1002 L760 1099 L632 1099" class="edge-assoc" marker-end="url(#arrowAssoc)"/>
+<path d="M380 1140 L380 1178" class="edge-dark" marker-end="url(#arrowDark)"/>
+</svg>

@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080"><title>Publisher static export lifecycle - presentation</title>
+<defs>
+<marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+<marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+<marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+<marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+<marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+</defs><style>
+text {font-family:Helvetica,Arial,sans-serif} .node-title{font-weight:700} .node-sub{font-weight:400}
+.edge-dark{fill:none;stroke:#263238;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-hil{fill:none;stroke:#D85A30;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.edge-gate{fill:none;stroke:#7A5C12;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-loop{fill:none;stroke:#3D8FD9;stroke-width:2.8;stroke-dasharray:7 5;stroke-linejoin:round;stroke-linecap:round}
+.edge-assoc{fill:none;stroke:#8A887F;stroke-width:2;stroke-dasharray:6 4;stroke-linejoin:round;stroke-linecap:round}
+</style>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#F8FAFC" stroke="none" stroke-width="0"/>
+<rect x="24" y="22" width="1080" height="1036" rx="22" fill="#F4F8FB" stroke="#D9E1E8" stroke-width="1.4"/>
+<rect x="115.0" y="44" width="700" height="54" rx="14" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="465.0" y="67.5" text-anchor="middle" class="node-title" font-size="21" fill="#FFFFFF">Network + profiles ready</text>
+<text x="465.0" y="86.5" text-anchor="middle" class="node-sub" font-size="14" fill="#FFFFFF" opacity="0.90">network-load time</text>
+<rect x="115.0" y="128" width="700" height="70" rx="14" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="465.0" y="159.5" text-anchor="middle" class="node-title" font-size="20" fill="#FFFFFF">publish_topology_and_profiles()</text>
+<text x="465.0" y="178.5" text-anchor="middle" class="node-sub" font-size="14" fill="#FFFFFF" opacity="0.90">topology.json + profiles.json</text>
+<rect x="875" y="124" width="190" height="78" rx="10" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="970.0" y="151.0" text-anchor="middle" class="node-title" font-size="15" fill="#FFFFFF">System payloads</text>
+<text x="970.0" y="170.0" text-anchor="middle" class="node-sub" font-size="10" fill="#FFFFFF" opacity="0.90">build_topology</text>
+<text x="970.0" y="187.0" text-anchor="middle" class="node-sub" font-size="10" fill="#FFFFFF" opacity="0.90">build_profiles_payload</text>
+<rect x="115.0" y="238" width="700" height="54" rx="14" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="465.0" y="261.5" text-anchor="middle" class="node-title" font-size="20" fill="#FFFFFF">Each scenario completes</text>
+<text x="465.0" y="280.5" text-anchor="middle" class="node-sub" font-size="13.5" fill="#FFFFFF" opacity="0.90">inside benchmark_runner scenario loop</text>
+<rect x="115.0" y="322" width="700" height="64" rx="14" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="465.0" y="350.5" text-anchor="middle" class="node-title" font-size="19" fill="#FFFFFF">publish_scenario_result()</text>
+<text x="465.0" y="369.5" text-anchor="middle" class="node-sub" font-size="13" fill="#FFFFFF" opacity="0.90">build_scenario_payload -&gt; scenarios/&lt;sid&gt;.json</text>
+<polygon points="465,409.0 590.0,438 465,467.0 340.0,438" fill="#854F0B"/>
+<text x="465" y="443.0" text-anchor="middle" class="node-title" font-size="17" fill="#FFFFFF">more scenarios?</text>
+<rect x="850" y="323" width="215" height="62" rx="10" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="957.5" y="350.5" text-anchor="middle" class="node-title" font-size="14.5" fill="#FFFFFF">Per-scenario JSON</text>
+<text x="957.5" y="369.5" text-anchor="middle" class="node-sub" font-size="10" fill="#FFFFFF" opacity="0.90">compact full timeseries</text>
+<rect x="115.0" y="508" width="700" height="54" rx="14" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="465.0" y="531.5" text-anchor="middle" class="node-title" font-size="20" fill="#FFFFFF">All scenarios + HC complete</text>
+<text x="465.0" y="550.5" text-anchor="middle" class="node-sub" font-size="13.5" fill="#FFFFFF" opacity="0.90">final summary write point</text>
+<rect x="115.0" y="594" width="700" height="64" rx="14" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="465.0" y="622.5" text-anchor="middle" class="node-title" font-size="19" fill="#FFFFFF">publish_hc_and_comparison()</text>
+<text x="465.0" y="641.5" text-anchor="middle" class="node-sub" font-size="13" fill="#FFFFFF" opacity="0.90">conditional final-summary files</text>
+<polygon points="465,689.0 575.0,716 465,743.0 355.0,716" fill="#854F0B"/>
+<text x="465" y="721.0" text-anchor="middle" class="node-title" font-size="16" fill="#FFFFFF">HC available?</text>
+<rect x="40" y="687" width="215" height="58" rx="10" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="147.5" y="712.5" text-anchor="middle" class="node-title" font-size="14.5" fill="#FFFFFF">hc.json</text>
+<text x="147.5" y="731.5" text-anchor="middle" class="node-sub" font-size="10" fill="#FFFFFF" opacity="0.90">build_hc_payload</text>
+<polygon points="465,771.0 587.5,798 465,825.0 342.5,798" fill="#854F0B"/>
+<text x="465" y="803.0" text-anchor="middle" class="node-title" font-size="16" fill="#FFFFFF">comparison available?</text>
+<rect x="850" y="769" width="215" height="58" rx="10" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="957.5" y="794.5" text-anchor="middle" class="node-title" font-size="14.5" fill="#FFFFFF">comparison.json</text>
+<text x="957.5" y="813.5" text-anchor="middle" class="node-sub" font-size="10" fill="#FFFFFF" opacity="0.90">comparison_df -&gt; records</text>
+<rect x="115.0" y="866" width="700" height="60" rx="14" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="465.0" y="892.5" text-anchor="middle" class="node-title" font-size="18" fill="#FFFFFF">Return written paths</text>
+<text x="465.0" y="911.5" text-anchor="middle" class="node-sub" font-size="12.5" fill="#FFFFFF" opacity="0.90">independent writes; no monolithic publish_result()</text>
+<rect x="115.0" y="958" width="700" height="72" rx="14" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="465.0" y="990.5" text-anchor="middle" class="node-title" font-size="17" fill="#FFFFFF">Static publisher output</text>
+<text x="465.0" y="1009.5" text-anchor="middle" class="node-sub" font-size="12" fill="#FFFFFF" opacity="0.90">system files + one JSON per completed scenario + final summaries</text>
+<path d="M465 98 L465 126" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M815 163 L873 163" class="edge-assoc" marker-end="url(#arrowAssoc)"/>
+<path d="M465 198 L465 236" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M465 292 L465 320" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M465 386 L465 407" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M815 354 L848 354" class="edge-assoc" marker-end="url(#arrowAssoc)"/>
+<path d="M340 438 L82 438 L82 265 L113 265" class="edge-loop" marker-end="url(#arrowLoop)"/>
+<text x="328.0" y="430" text-anchor="end" fill="#3D8FD9" font-size="12" font-weight="700">yes</text>
+<path d="M465 467 L465 506" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="477" y="483.0" text-anchor="start" fill="#111111" font-size="12" font-weight="700">no</text>
+<path d="M465 562 L465 592" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M465 658 L465 687" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M355 716 L257 716" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="345.0" y="709" text-anchor="end" fill="#7A5C12" font-size="12" font-weight="700">yes</text>
+<path d="M465 743 L465 769" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="477" y="759.0" text-anchor="start" fill="#111111" font-size="12" font-weight="700">no</text>
+<path d="M587.5 798 L848 798" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="597.5" y="791" text-anchor="start" fill="#7A5C12" font-size="12" font-weight="700">yes</text>
+<path d="M465 825 L465 864" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="477" y="841.0" text-anchor="start" fill="#111111" font-size="12" font-weight="700">no</text>
+<path d="M97.5 745 L97.5 896 L113 896" class="edge-assoc" marker-end="url(#arrowAssoc)"/>
+<path d="M957.5 827 L957.5 896 L817 896" class="edge-assoc" marker-end="url(#arrowAssoc)"/>
+<path d="M465 926 L465 956" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="1140" y="26" width="740" height="300" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1140" y="346" width="740" height="310" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1140" y="676" width="740" height="360" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1162" y="58" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Three independent static write points</text>
+<text x="1162" y="96" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">1. Network-load time: topology.json and profiles.json are written before scenario execution.</text>
+<text x="1162" y="135" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">2. Scenario-loop time: each successful ScenarioResult is written immediately to scenarios/&lt;sid&gt;.json.</text>
+<text x="1162" y="174" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">3. Post-run time: HC and comparison payloads are written after the scenario loop and HC analysis.</text>
+<text x="1162" y="213" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">The old monolithic publish_result() flow is no longer present in the current publisher.py.</text>
+<text x="1162" y="252" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">Splitting the writes improves crash resilience and avoids one large end-of-run write burst.</text>
+<text x="1162" y="380" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Payload-builder responsibilities</text>
+<text x="1162" y="418" text-anchor="start" fill="#111111" font-size="11.9" font-weight="600">build_topology(): buses, lines, trafos, sgens, loads, feeder distance and voltage limits.</text>
+<text x="1162" y="460" text-anchor="start" fill="#111111" font-size="11.9" font-weight="600">build_profiles_payload(): full-resolution and hourly load/PV/wind totals plus per-element series.</text>
+<text x="1162" y="502" text-anchor="start" fill="#111111" font-size="11.9" font-weight="600">build_scenario_payload(): summary plus per-timestep network, violation, control and energy fields.</text>
+<text x="1162" y="544" text-anchor="start" fill="#111111" font-size="11.9" font-weight="600">build_hc_payload(): baseline/Volt-Var HC summaries, gain and stored sweep-curve data.</text>
+<text x="1162" y="586" text-anchor="start" fill="#111111" font-size="11.9" font-weight="600">_dump() performs JSON-safe serialization and creates parent directories as needed.</text>
+<text x="1162" y="710" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Output/file semantics</text>
+<text x="1162" y="748" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">topology.json and profiles.json are system-level files.</text>
+<text x="1162" y="793" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">scenarios/&lt;sid&gt;.json is written compactly (indent=None) because annual payloads can be very large.</text>
+<text x="1162" y="838" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">publish_scenario_result(None) returns None and writes nothing.</text>
+<text x="1162" y="883" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">hc.json is omitted when hc_results is empty; comparison.json is omitted when the DataFrame is empty.</text>
+<text x="1162" y="928" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">The HC-stressed re-benchmark uses a separate output directory and repeats the same static write lifecycle.</text>
+</svg>

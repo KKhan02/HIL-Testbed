@@ -1,0 +1,609 @@
+% =========================================================================
+% paper.tex — IEEE ISGT Europe conference paper (6 pages, two-column)
+%
+% A Low-Cost Hardware-in-the-Loop Testbed for Distribution Grid
+% Volt-Var Control: Architecture, Benchmarking, and Quantisation Effects
+%
+% Compile with:  pdflatex paper.tex   (twice, for cross-references)
+% Requires a standard IEEEtran installation (TeX Live / MiKTeX).
+%
+% All numerical values are taken verbatim from the project knowledge base
+% (HIL_Testbed_Project_Knowledge_Base). Values marked [TBD] were not
+% present in the knowledge base and must be populated from the analysis
+% scripts indicated in the adjacent comments before submission.
+% =========================================================================
+\documentclass[conference]{IEEEtran}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage[hidelinks]{hyperref}
+
+\sisetup{detect-all=true, per-mode=symbol}
+
+% ---- Placeholder box used until real figure files are dropped in --------
+% Replace each \figplaceholder{...} with the commented \includegraphics
+% line directly above it once the figure PDF/PNG exists.
+\newcommand{\figplaceholder}[1]{%
+  \framebox[\columnwidth]{\parbox[c][4.5cm][c]{0.92\columnwidth}{\centering
+  \footnotesize\textit{Figure placeholder:}\\[2pt] #1}}}
+
+\begin{document}
+
+\title{A Low-Cost Hardware-in-the-Loop Testbed for Distribution Grid
+Volt-Var Control: Architecture, Benchmarking, and Quantisation Effects}
+
+% NOTE: Fill in author name(s), ORCID, and e-mail before submission.
+\author{\IEEEauthorblockN{[Author Name(s)]}
+\IEEEauthorblockA{Carl von Ossietzky Universit\"at Oldenburg, Germany\\
+{[e-mail address]}}}
+
+\maketitle
+
+% =========================================================================
+\begin{abstract}
+Rising penetration of distributed energy resources (DERs) increasingly
+causes overvoltage violations in medium-voltage (MV) distribution grids.
+This paper presents a low-cost Hardware-in-the-Loop (HIL) testbed in which
+a Raspberry Pi~5 executes pandapower/SimBench MV networks while an Arduino
+Uno~R3 implements the VDE-AR-N~4110 Q(V) characteristic as a physical
+reactive power controller, augmented by a Jacobian-based sensitivity
+coordinator. On a rural SimBench MV feeder, sensitivity coordination
+reduces active power curtailment by up to \SI{46.2}{\percent} relative to
+local Q(V)-only control. Beyond benchmarking, we report a novel
+quantisation finding: the four-decimal ASCII serial protocol perturbs
+reactive power setpoints just enough to raise the coordinator activation
+rate from \SI{9.5}{\percent} (pure-software dry-run) to
+\SI{99.9}{\percent} (HIL) on the same network---directly analogous to
+Modbus/SunSpec 16-bit register truncation in field inverters. Idealised
+simulation therefore underestimates real-world coordinator activation,
+with implications for field deployment of sensitivity-based Volt-Var
+control.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Hardware-in-the-loop, Volt-Var control, reactive power, distribution
+grids, quantisation, SimBench, pandapower, VDE-AR-N 4110
+\end{IEEEkeywords}
+
+% =========================================================================
+\section{Introduction}
+\label{sec:intro}
+
+The rapid growth of distributed energy resources (DERs), particularly
+rooftop and utility-scale photovoltaics, is transforming medium-voltage
+(MV) distribution grids from passive load-serving networks into active
+systems in which reverse power flows routinely push bus voltages above
+their statutory limits. Reactive power provision by DER inverters is a
+well-established and economically attractive lever for voltage regulation
+under high penetration, as it exploits latent inverter capability without
+sacrificing energy yield~\cite{turitsyn2011}. Where reactive power alone
+is insufficient, active power curtailment becomes the remedy of last
+resort, directly reducing renewable energy harvest~\cite{tonkoski2011}.
+In Germany, the grid connection standard VDE-AR-N~4110 formalises this
+hierarchy for MV-connected plants by mandating a piecewise-linear Q(V)
+characteristic (Bild~8) executed locally by each generating
+unit~\cite{vde4110}.
+
+Validating voltage control strategies before field deployment requires
+test environments that reproduce not only the network physics but also
+the behaviour of the real control hardware. Hardware-in-the-Loop (HIL)
+and power-HIL platforms are the established answer~\cite{faruque2015,
+lauss2016}, and have been applied to distribution-scale problems
+including remote circuit co-simulation~\cite{palmintier2015}. However,
+commercial real-time simulators (RTDS, OPAL-RT and similar) carry costs
+that place them out of reach for many teaching and early-stage research
+settings; low-cost alternatives exist~\cite{haidekker2023} but focus on
+power-stage emulation rather than the communication and arithmetic
+precision of the controller itself. Conversely, pure software simulation
+represents DER controllers with float64 arithmetic and lossless
+information exchange---a fidelity that no fielded inverter possesses,
+since real devices communicate setpoints through finite-precision
+channels such as 16-bit Modbus/SunSpec registers~\cite{sunspec,
+modbus, ieee1547}. Neither extreme exposes how controller-side
+quantisation propagates into the behaviour of higher-level coordination
+layers.
+
+This paper contributes: (i) a low-cost HIL testbed (Raspberry Pi~5 plus
+Arduino Uno~R3) in which a real embedded device executes the
+VDE-AR-N~4110 Q(V) characteristic inside a pandapower/SimBench time-series
+simulation; (ii) a reproducible five-scenario benchmark framework
+comparing no control, on-load tap changer (OLTC), static VAr compensator
+(SVC), local Volt-Var, and Jacobian-based coordinated Volt-Var at full
+annual resolution, with an extensible plugin architecture for
+third-party controllers and networks; (iii) a timing characterisation of
+the HIL loop demonstrating real-time feasibility; and (iv) a quantisation
+finding with direct field-deployment implications: hardware-induced
+truncation of voltage telemetry raises the activation rate of a
+sensitivity-based coordinator from \SI{9.5}{\percent} to
+\SI{99.9}{\percent} on the same network. The remainder of the paper
+describes the testbed architecture (Section~\ref{sec:arch}), the
+benchmark framework (Section~\ref{sec:benchmark}), results including the
+quantisation effect (Section~\ref{sec:results}), discussion
+(Section~\ref{sec:discussion}), and conclusions
+(Section~\ref{sec:conclusion}).
+
+% =========================================================================
+\section{Testbed Architecture}
+\label{sec:arch}
+
+\subsection{Hardware}
+\label{sec:hw}
+
+The testbed comprises two commodity devices. A Raspberry Pi~5 (8~GB,
+EUR~189.44) acts as the grid simulator, running the full Python power
+system stack. An Arduino Uno~R3 is physically inserted into the control
+loop as the reactive power controller, connected over USB serial at
+\SI{115200}{baud} (8N1). The Arduino firmware implements the
+VDE-AR-N~4110 Q(V) Bild~8 piecewise-linear characteristic with
+breakpoints $U_1{=}0.96$, $U_2{=}0.99$, $U_3{=}1.01$, and $U_4{=}1.04$~pu
+and a reactive capability ratio $Q_\mathrm{max}/P_\mathrm{inst} =
+0.25$ per DER: reactive power is injected below $U_2$, zero in the
+deadband $[U_2, U_3]$, and absorbed on a linear ramp between $U_3$ and
+$U_4$, saturating at $\pm Q_\mathrm{max}$ outside the band.
+
+The firmware targets the ATmega328P with hard embedded constraints: of
+the \SI{2048}{\byte} SRAM, \SI{1918}{\byte} are allocated (approximately
+\SI{130}{\byte} of stack, roughly \SI{50}{\byte} free margin), supporting
+up to 105 DERs per exchange. All floating-point arithmetic is 32-bit
+(AVR \texttt{double} $\equiv$ \texttt{float}). These constraints are
+deliberately representative of resource-constrained embedded controllers
+in real DER applications and are, as Section~\ref{sec:quant} shows,
+scientifically productive rather than incidental.
+
+\begin{figure}[!t]
+\centering
+% -----------------------------------------------------------------------
+% FIGURE 1: Block diagram of the HIL loop. This diagram is drawn manually
+% (e.g. TikZ / draw.io / Inkscape) — it is NOT produced by plot_results.py.
+% Contents: RPi 5 (pandapower net, SensitivityCoordinator, DERDynamics)
+% <--115200 baud ASCII serial--> Arduino Uno R3 (Q(V) firmware), with the
+% per-timestep message sequence V:...\n  ->  Q:...\n annotated.
+% \includegraphics[width=\columnwidth]{fig1_hil_block_diagram}
+% -----------------------------------------------------------------------
+\figplaceholder{Block diagram of the HIL loop (manual drawing; see comment
+in source).}
+\caption{HIL loop architecture and per-timestep sequence. Each
+\SI{15}{\minute} simulation step executes: (1)~write profile active power
+to the network model; (2)~pre-control power flow yielding bus voltages at
+all DERs; (3)~serial exchange---the RPi transmits per-DER voltage
+magnitudes (\texttt{V:}\,message) and the Arduino returns Q(V) setpoints
+(\texttt{Q:}\,message), both as four-decimal ASCII; (4)~optional
+Jacobian-based sensitivity coordination of the returned setpoints;
+(5)~PT1 dynamics and ramp limiting; (6)~post-control power flow and
+violation detection; (7)~iterative active power curtailment if
+violations persist.}
+\label{fig:hil_block}
+\end{figure}
+
+\subsection{Software Stack}
+\label{sec:sw}
+
+The simulation side is built on pandapower~3.4.0~\cite{thurner2018} for
+Newton--Raphson power flow and network modelling, and
+SimBench~1.6.1~\cite{meinecke2020} for benchmark MV networks with native
+annual profiles. Weather-driven profile generation for non-SimBench
+networks uses pvlib~\cite{holmgren2018} with German Weather Service
+(DWD) station data.
+
+Each Scenario~4 timestep performs two power flow solutions: a
+pre-control \texttt{runpp()} to obtain the voltage magnitudes sent to the
+Arduino, and a post-control \texttt{runpp()} after reactive power and
+dynamics are applied, followed by violation detection and, if needed, an
+iterative curtailment loop (\SI{10}{\percent} reduction per iteration, at
+most 10 iterations). The \texttt{SensitivityCoordinator} implements the
+coordinated path: it linearises the voltage--reactive-power relationship
+through the power flow Jacobian~\cite{christakou2013} and, whenever the
+predicted post-Q(V) voltage still exceeds the violation threshold at any
+bus, solves a least-squares problem over the sensitivity submatrix of
+violated buses for a minimum-norm reactive power correction distributed
+across all DERs---a sensitivity-based Volt-Var philosophy shared with
+discrete coordinate-descent approaches~\cite{jabr2016}. On rural radial
+feeders this submatrix is structurally rank-deficient (rank 3--4 despite
+8+ DERs, since DERs on the same branch produce collinear sensitivity
+columns); the SVD-based least-squares solve handles the null space
+directly. Applied setpoints are finally shaped by a first-order (PT1)
+reactive power filter with active power ramp limiting
+(\texttt{DERDynamics}), emulating inverter response dynamics.
+
+\subsection{Extensibility: Controller and Network Plugins}
+\label{sec:plugins}
+
+Because the testbed serves as a shared research platform, both the
+controller and the network layer are extensible without modification of
+any core module. A controller plugin system loads user-defined Q(V) (or
+arbitrary Q) control functions from YAML descriptors, validated against a
+safety matrix (identifier collisions, hardware guards, capability
+clamping through a dry-run controller instance) and registered
+dynamically alongside the built-in scenarios; reference plugins include a
+proportional Q--P droop and a four-breakpoint deadband characteristic
+using VDE-AR-N~4110 default parameters. A companion network plugin system
+admits external grids from pandapower JSON, pickle, or loader functions,
+with three profile strategies (SimBench-native, DWD/pvlib weather-driven,
+or flat rated-capacity), so that student-contributed controllers and
+networks run under the identical benchmark, metric, and publication
+pipeline as the built-in scenarios.
+
+% =========================================================================
+\section{Five-Scenario Benchmark Framework}
+\label{sec:benchmark}
+
+Table~\ref{tab:scenarios} summarises the benchmark scenarios. Scenarios
+1--3 and 5 are pure software; only Scenario~4 (both variants) places the
+Arduino in the loop, and each Scenario~4 variant can additionally run in
+a \emph{dry-run} mode in which a float64 Python implementation of the
+identical Q(V) characteristic replaces the Arduino---the comparison that
+enables the quantisation analysis of Section~\ref{sec:quant}. Scenario~5
+provides a theoretical optimum bound via AC optimal power flow and runs
+on the CIGRE MV network only, because the HV/MV transformer impedance
+contrast of SimBench MV networks ill-conditions the OPF admittance
+matrix.
+
+\begin{table}[!t]
+\caption{Benchmark Scenarios}
+\label{tab:scenarios}
+\centering
+\begin{tabular}{@{}clcc@{}}
+\toprule
+No. & Name & Control method & HW \\
+\midrule
+1  & Baseline           & None (violation reference)             & N \\
+2  & OLTC               & On-load tap changer                    & N \\
+3  & SVC                & Static VAr compensator at MV busbar    & N \\
+4A & Volt-Var local     & Arduino Q(V), VDE-AR-N 4110 Bild 8     & Y \\
+4B & Volt-Var coord.    & Arduino Q(V) + Jacobian sensitivity    & Y \\
+   &                    & coordinator (least-squares correction) &   \\
+5  & OPF benchmark      & AC optimal power flow (bound)          & N \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The primary benchmark network is SimBench \texttt{1-MV-rural--2-sw}
+(99~buses, 102~DERs including 91 aggregated low-voltage residential PV
+units, closed sectionalizer). All annual runs use the native SimBench
+profiles at \SI{15}{\minute} resolution: 35\,136 timesteps covering the
+full 366-day leap year 2016. The open-sectionalizer variant
+\texttt{1-MV-rural--1-sw} serves as the secondary network on which the
+primary coordination result is demonstrated. Reported metrics are:
+the number of violated timesteps ($V_\mathrm{min}{=}0.95$,
+$V_\mathrm{max}{=}1.05$~pu); the voltage deviation index
+$\mathrm{VDI}=\sum_{t}\sum_{b}\left|v_{b,t}-1.0\right|$ summed over all
+buses and converged timesteps (dimensionless, additive across
+subnetworks); the maximum bus voltage $\max v_m$; the number of timesteps
+requiring active power curtailment; and the coordination rate, the share
+of timesteps on which the sensitivity coordinator modifies the local
+Q(V) setpoints.
+
+The Q(V) characteristic follows VDE-AR-N~4110~\cite{vde4110} rather than
+IEEE~1547-2018~\cite{ieee1547} because the testbed models German MV
+networks, for which VDE-AR-N~4110 is the governing connection standard;
+its Bild~8 characteristic prescribes the breakpoint voltages and
+deadband adopted by the firmware. IEEE~1547-2018 Category~B volt-var is
+functionally analogous but differs in default breakpoints, so results
+transfer qualitatively rather than numerically; the firmware curve is
+parameterised and can be re-pointed to IEEE~1547 defaults without
+structural change.
+
+% =========================================================================
+\section{Results}
+\label{sec:results}
+
+\subsection{Voltage Control Performance}
+\label{sec:perf}
+
+Table~\ref{tab:results} reports the annual benchmark on
+\texttt{1-MV-rural--1-sw} (closed sectionalizer). The uncontrolled
+baseline violates limits on 2\,880 timesteps; the OLTC reduces this to
+862. The SVC is included honestly as a negative result: on this radial
+rural topology it is catastrophic, collapsing the minimum bus voltage to
+0.827~pu, and is therefore unsuitable for this network class. The two
+Volt-Var variants form the main comparison: local Q(V) control
+(Scenario~4A) requires curtailment on 290 timesteps, whereas adding the
+sensitivity coordinator (Scenario~4B) reduces this to 156
+timesteps---a \SI{46.2}{\percent} reduction in curtailment
+events---while also reducing overvoltage timesteps from 955 to 490 and
+the VDI from 3\,960 to 3\,879, at a coordination rate of only
+\SI{9.1}{\percent}. The coordinator thus intervenes sparingly but at the
+timesteps where local control alone would otherwise force curtailment.
+Consistent behaviour is observed on the other network configurations:
+$-45.9\%$ curtailment on the open-sectionalizer variant of the same
+network and $-31.6\%$ on \texttt{1-MV-rural--2-sw} (open sectionalizer).
+
+\begin{table}[!t]
+\caption{Annual Benchmark, SimBench \texttt{1-MV-rural--1-sw}
+(Closed Sectionalizer), 35\,136 Timesteps, $Q_\mathrm{max}/P_\mathrm{inst}=0.25$}
+\label{tab:results}
+\centering
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Scenario & Viol.\ steps & $\max v_m$ (pu) & Curtail.\ steps & Coord.\ rate \\
+\midrule
+1 Baseline    & 2\,880           & [TBD] & ---  & ---  \\
+2 OLTC        & 862              & [TBD] & ---  & ---  \\
+3 SVC$^{a}$   & [TBD]            & [TBD] & ---  & ---  \\
+4A Local      & 955$^{b}$        & [TBD] & 290  & 0\,\%$^{c}$ \\
+4B Coord.     & 490$^{b}$        & [TBD] & 156  & \SI{9.1}{\percent} \\
+\bottomrule
+\end{tabular}
+\begin{flushleft}\footnotesize
+$^{a}$SVC fails catastrophically on this topology ($\min v_m = 0.827$~pu)
+and is reported as a negative result.
+$^{b}$Overvoltage timesteps; VDI $= 3\,960$ (4A) vs.\ $3\,879$ (4B).
+$^{c}$Zero by definition: no coordination layer is active in 4A.\\
+% [TBD] entries: populate from the summary comparison table emitted by
+% compare_scenarios.py (per-scenario max_vm_pu and the SVC violation-step
+% count) on the post-fix clean annual run.
+\end{flushleft}
+\end{table}
+
+\begin{figure}[!t]
+\centering
+% -----------------------------------------------------------------------
+% FIGURE 2: Voltage envelope comparison across scenarios (annual).
+% Produced by compare_scenarios.py — "voltage envelope" output — on the
+% clean post-fix annual run for 1-MV-rural--1-sw (closed sectionalizer).
+% \includegraphics[width=\columnwidth]{fig2_voltage_envelope}
+% -----------------------------------------------------------------------
+\figplaceholder{Annual voltage envelope ($\min$/$\max$ bus voltage per
+timestep) for Scenarios 1, 2, 4A and 4B; from
+\texttt{compare\_scenarios.py}.}
+\caption{Annual voltage envelope comparison on
+\texttt{1-MV-rural--1-sw}. The coordinated Volt-Var scenario (4B)
+suppresses the overvoltage excursions that force curtailment under local
+control (4A), while the baseline exhibits sustained violations of the
+1.05~pu limit.}
+\label{fig:envelope}
+\end{figure}
+
+\subsection{HIL Timing Characterisation}
+\label{sec:timing}
+
+The Arduino serial round trip (\texttt{hil\_latency\_ms}) has a mean of
+\SI{151.8}{\milli\second} with a standard deviation below
+\SI{1.2}{\milli\second}---a tight, unimodal distribution with no drift
+over the full annual run. The median total per-timestep cost on the
+Raspberry~Pi is approximately \SI{227}{\milli\second} for Scenario~4A and
+\SI{234}{\milli\second} for Scenario~4B, so the serial exchange accounts
+for \SI{66}{\percent} (4A) and \SI{64}{\percent} (4B) of the timestep
+budget; the non-serial residual of approximately \SIrange{75}{83}{\milli\second}
+covers the two power flow solutions, the sensitivity solve, and the DER
+dynamics. Since one simulated timestep represents \SI{15}{\minute} of
+grid time, the loop operates with real-time margin exceeding three
+orders of magnitude. Comparing platforms, the Raspberry~Pi is
+\emph{faster} than the reference laptop at pure pandapower computation
+(ratio 0.62$\times$ on Scenarios~1--3) but 1.76--1.86$\times$ slower on
+Scenario~4, entirely attributable to the serial exchange.
+
+A reproducible outlier pattern was identified in the OLTC scenario: the
+five largest-latency timesteps occur at identical timestep indices across
+two independent Raspberry~Pi runs, spaced roughly 7\,000 timesteps
+($\approx$7 weeks) apart, with monotonically increasing magnitude
+(\SIrange{1340}{1952}{\milli\second}). No tap operation was attempted on
+any of these steps; the signature is attributed to pandapower sparse
+matrix cache growth over the annual run, and a similar periodicity
+appears in the SVC scenario.
+
+\subsection{Hardware Quantisation Effect}
+\label{sec:quant}
+
+The central novel finding concerns how finite hardware precision alters
+coordinator behaviour. The serial protocol transmits each voltage
+magnitude as four-decimal ASCII, quantising $v_m$ to steps of
+$\Delta v_m = 10^{-4}$~pu. On the absorption ramp of the Bild~8
+characteristic, the corresponding reactive power sensitivity per DER is
+\begin{equation}
+\Delta q \;=\; \frac{Q_\mathrm{max}}{U_4 - U_3}\,\Delta v_m ,
+\label{eq:quant}
+\end{equation}
+which for the largest unit in the network ($P_\mathrm{inst} =
+\SI{4.9}{\mega\watt}$, hence $Q_\mathrm{max} = 0.25 \times 4.9 =
+\SI{1.225}{\mega\text{var}}$) evaluates to $1.225 \times 10^{-4} / 0.03
+\approx \SI{0.004}{\mega\text{var}}$ per quantisation step, and to
+approximately \SI{0.0013}{\mega\text{var}} per DER on average across the
+fleet. Aggregated over the 98 profiled DERs, the HIL path thus returns a
+total reactive power response smaller by roughly
+\SI{0.13}{\mega\text{var}} than the float64 dry-run path at the same
+operating point.
+
+This seemingly negligible deficit is decisive at the coordinator gate.
+The coordinator fires when the Jacobian-predicted post-Q(V) voltage
+exceeds the violation threshold of $1.05 + 0.001 = 1.051$~pu (band limit
+plus a \SI{1}{m\text{pu}} noise guard) at any bus. Debug instrumentation
+of the coordination step confirms the mechanism directly: on a peak
+summer day (day~172, pre-control maximum 1.0787~pu), the float64 dry-run
+setpoints pull the predicted voltage below 1.051~pu on \emph{every}
+timestep---the residual violation mask is empty all day---whereas on the
+Raspberry~Pi the identical timesteps show populated residual masks and
+active coordination. Aggregated over the year, the coordinator is active
+on \SI{99.9}{\percent} of violated timesteps in HIL mode versus
+\SI{9.5}{\percent} in the dry-run on the same network. The dry-run figure
+is not idle behaviour: on a more demanding day (day~160, pre-control
+maximum 1.0888~pu) the dry-run coordinator also fires on 15 afternoon
+timesteps with residual masks of 1--4 buses and corrections up to
+\SI{0.095}{\mega\text{var}}, reducing curtailment from 25.3 to
+20.7~MW-steps ($-18.4\%$)---confirming genuine coordination work on hard
+days even under float64 precision.
+
+The correct interpretation is therefore not that either mode is wrong,
+but that the dry-run establishes the \emph{theoretical minimum}
+coordinator activation while HIL exposes the \emph{realistic} rate under
+hardware quantisation; the gap measures the sensitivity of the
+coordination gate to field device precision. The mechanism is directly
+analogous to real inverter communications: SunSpec Modbus, the default
+DER interoperability profile referenced by
+IEEE~1547-2018~\cite{ieee1547}, encodes measurements and setpoints as
+16-bit integer registers with power-of-ten scale
+factors~\cite{sunspec,modbus}, imposing quantisation of exactly the kind
+the ASCII protocol reproduces. A coordination layer calibrated
+exclusively against idealised float64 simulation will consequently
+underestimate its own field activation frequency---a gap that pure
+simulation cannot capture and that this low-cost testbed exposes by
+construction.
+
+\begin{figure}[!t]
+\centering
+% -----------------------------------------------------------------------
+% FIGURE 3: Coordinator activation comparison, dry-run vs HIL.
+% Data source: coordination_active flags in the publisher JSON of the two
+% Scenario 4B annual runs (laptop dry-run and RPi HIL) on the same
+% network; plotted via plot_results.py (coordination-rate panel) or a
+% small dedicated script. A per-day activation-count scatter (dry-run vs
+% HIL) or paired histogram both work.
+% \includegraphics[width=\columnwidth]{fig3_coordination_quantisation}
+% -----------------------------------------------------------------------
+\figplaceholder{Coordinator activation: dry-run (float64) vs.\ HIL
+(4-decimal ASCII) per-day activation counts on the same network; from the
+publisher JSON of both annual Scenario~4B runs.}
+\caption{Effect of hardware quantisation on coordinator activation. The
+four-decimal ASCII truncation of voltage telemetry shifts the
+Jacobian-predicted voltage marginally above the 1.051~pu gate on nearly
+all violated timesteps, raising the annual activation rate from
+\SI{9.5}{\percent} (dry-run) to \SI{99.9}{\percent} (HIL).}
+\label{fig:quant}
+\end{figure}
+
+% =========================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+The quantisation finding has a direct consequence for field deployment
+of sensitivity-based coordinators. Activation frequency drives
+communication load, actuator wear-equivalent behaviour (setpoint churn),
+and the operating envelope within which the coordinator's linearised
+model must remain valid; a design tuned against idealised float64
+simulation will meet a materially different duty cycle in the field,
+where every measurement and setpoint passes through finite-precision
+registers. Coordinator gates---violation thresholds, noise guards, and
+hysteresis---should therefore be calibrated against the realistic
+precision of the deployment communication stack (e.g., 16-bit SunSpec
+register resolution), and HIL evaluation with representative quantisation
+should precede parameter freeze. The testbed presented here provides
+exactly this capability at commodity cost, since the precision-limiting
+element is a real embedded device rather than a simulated abstraction.
+
+Several limitations bound the claims. First, the simulation is
+quasi-static: successive power flow snapshots at \SI{15}{\minute}
+resolution capture voltage regulation behaviour but not electromagnetic
+or electromechanical dynamics, converter control interactions, or
+sub-minute variability. Second, a single Arduino computes the Q(V)
+response for all DERs in one batched exchange; while this faithfully
+reproduces embedded arithmetic and protocol quantisation, it does not
+capture per-inverter heterogeneity, asynchronous communication, or
+packet loss that a one-device-per-DER architecture would exhibit. Third,
+the profiles are SimBench synthetic time series rather than measured
+field data, so absolute violation and curtailment counts are
+benchmark-relative quantities; the relative comparisons between
+scenarios, and the quantisation mechanism itself, are the transferable
+results.
+
+% =========================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+This paper presented a low-cost HIL testbed in which a Raspberry Pi~5
+runs full-year pandapower/SimBench MV simulations while an Arduino
+Uno~R3 physically executes the VDE-AR-N~4110 Q(V) characteristic, wrapped
+in a reproducible five-scenario benchmark with an extensible plugin
+architecture. On a rural SimBench MV feeder, Jacobian-based sensitivity
+coordination reduced active power curtailment events by
+\SI{46.2}{\percent} relative to local Q(V) control, at a mean HIL serial
+latency of \SI{151.8}{\milli\second}. The principal finding is that
+four-decimal telemetry quantisation---analogous to 16-bit Modbus/SunSpec
+register encoding in field inverters---raises the coordinator activation
+rate from \SI{9.5}{\percent} to \SI{99.9}{\percent} on the same network,
+demonstrating that idealised simulation systematically underestimates
+real-world coordinator duty. Future work extends the benchmark to
+low-voltage SimBench networks, replaces the ASCII protocol with a real
+inverter Modbus/SunSpec interface, and couples the testbed to dynamic
+simulation.
+
+% =========================================================================
+\begin{thebibliography}{9}
+
+\bibitem{turitsyn2011}
+K.~Turitsyn, P.~\v{S}ulc, S.~Backhaus, and M.~Chertkov, ``Options for
+control of reactive power by distributed photovoltaic generators,''
+\emph{Proc. IEEE}, vol.~99, no.~6, pp. 1063--1073, Jun. 2011, doi:
+10.1109/JPROC.2011.2116750.
+
+\bibitem{tonkoski2011}
+R.~Tonkoski, L.~A.~C. Lopes, and T.~H.~M. El-Fouly, ``Coordinated active
+power curtailment of grid connected PV inverters for overvoltage
+prevention,'' \emph{IEEE Trans. Sustain. Energy}, vol.~2, no.~2, pp.
+139--147, Apr. 2011, doi: 10.1109/TSTE.2010.2098483.
+
+\bibitem{vde4110}
+VDE-AR-N 4110, \emph{Technical Requirements for the Connection and
+Operation of Customer Installations to the Medium Voltage Network (TAR
+Medium Voltage)}, VDE Verlag, Berlin, Germany, Nov. 2018.
+
+\bibitem{faruque2015}
+M.~D. Omar~Faruque \emph{et~al.}, ``Real-time simulation technologies for
+power systems design, testing, and analysis,'' \emph{IEEE Power Energy
+Technol. Syst. J.}, vol.~2, no.~2, pp. 63--73, Jun. 2015, doi:
+10.1109/JPETS.2015.2427370.
+
+\bibitem{lauss2016}
+G.~F. Lauss, M.~O. Faruque, K.~Schoder, C.~Dufour, A.~Viehweider, and
+J.~Langston, ``Characteristics and design of power hardware-in-the-loop
+simulations for electrical power systems,'' \emph{IEEE Trans. Ind.
+Electron.}, vol.~63, no.~1, pp. 406--417, Jan. 2016.
+
+\bibitem{palmintier2015}
+B.~Palmintier, B.~Lundstrom, S.~Chakraborty, T.~Williams, K.~Schneider,
+and D.~Chassin, ``A power hardware-in-the-loop platform with remote
+distribution circuit cosimulation,'' \emph{IEEE Trans. Ind. Electron.},
+vol.~62, no.~4, pp. 2236--2245, Apr. 2015.
+
+\bibitem{haidekker2023}
+M.~A. Haidekker, M.~Liu, and W.~Song, ``Alternating-current microgrid
+testbed built with low-cost modular hardware,'' \emph{Sensors}, vol.~23,
+no.~6, p. 3235, Mar. 2023, doi: 10.3390/s23063235.
+
+\bibitem{sunspec}
+SunSpec Alliance, \emph{SunSpec Device Information Model Specification},
+San Jose, CA, USA. [Online]. Available: \url{https://sunspec.org}
+
+\bibitem{modbus}
+Modbus Organization, \emph{MODBUS Application Protocol Specification
+V1.1b3}, Apr. 2012. [Online]. Available: \url{https://modbus.org}
+
+\bibitem{ieee1547}
+\emph{IEEE Standard for Interconnection and Interoperability of
+Distributed Energy Resources with Associated Electric Power Systems
+Interfaces}, IEEE Std 1547-2018, Apr. 2018.
+
+\bibitem{thurner2018}
+L.~Thurner \emph{et~al.}, ``pandapower---an open-source Python tool for
+convenient modeling, analysis, and optimization of electric power
+systems,'' \emph{IEEE Trans. Power Syst.}, vol.~33, no.~6, pp.
+6510--6521, Nov. 2018, doi: 10.1109/TPWRS.2018.2829021.
+
+\bibitem{meinecke2020}
+S.~Meinecke \emph{et~al.}, ``SimBench---a benchmark dataset of electric
+power systems to compare innovative solutions based on power flow
+analysis,'' \emph{Energies}, vol.~13, no.~12, p. 3290, Jun. 2020, doi:
+10.3390/en13123290.
+
+\bibitem{holmgren2018}
+W.~F. Holmgren, C.~W. Hansen, and M.~A. Mikofski, ``pvlib python: a
+python package for modeling solar energy systems,'' \emph{J. Open Source
+Softw.}, vol.~3, no.~29, p. 884, 2018, doi: 10.21105/joss.00884.
+
+\bibitem{christakou2013}
+K.~Christakou, J.-Y. Le~Boudec, M.~Paolone, and D.-C. Tomozei,
+``Efficient computation of sensitivity coefficients of node voltages and
+line currents in unbalanced radial electrical distribution networks,''
+\emph{IEEE Trans. Smart Grid}, vol.~4, no.~2, pp. 741--750, Jun. 2013,
+doi: 10.1109/TSG.2012.2221751.
+
+\bibitem{jabr2016}
+R.~A. Jabr and I.~D\v{z}afi\'{c}, ``Sensitivity-based discrete
+coordinate-descent for Volt/VAr control in distribution networks,''
+\emph{IEEE Trans. Power Syst.}, vol.~31, no.~6, pp. 4670--4678, Nov.
+2016.
+
+\end{thebibliography}
+
+\end{document}

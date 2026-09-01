@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080"><title>profile_builder SimBench native profile path - presentation</title>
+<defs>
+<marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+<marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+<marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+<marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+<marker id="arrowRed" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#993C1D"/></marker>
+</defs>
+<style>
+text {font-family:Helvetica,Arial,sans-serif} .node-title{font-weight:700} .node-sub{font-weight:400}
+.edge-dark{fill:none;stroke:#263238;stroke-width:2.7;stroke-linejoin:round;stroke-linecap:round}
+.edge-gate{fill:none;stroke:#7A5C12;stroke-width:2.7;stroke-linejoin:round;stroke-linecap:round}
+.edge-loop{fill:none;stroke:#3D8FD9;stroke-width:2.6;stroke-dasharray:7 5;stroke-linejoin:round;stroke-linecap:round}
+.edge-assoc{fill:none;stroke:#8A887F;stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round;stroke-linecap:round}
+.edge-red{fill:none;stroke:#993C1D;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+</style>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#F8FAFC" stroke="none" stroke-width="0"/>
+<rect x="145.0" y="26" width="650" height="48" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="470.0" y="47.5" text-anchor="middle" class="node-title" font-size="17" fill="#FFFFFF">build_annual_profiles()</text>
+<text x="470.0" y="62.5" text-anchor="middle" class="node-sub" font-size="11" fill="#FFFFFF" opacity="0.90">net, net_name, simbench_code</text>
+<polygon points="470,103.0 610.0,126 470,149.0 330.0,126" fill="#854F0B"/>
+<text x="470" y="130" text-anchor="middle" class="node-title" font-size="13.5" fill="#FFFFFF">net_type == &#x27;simbench&#x27;?</text>
+<rect x="55" y="103" width="190" height="46" rx="12" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="150.0" y="131.0" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">No: fallback path</text>
+<polygon points="470,181.0 605.0,204 470,227.0 335.0,204" fill="#854F0B"/>
+<text x="470" y="208" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">simbench_code provided?</text>
+<rect x="760" y="181" width="190" height="46" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="855.0" y="201.5" text-anchor="middle" class="node-title" font-size="11" fill="#FFFFFF">ValueError</text>
+<text x="855.0" y="216.5" text-anchor="middle" class="node-sub" font-size="8.5" fill="#FFFFFF" opacity="0.90">missing code</text>
+<rect x="145.0" y="244" width="650" height="66" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="470.0" y="268.0" text-anchor="middle" class="node-title" font-size="13.5" fill="#FFFFFF">Load SimBench source network + absolute profiles</text>
+<text x="470.0" y="283.0" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">get_simbench_net(code) -&gt; get_absolute_values(...profiles=True)</text>
+<text x="470.0" y="296.0" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">times = load-profile index</text>
+<polygon points="470,334.0 620.0,358 470,382.0 320.0,358" fill="#854F0B"/>
+<text x="470" y="362" text-anchor="middle" class="node-title" font-size="12.3" fill="#FFFFFF">profile index already DatetimeIndex?</text>
+<rect x="65" y="334" width="220" height="48" rx="12" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="175.0" y="355.5" text-anchor="middle" class="node-title" font-size="11.2" fill="#FFFFFF">Use native timestamps</text>
+<text x="175.0" y="370.5" text-anchor="middle" class="node-sub" font-size="8.2" fill="#FFFFFF" opacity="0.90">times = profile index</text>
+<rect x="705" y="326" width="250" height="64" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="830.0" y="349.0" text-anchor="middle" class="node-title" font-size="11.1" fill="#FFFFFF">Reconstruct time axis</text>
+<text x="830.0" y="364.0" text-anchor="middle" class="node-sub" font-size="8.2" fill="#FFFFFF" opacity="0.90">2016-01-01; 15-min cadence</text>
+<text x="830.0" y="377.0" text-anchor="middle" class="node-sub" font-size="8.2" fill="#FFFFFF" opacity="0.90">Europe/Berlin; periods=len(times)</text>
+<circle cx="470" cy="420" r="12" fill="#5F5E5A"/>
+<rect x="145.0" y="446" width="650" height="76" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="470.0" y="475.0" text-anchor="middle" class="node-title" font-size="12.8" fill="#FFFFFF">Extract load and sgen active-power frames</text>
+<text x="470.0" y="490.0" text-anchor="middle" class="node-sub" font-size="8.7" fill="#FFFFFF" opacity="0.90">load_df -&gt; index=times -&gt; clip &gt;=0</text>
+<text x="470.0" y="503.0" text-anchor="middle" class="node-sub" font-size="8.7" fill="#FFFFFF" opacity="0.90">sgen_prof -&gt; index=times -&gt; shared source for PV/wind</text>
+<rect x="145.0" y="548" width="650" height="76" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="470.0" y="577.0" text-anchor="middle" class="node-title" font-size="12.8" fill="#FFFFFF">Split sgen columns into PV and wind</text>
+<text x="470.0" y="592.0" text-anchor="middle" class="node-sub" font-size="8.7" fill="#FFFFFF" opacity="0.90">PV mask: pv | solar | lv_res</text>
+<text x="470.0" y="605.0" text-anchor="middle" class="node-sub" font-size="8.7" fill="#FFFFFF" opacity="0.90">Wind mask: wind | wp; intersect with available profile columns</text>
+<rect x="145.0" y="650" width="650" height="76" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="470.0" y="679.0" text-anchor="middle" class="node-title" font-size="12.8" fill="#FFFFFF">Apply physical cleanup</text>
+<text x="470.0" y="694.0" text-anchor="middle" class="node-sub" font-size="8.7" fill="#FFFFFF" opacity="0.90">PV night-zero for local hour &gt;=22 or &lt;=4</text>
+<text x="470.0" y="707.0" text-anchor="middle" class="node-sub" font-size="8.7" fill="#FFFFFF" opacity="0.90">clip PV/wind &gt;=0; empty selections stay empty</text>
+<rect x="145.0" y="752" width="650" height="66" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="470.0" y="776.0" text-anchor="middle" class="node-title" font-size="12.8" fill="#FFFFFF">Assemble common output schema</text>
+<text x="470.0" y="791.0" text-anchor="middle" class="node-sub" font-size="8.7" fill="#FFFFFF" opacity="0.90">result = {load, pv, wind, times, net_type}</text>
+<text x="470.0" y="804.0" text-anchor="middle" class="node-sub" font-size="8.7" fill="#FFFFFF" opacity="0.90">add extreme_days after result assembly</text>
+<rect x="145.0" y="844" width="650" height="66" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="470.0" y="868.0" text-anchor="middle" class="node-title" font-size="12.5" fill="#FFFFFF">find_extreme_days(result)</text>
+<text x="470.0" y="883.0" text-anchor="middle" class="node-sub" font-size="8.5" fill="#FFFFFF" opacity="0.90">safe_sum -&gt; total PV + wind = DER; total load</text>
+<text x="470.0" y="896.0" text-anchor="middle" class="node-sub" font-size="8.5" fill="#FFFFFF" opacity="0.90">filter daily means to days with &gt;=80% max daily sample count</text>
+<rect x="145.0" y="936" width="650" height="44" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="470.0" y="963.0" text-anchor="middle" class="node-title" font-size="13.5" fill="#FFFFFF">return profiles dict</text>
+<path d="M470 74 L470 101" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M330 126 L247 126" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="320.0" y="119" text-anchor="end" fill="#7A5C12" font-size="11" font-weight="700">no</text>
+<path d="M470 149 L470 179" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="482" y="164.0" text-anchor="start" fill="#111111" font-size="11" font-weight="700">yes</text>
+<path d="M605 204 L758 204" class="edge-red" marker-end="url(#arrowRed)"/>
+<text x="615.0" y="197" text-anchor="start" fill="#993C1D" font-size="11" font-weight="700">no</text>
+<path d="M470 227 L470 242" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="482" y="242.0" text-anchor="start" fill="#111111" font-size="11" font-weight="700">yes</text>
+<path d="M470 310 L470 332" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M320 358 L287 358" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="310.0" y="351" text-anchor="end" fill="#7A5C12" font-size="11" font-weight="700">yes</text>
+<path d="M620 358 L703 358" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="630.0" y="351" text-anchor="start" fill="#7A5C12" font-size="11" font-weight="700">no</text>
+<path d="M175 382 L175 420 L456 420" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M830 390 L830 420 L484 420" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M470 432 L470 444" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M470 522 L470 546" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M470 624 L470 648" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M470 726 L470 750" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M470 818 L470 842" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M470 910 L470 934" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="1080" y="28" width="800" height="260" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1102" y="58" text-anchor="start" fill="#111111" font-size="16" font-weight="700">SimBench source + cadence</text>
+<text x="1102" y="94" text-anchor="start" fill="#111111" font-size="11.2" font-weight="600">get_simbench_net(simbench_code) supplies the source network used for profile lookup.</text>
+<text x="1102" y="131" text-anchor="start" fill="#111111" font-size="11.2" font-weight="600">get_absolute_values(...profiles_instead_of_study_cases=True) supplies load/sgen P profiles.</text>
+<text x="1102" y="168" text-anchor="start" fill="#111111" font-size="11.2" font-weight="600">If the returned load-profile index is not a DatetimeIndex, timestamps are reconstructed.</text>
+<text x="1102" y="205" text-anchor="start" fill="#111111" font-size="11.2" font-weight="600">The reconstruction uses 2016-01-01, 15-minute cadence, and Europe/Berlin timezone.</text>
+<text x="1102" y="242" text-anchor="start" fill="#111111" font-size="11.2" font-weight="600">The branch stays at native SimBench resolution; there is no 10-minute resampling here.</text>
+<rect x="1080" y="310" width="800" height="302" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1102" y="340" text-anchor="start" fill="#111111" font-size="16" font-weight="700">DER classification + physical cleanup</text>
+<text x="1102" y="376" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">PV classification uses net.sgen.type containing pv, solar, or lv_res.</text>
+<text x="1102" y="415" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">Wind classification uses net.sgen.type containing wind or wp.</text>
+<text x="1102" y="454" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">Only element indices also present in sgen_prof are retained as profile columns.</text>
+<text x="1102" y="493" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">PV is forced to zero at local hours &gt;=22 or &lt;=4.</text>
+<text x="1102" y="532" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">PV and wind are clipped at zero to remove small negative profile-scaling artefacts.</text>
+<text x="1102" y="571" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">If no matching columns exist, the resulting PV/wind DataFrame is simply empty.</text>
+<rect x="1080" y="634" width="800" height="356" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1102" y="664" text-anchor="start" fill="#111111" font-size="16" font-weight="700">Return schema + extreme-day calculation</text>
+<text x="1102" y="700" text-anchor="start" fill="#111111" font-size="10.8" font-weight="600">Returned keys are load, pv, wind, times, net_type, and extreme_days.</text>
+<text x="1102" y="739" text-anchor="start" fill="#111111" font-size="10.8" font-weight="600">safe_sum() converts a missing or empty profile frame into a zero series on times.</text>
+<text x="1102" y="778" text-anchor="start" fill="#111111" font-size="10.8" font-weight="600">total_der = sum(PV columns) + sum(wind columns); total_load = sum(load columns).</text>
+<text x="1102" y="817" text-anchor="start" fill="#111111" font-size="10.8" font-weight="600">Each series is resampled to daily mean before selecting max/min days.</text>
+<text x="1102" y="856" text-anchor="start" fill="#111111" font-size="10.8" font-weight="600">Days with fewer than 80% of the maximum daily sample count are excluded.</text>
+<text x="1102" y="895" text-anchor="start" fill="#111111" font-size="10.8" font-weight="600">A series with no values or zero maximum yields None for that extreme-day key.</text>
+<text x="1102" y="934" text-anchor="start" fill="#111111" font-size="10.8" font-weight="600">Otherwise max_der, min_der, max_load, and min_load are YYYY-MM-DD strings.</text>
+</svg>

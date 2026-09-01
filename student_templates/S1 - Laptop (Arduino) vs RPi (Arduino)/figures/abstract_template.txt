@@ -1,0 +1,1 @@
+This paper presents results from [Laptop Arduino] and [RPi HIL Arduino] benchmarks on the HIL testbed. Scenario 4B reduced curtailment by [16.8]% compared to 4A on [1-MV-rural--2-sw]. The HIL coordination active rate was [100.0]% versus [100.0]% in dry-run mode, consistent with the hardware quantisation finding documented in [CITE].

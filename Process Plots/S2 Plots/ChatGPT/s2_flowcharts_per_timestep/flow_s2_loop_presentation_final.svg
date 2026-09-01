@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080"><title>Scenario 2 per-timestep OLTC flow - presentation</title>
+<defs>
+<marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+<marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+<marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+<marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+<marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+</defs><style>
+text {font-family:Helvetica,Arial,sans-serif} .node-title{font-weight:700} .node-sub{font-weight:400}
+.edge-dark{fill:none;stroke:#263238;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-hil{fill:none;stroke:#D85A30;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-gate{fill:none;stroke:#7A5C12;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-loop{fill:none;stroke:#3D8FD9;stroke-width:2.6;stroke-dasharray:7 5;stroke-linejoin:round;stroke-linecap:round}
+.edge-assoc{fill:none;stroke:#8A887F;stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round;stroke-linecap:round}
+</style>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#F8FAFC" stroke="none" stroke-width="0"/>
+<polygon points="480,4.0 570.0,20 480,36.0 390.0,20" fill="#5F5E5A"/>
+<text x="480" y="17" text-anchor="middle" class="node-title" font-size="14" fill="#FFFFFF">for each t</text>
+<text x="480" y="29" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">in time_steps</text>
+<rect x="170" y="42" width="620" height="38" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="480.0" y="66.0" text-anchor="middle" class="node-title" font-size="13.5" fill="#FFFFFF">[1] write load / DER profiles; force DER Q=0</text>
+<path d="M480 36 L480 40" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="170" y="96" width="620" height="38" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="480.0" y="116" text-anchor="middle" class="node-title" font-size="13.2" fill="#FFFFFF">[2] pre-action PF at current tap</text>
+<text x="480.0" y="131" text-anchor="middle" class="node-sub" font-size="8.8" fill="#FFFFFF" opacity="0.90">pp.runpp(voltage_depend_loads=False)</text>
+<path d="M480 80 L480 94" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="480,149.0 600.0,170 480,191.0 360.0,170" fill="#854F0B"/>
+<text x="480" y="174" text-anchor="middle" class="node-title" font-size="12.8" fill="#FFFFFF">pre-PF converged?</text>
+<path d="M480 134 L480 147" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="62" y="143" width="220" height="54" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="172.0" y="163" text-anchor="middle" class="node-title" font-size="10.8" fill="#FFFFFF">Pre-PF failure</text>
+<text x="172.0" y="178" text-anchor="middle" class="node-sub" font-size="8.0" fill="#FFFFFF" opacity="0.90">append failed record; hold tap; no publish; continue</text>
+<path d="M360 170 L284 170" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="350.0" y="162" text-anchor="end" fill="#D85A30" font-size="10.5" font-weight="700">no</text>
+<rect x="170" y="214" width="620" height="36" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="480.0" y="237.0" text-anchor="middle" class="node-title" font-size="13.1" fill="#FFFFFF">[3] vm_ctrl = mean(control-bus vm_pu); min/max diagnostic only</text>
+<path d="M480 191 L480 212" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="492" y="206.0" text-anchor="start" fill="#111111" font-size="10.5" font-weight="700">yes</text>
+<polygon points="480,266.0 630.0,290 480,314.0 330.0,290" fill="#854F0B"/>
+<text x="480" y="294" text-anchor="middle" class="node-title" font-size="12.7" fill="#FFFFFF">vm_ctrl vs [0.98, 1.02]?</text>
+<path d="M480 250 L480 264" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="70" y="266" width="250" height="48" rx="10" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="195.0" y="286" text-anchor="middle" class="node-title" font-size="10.8" fill="#FFFFFF">High V: candidate=current+sign</text>
+<text x="195.0" y="301" text-anchor="middle" class="node-sub" font-size="8.1" fill="#FFFFFF" opacity="0.90">clip to gang range</text>
+<rect x="690" y="266" width="250" height="48" rx="10" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="815.0" y="286" text-anchor="middle" class="node-title" font-size="10.8" fill="#FFFFFF">Low V: candidate=current-sign</text>
+<text x="815.0" y="301" text-anchor="middle" class="node-sub" font-size="8.1" fill="#FFFFFF" opacity="0.90">clip to gang range</text>
+<rect x="320" y="330" width="320" height="44" rx="10" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="480.0" y="350" text-anchor="middle" class="node-title" font-size="10.8" fill="#FFFFFF">In band: hold + reuse pre-PF</text>
+<text x="480.0" y="365" text-anchor="middle" class="node-sub" font-size="8.1" fill="#FFFFFF" opacity="0.90">tap_attempted=False</text>
+<path d="M330 290 L322 290" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="350.0" y="282" text-anchor="end" fill="#7A5C12" font-size="10" font-weight="700">&gt;1.02</text>
+<path d="M630 290 L688 290" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="642.0" y="282" text-anchor="start" fill="#7A5C12" font-size="10" font-weight="700">&lt;0.98</text>
+<path d="M480 314 L480 328" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="494" y="329.0" text-anchor="start" fill="#7A5C12" font-size="10" font-weight="700">in band</text>
+<path d="M195 314 L195 402 L466 402" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M815 314 L815 402 L494 402" class="edge-gate" marker-end="url(#arrowGate)"/>
+<circle cx="480" cy="402" r="12" fill="#5F5E5A"/>
+<polygon points="480,430.0 605.0,450 480,470.0 355.0,450" fill="#854F0B"/>
+<text x="480" y="454" text-anchor="middle" class="node-title" font-size="12.0" fill="#FFFFFF">candidate != current?</text>
+<path d="M480 414 L480 428" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="725" y="430" width="250" height="40" rx="10" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="850.0" y="450" text-anchor="middle" class="node-title" font-size="10.2" fill="#FFFFFF">Tap limit reached</text>
+<text x="850.0" y="465" text-anchor="middle" class="node-sub" font-size="7.9" fill="#FFFFFF" opacity="0.90">reuse pre-PF; blocked_reason set</text>
+<path d="M605 450 L723 450" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="615.0" y="443" text-anchor="start" fill="#7A5C12" font-size="10" font-weight="700">no</text>
+<rect x="240" y="492" width="480" height="38" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="480.0" y="512" text-anchor="middle" class="node-title" font-size="12.0" fill="#FFFFFF">[5] write candidate tap to ganged transformer group</text>
+<text x="480.0" y="527" text-anchor="middle" class="node-sub" font-size="8.1" fill="#FFFFFF" opacity="0.90">save prev_tap</text>
+<path d="M480 470 L480 490" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="492" y="485.0" text-anchor="start" fill="#111111" font-size="10" font-weight="700">yes</text>
+<rect x="240" y="548" width="480" height="38" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="480.0" y="572.0" text-anchor="middle" class="node-title" font-size="12.5" fill="#FFFFFF">[5a] post-tap PF</text>
+<path d="M480 530 L480 546" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="480,603.0 595.0,624 480,645.0 365.0,624" fill="#854F0B"/>
+<text x="480" y="628" text-anchor="middle" class="node-title" font-size="12.0" fill="#FFFFFF">post-PF converged?</text>
+<path d="M480 586 L480 601" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="80" y="655" width="250" height="46" rx="10" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="205.0" y="675" text-anchor="middle" class="node-title" font-size="10.5" fill="#FFFFFF">Accept candidate</text>
+<text x="205.0" y="690" text-anchor="middle" class="node-sub" font-size="8.0" fill="#FFFFFF" opacity="0.90">current_tap=candidate; changed=True</text>
+<rect x="650" y="647" width="310" height="62" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="805.0" y="667" text-anchor="middle" class="node-title" font-size="10.0" fill="#FFFFFF">Rollback candidate</text>
+<text x="805.0" y="682" text-anchor="middle" class="node-sub" font-size="7.8" fill="#FFFFFF" opacity="0.90">restore prev_tap; blocked_reason set</text>
+<text x="805.0" y="695" text-anchor="middle" class="node-sub" font-size="7.8" fill="#FFFFFF" opacity="0.90">runpp() again at previous tap</text>
+<path d="M365 624 L205 624 L205 653" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="355.0" y="616" text-anchor="end" fill="#7A5C12" font-size="10" font-weight="700">yes</text>
+<path d="M595 624 L805 624 L805 645" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="605.0" y="616" text-anchor="start" fill="#D85A30" font-size="10" font-weight="700">no</text>
+<path d="M205 701 L205 738 L466 738" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M805 709 L805 738 L494 738" class="edge-hil" marker-end="url(#arrowHil)"/>
+<circle cx="480" cy="738" r="12" fill="#5F5E5A"/>
+<path d="M480 750 L480 758" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M320 352 L104 352 L104 772 L466 772" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M975 450 L1000 450 L1000 772 L494 772" class="edge-gate" marker-end="url(#arrowGate)"/>
+<circle cx="480" cy="772" r="12" fill="#5F5E5A"/>
+<polygon points="480,802.0 595.0,822 480,842.0 365.0,822" fill="#854F0B"/>
+<text x="480" y="826" text-anchor="middle" class="node-title" font-size="12.0" fill="#FFFFFF">settled PF converged?</text>
+<path d="M480 784 L480 800" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="70" y="800" width="250" height="44" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="195.0" y="820" text-anchor="middle" class="node-title" font-size="10.2" fill="#FFFFFF">Non-converged settled state</text>
+<text x="195.0" y="835" text-anchor="middle" class="node-sub" font-size="7.9" fill="#FFFFFF" opacity="0.90">rollback PF also failed</text>
+<rect x="660" y="796" width="330" height="52" rx="10" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="825.0" y="816" text-anchor="middle" class="node-title" font-size="10.7" fill="#FFFFFF">Extract final state</text>
+<text x="825.0" y="831" text-anchor="middle" class="node-sub" font-size="8.0" fill="#FFFFFF" opacity="0.90">V/loading + violations + losses/import</text>
+<path d="M365 822 L322 822" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="355.0" y="815" text-anchor="end" fill="#D85A30" font-size="10" font-weight="700">no</text>
+<path d="M595 822 L658 822" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="605.0" y="815" text-anchor="start" fill="#111111" font-size="10" font-weight="700">yes</text>
+<path d="M195 844 L195 872 L466 872" class="edge-hil" marker-end="url(#arrowHil)"/>
+<path d="M825 848 L825 872 L494 872" class="edge-dark" marker-end="url(#arrowDark)"/>
+<circle cx="480" cy="872" r="12" fill="#5F5E5A"/>
+<rect x="225" y="892" width="510" height="38" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="480.0" y="916.0" text-anchor="middle" class="node-title" font-size="11.8" fill="#FFFFFF">[6] build record -&gt; publish -&gt; append</text>
+<path d="M480 884 L480 890" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="480,946.0 575.0,966 480,986.0 385.0,966" fill="#854F0B"/>
+<text x="480" y="970" text-anchor="middle" class="node-title" font-size="11.3" fill="#FFFFFF">t % 96 == 0?</text>
+<path d="M480 930 L480 944" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="730" y="936" width="300" height="44" rx="10" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="880.0" y="956" text-anchor="middle" class="node-title" font-size="10.3" fill="#FFFFFF">Periodic progress</text>
+<text x="880.0" y="971" text-anchor="middle" class="node-sub" font-size="8.0" fill="#FFFFFF" opacity="0.90">optional partial CSV + logger.info</text>
+<path d="M575 966 L728 966 L728 958" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="583.0" y="959" text-anchor="start" fill="#7A5C12" font-size="10" font-weight="700">yes</text>
+<path d="M480 986 L480 1012" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="490" y="1001.0" text-anchor="start" fill="#111111" font-size="10" font-weight="700">no</text>
+<path d="M880 980 L880 1026 L494 1026" class="edge-gate" marker-end="url(#arrowGate)"/>
+<circle cx="480" cy="1026" r="12" fill="#5F5E5A"/>
+<path d="M62 170 L42 170" class="edge-hil"/>
+<path d="M42 170 L42 1026" class="edge-hil"/>
+<path d="M42 1026 L466 1026" class="edge-hil" marker-end="url(#arrowHil)"/>
+<polygon points="760,1033.0 860.0,1050 760,1067.0 660.0,1050" fill="#854F0B"/>
+<text x="760" y="1054" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">more timesteps?</text>
+<path d="M480 1038 L480 1050 L658 1050" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="880" y="1033" width="200" height="34" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="980.0" y="1055.0" text-anchor="middle" class="node-title" font-size="11.0" fill="#FFFFFF">loop complete</text>
+<path d="M860 1050 L878 1050" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="868.0" y="1044" text-anchor="start" fill="#111111" font-size="10" font-weight="700">no</text>
+<path d="M760 1067 L760 1072 L18 1072 L18 20 L388 20" class="edge-loop" marker-end="url(#arrowLoop)"/>
+<text x="772" y="1081.0" text-anchor="start" fill="#3D8FD9" font-size="10" font-weight="700">yes - next t</text>
+<rect x="1120" y="24" width="760" height="280" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1120" y="326" width="760" height="290" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1120" y="638" width="760" height="350" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1142" y="54" text-anchor="start" fill="#111111" font-size="17" font-weight="700">OLTC decision semantics</text>
+<text x="1142" y="88" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">Control signal is the mean voltage across all selected secondary busbars.</text>
+<text x="1142" y="120" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">vm_ctrl &gt; 1.02: candidate = current_tap + calibrated sign.</text>
+<text x="1142" y="152" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">vm_ctrl &lt; 0.98: candidate = current_tap - calibrated sign.</text>
+<text x="1142" y="184" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">Only one tap step is requested per timestep; candidate is clipped to the ganged range.</text>
+<text x="1142" y="216" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">Inside the deadband no post-PF is run; valid pre-PF results are reused.</text>
+<text x="1142" y="248" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">If clipping returns current_tap, the controller records tap_limit_reached and also reuses pre-PF.</text>
+<text x="1142" y="358" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Post-tap + rollback semantics</text>
+<text x="1142" y="394" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">Candidate PF converges: accept the move and set tap_changed=True.</text>
+<text x="1142" y="428" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">Candidate PF fails: restore prev_tap and set blocked_reason=post_pf_non_convergence.</text>
+<text x="1142" y="462" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">A second runpp() is attempted after rollback to rebuild valid result tables.</text>
+<text x="1142" y="496" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">Rollback success is recorded as converged=True but post_pf_reused=False.</text>
+<text x="1142" y="530" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">Rollback failure leaves converged_post=False and empty result tables.</text>
+<text x="1142" y="564" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">No reactive-power control or active-power curtailment exists in Scenario 2.</text>
+<text x="1142" y="670" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Publisher / failure semantics + implementation note</text>
+<text x="1142" y="706" text-anchor="start" fill="#111111" font-size="11.7" font-weight="600">Normal path: build record -&gt; on_timestep(rec) -&gt; append -&gt; optional t%96 progress.</text>
+<text x="1142" y="743" text-anchor="start" fill="#111111" font-size="11.7" font-weight="600">Pre-PF failure appends its failed record directly, then continue: no on_timestep() and no t%96 branch.</text>
+<text x="1142" y="780" text-anchor="start" fill="#111111" font-size="11.7" font-weight="600">The pre-PF failure rail and blue next-timestep rail are intentionally separate.</text>
+<text x="1142" y="817" text-anchor="start" fill="#111111" font-size="11.7" font-weight="600">Current source edge case: if rollback PF also fails, der_gen_mw_t/load_mw_t are not assigned in that branch.</text>
+<text x="1142" y="854" text-anchor="start" fill="#111111" font-size="11.7" font-weight="600">If this is the first such occurrence record construction can raise; otherwise stale prior-loop values can be reused.</text>
+<text x="1142" y="891" text-anchor="start" fill="#111111" font-size="11.7" font-weight="600">This note reflects the supplied implementation and is not silently corrected by the diagram.</text>
+</svg>

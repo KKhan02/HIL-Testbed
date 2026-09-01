@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080"><title>Scenario 1 top-level baseline flow - presentation</title>
+<defs>
+<marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+<marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+<marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+<marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+<marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+</defs><style>
+text {font-family:Helvetica,Arial,sans-serif} .node-title{font-weight:700} .node-sub{font-weight:400}
+.edge-dark{fill:none;stroke:#263238;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-hil{fill:none;stroke:#D85A30;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.edge-gate{fill:none;stroke:#7A5C12;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-loop{fill:none;stroke:#3D8FD9;stroke-width:2.8;stroke-dasharray:7 5;stroke-linejoin:round;stroke-linecap:round}
+.edge-assoc{fill:none;stroke:#8A887F;stroke-width:2;stroke-dasharray:6 4;stroke-linejoin:round;stroke-linecap:round}
+</style>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#F8FAFC" stroke="none" stroke-width="0"/>
+<rect x="28" y="24" width="1040" height="1032" rx="24" fill="#F4F8FB" stroke="#D9E1E8" stroke-width="1.5"/>
+<rect x="140.0" y="46" width="720" height="58" rx="14" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="74" text-anchor="middle" class="node-title" font-size="24" fill="#FFFFFF">run_scenario_1()</text>
+<text x="500.0" y="93" text-anchor="middle" class="node-sub" font-size="16" fill="#FFFFFF" opacity="0.90">network, profiles, voltage limits</text>
+<rect x="140.0" y="134" width="720" height="74" rx="14" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="162" text-anchor="middle" class="node-title" font-size="21" fill="#FFFFFF">Prepare profiles + integer timestep axis</text>
+<text x="500.0" y="181" text-anchor="middle" class="node-sub" font-size="14" fill="#FFFFFF" opacity="0.90">adapt_profiles(); on_scenario_start()</text>
+<text x="500.0" y="198" text-anchor="middle" class="node-sub" font-size="14" fill="#FFFFFF" opacity="0.90">reindex DER/load tables to 0...T-1 and validate coverage</text>
+<rect x="140.0" y="238" width="720" height="58" rx="14" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="273.0" text-anchor="middle" class="node-title" font-size="21" fill="#FFFFFF">Reset stale controllers / results</text>
+<rect x="140.0" y="326" width="720" height="76" rx="14" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="500.0" y="354" text-anchor="middle" class="node-title" font-size="21" fill="#FFFFFF">Attach ConstControl profile sources</text>
+<text x="500.0" y="373" text-anchor="middle" class="node-sub" font-size="14" fill="#FFFFFF" opacity="0.90">DER active power; load active + reactive power</text>
+<rect x="140.0" y="432" width="720" height="70" rx="14" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="500.0" y="460" text-anchor="middle" class="node-title" font-size="21" fill="#FFFFFF">Configure OutputWriter</text>
+<text x="500.0" y="479" text-anchor="middle" class="node-sub" font-size="14" fill="#FFFFFF" opacity="0.90">V/loading + losses + ext_grid P</text>
+<rect x="140.0" y="536" width="720" height="82" rx="14" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="500.0" y="564" text-anchor="middle" class="node-title" font-size="21" fill="#FFFFFF">run_timeseries sweep + logged-result post-processing</text>
+<text x="500.0" y="583" text-anchor="middle" class="node-sub" font-size="14" fill="#FFFFFF" opacity="0.90">two distinct execution phases; see detailed figure</text>
+<rect x="140.0" y="652" width="720" height="68" rx="14" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="500.0" y="680" text-anchor="middle" class="node-title" font-size="20" fill="#FFFFFF">ScenarioResult.from_records()</text>
+<text x="500.0" y="699" text-anchor="middle" class="node-sub" font-size="14" fill="#FFFFFF" opacity="0.90">baseline summary from complete record list</text>
+<rect x="140.0" y="754" width="720" height="62" rx="14" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="500.0" y="782" text-anchor="middle" class="node-title" font-size="20" fill="#FFFFFF">on_scenario_end()</text>
+<text x="500.0" y="801" text-anchor="middle" class="node-sub" font-size="14" fill="#FFFFFF" opacity="0.90">final publisher event / handle close</text>
+<rect x="140.0" y="850" width="720" height="48" rx="14" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="880.0" text-anchor="middle" class="node-title" font-size="20" fill="#FFFFFF">return ScenarioResult</text>
+<path d="M500 104 L500 132" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 208 L500 236" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 296 L500 324" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 402 L500 430" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 502 L500 534" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 618 L500 650" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 720 L500 752" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 816 L500 848" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="1120" y="28" width="760" height="280" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1120" y="330" width="760" height="300" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1120" y="652" width="760" height="340" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1142" y="60" text-anchor="start" fill="#111111" font-size="18" font-weight="700">Baseline execution contract</text>
+<text x="1142" y="96" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">No manual control loop, OLTC, SVC, Volt-Var, OPF, curtailment, or hardware path.</text>
+<text x="1142" y="132" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">run_timeseries() owns the annual power-flow sweep through pandapower controllers.</text>
+<text x="1142" y="168" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">Violation detection is deliberately deferred until after the entire sweep.</text>
+<text x="1142" y="204" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">continue_on_divergence=True allows later timesteps to run after an individual PF failure.</text>
+<text x="1142" y="240" text-anchor="start" fill="#111111" font-size="12.2" font-weight="600">The runner controls DER p_mw only; it does not explicitly overwrite sgen q_mvar.</text>
+<text x="1142" y="362" text-anchor="start" fill="#111111" font-size="18" font-weight="700">Publisher / checkpoint semantics</text>
+<text x="1142" y="400" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">enable_checkpointing and live_csv_rewrite_fn are accepted but not used for resume/progress logic.</text>
+<text x="1142" y="439" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">Scenario 1 never calls get_resume_records(), so a prior checkpoint cannot skip or resume the sweep.</text>
+<text x="1142" y="478" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">on_timestep() is called only while post-processing converged logged timesteps.</text>
+<text x="1142" y="517" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">A non-converged logged timestep is appended directly and therefore is not sent to on_timestep().</text>
+<text x="1142" y="556" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">PublishHandle may still write checkpoint lines during post-processing, but this runner will not consume them on restart.</text>
+<text x="1142" y="684" text-anchor="start" fill="#111111" font-size="18" font-weight="700">Data and timing semantics</text>
+<text x="1142" y="722" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">DFData/ConstControl use integer timestep rows and actual element indices as profile columns.</text>
+<text x="1142" y="763" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">OutputWriter logs vm_pu, line/trafo loading, line/trafo losses, and ext_grid p_mw.</text>
+<text x="1142" y="804" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">_timed_runpp() records runpp wall time keyed by OutputWriter.time_step.</text>
+<text x="1142" y="845" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">Source comment says the timing map is cleared per call, but the supplied runner does not call _RUNPP_TIMING.clear().</text>
+<text x="1142" y="886" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">That discrepancy is an implementation note, not silently changed by the diagram.</text>
+</svg>

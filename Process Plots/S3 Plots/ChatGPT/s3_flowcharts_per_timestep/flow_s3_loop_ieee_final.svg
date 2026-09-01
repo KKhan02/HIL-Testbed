@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1580" viewBox="0 0 900 1580"><title>Scenario 3 per-timestep SVC flow - IEEE</title>
+<defs>
+<marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+<marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+<marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+<marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+<marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+</defs><style>
+text {font-family:Helvetica,Arial,sans-serif} .node-title{font-weight:700} .node-sub{font-weight:400}
+.edge-dark{fill:none;stroke:#263238;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-hil{fill:none;stroke:#D85A30;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-gate{fill:none;stroke:#7A5C12;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-loop{fill:none;stroke:#3D8FD9;stroke-width:2.6;stroke-dasharray:7 5;stroke-linejoin:round;stroke-linecap:round}
+.edge-assoc{fill:none;stroke:#8A887F;stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round;stroke-linecap:round}
+</style>
+<rect x="14" y="14" width="872" height="1552" rx="16" fill="#F8FAFC" stroke="#D9E1E8" stroke-width="1.5"/>
+<text x="450.0" y="36" text-anchor="middle" fill="#111111" font-size="17" font-weight="700">Scenario 3 - Per-Timestep SVC Execution</text>
+<polygon points="420,57.0 495.0,82 420,107.0 345.0,82" fill="#5F5E5A"/>
+<text x="420" y="78" text-anchor="middle" class="node-title" font-size="14" fill="#FFFFFF">for each t</text>
+<text x="420" y="92" text-anchor="middle" class="node-sub" font-size="10" fill="#FFFFFF" opacity="0.90">in time_steps</text>
+<rect x="220" y="124" width="400" height="66" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="420.0" y="144" text-anchor="middle" class="node-title" font-size="12.5" fill="#FFFFFF">[1] write timestep state</text>
+<text x="420.0" y="159" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">load P/Q; DER P=profile, DER Q=0</text>
+<text x="420.0" y="172" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">SVC q_mvar=0 before pre-PF</text>
+<path d="M420 107 L420 122" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="220" y="220" width="400" height="54" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="420.0" y="240" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">[2] pre-control PF</text>
+<text x="420.0" y="255" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">pp.runpp(voltage_depend_loads=False)</text>
+<path d="M420 190 L420 218" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="420,298.0 527.0,330 420,362.0 313.0,330" fill="#854F0B"/>
+<text x="420" y="334" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">pre-PF converged?</text>
+<path d="M420 274 L420 296" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="72" y="291" width="170" height="78" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="157.0" y="311" text-anchor="middle" class="node-title" font-size="11" fill="#FFFFFF">Pre-PF failure</text>
+<text x="157.0" y="326" text-anchor="middle" class="node-sub" font-size="8.5" fill="#FFFFFF" opacity="0.90">append failed record</text>
+<text x="157.0" y="339" text-anchor="middle" class="node-sub" font-size="8.5" fill="#FFFFFF" opacity="0.90">q=0; no publish; continue</text>
+<path d="M313 330 L244 330" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="305.0" y="320" text-anchor="end" fill="#D85A30" font-size="10" font-weight="700">no</text>
+<rect x="220" y="398" width="400" height="48" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="420.0" y="427.0" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">[3] read vm_pu at SVC bus</text>
+<path d="M420 362 L420 396" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="430" y="380.0" text-anchor="start" fill="#111111" font-size="10" font-weight="700">yes</text>
+<rect x="220" y="474" width="400" height="68" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="420.0" y="494" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">_droop_q(vm_svc, Q_MAX, k_q)</text>
+<text x="420.0" y="509" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">deadbanded droop; clip +/-Q_MAX</text>
+<text x="420.0" y="522" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">returns q_cmd + saturated flag</text>
+<path d="M420 446 L420 472" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="420,569.0 525.0,600 420,631.0 315.0,600" fill="#854F0B"/>
+<text x="420" y="604" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">|q_cmd| &gt; 0?</text>
+<path d="M420 542 L420 567" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="102" y="650" width="220" height="64" rx="10" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="212.0" y="670" text-anchor="middle" class="node-title" font-size="11" fill="#FFFFFF">Deadband path</text>
+<text x="212.0" y="685" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">reuse pre-PF results</text>
+<text x="212.0" y="698" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">converged_post=True</text>
+<rect x="520" y="650" width="300" height="64" rx="10" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="670.0" y="670" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">[4] post-SVC PF</text>
+<text x="670.0" y="685" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">write SVC q=q_cmd; try runpp()</text>
+<text x="670.0" y="698" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">exception -&gt; converged_post=False</text>
+<path d="M315 600 L212 600 L212 648" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="307.0" y="592" text-anchor="end" fill="#7A5C12" font-size="10" font-weight="700">no</text>
+<path d="M525 600 L670 600 L670 648" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="533.0" y="592" text-anchor="start" fill="#111111" font-size="10" font-weight="700">yes</text>
+<path d="M212 714 L212 752 L406 752" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M670 714 L670 752 L434 752" class="edge-dark" marker-end="url(#arrowDark)"/>
+<circle cx="420" cy="752" r="12" fill="#5F5E5A"/>
+<polygon points="420,790.0 525.0,820 420,850.0 315.0,820" fill="#854F0B"/>
+<text x="420" y="824" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">converged_post?</text>
+<path d="M420 764 L420 788" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="92" y="868" width="230" height="68" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="207.0" y="888" text-anchor="middle" class="node-title" font-size="11" fill="#FFFFFF">Non-converged state</text>
+<text x="207.0" y="903" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">empty V/loading series</text>
+<text x="207.0" y="916" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">losses/import=None</text>
+<rect x="480" y="868" width="340" height="78" rx="10" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="650.0" y="888" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">Extract final network state</text>
+<text x="650.0" y="903" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">copy V / line / trafo results</text>
+<text x="650.0" y="916" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">threshold violations; losses + grid import</text>
+<path d="M315 820 L207 820 L207 866" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="307.0" y="812" text-anchor="end" fill="#D85A30" font-size="10" font-weight="700">no</text>
+<path d="M525 820 L650 820 L650 866" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="533.0" y="812" text-anchor="start" fill="#111111" font-size="10" font-weight="700">yes</text>
+<path d="M207 936 L207 982 L406 982" class="edge-hil" marker-end="url(#arrowHil)"/>
+<path d="M650 946 L650 982 L434 982" class="edge-dark" marker-end="url(#arrowDark)"/>
+<circle cx="420" cy="982" r="12" fill="#5F5E5A"/>
+<rect x="190" y="1016" width="460" height="76" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="420.0" y="1036" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">[5] build normal TimestepRecord</text>
+<text x="420.0" y="1051" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">svc_q_mvar=q_cmd; svc_saturated=saturated</text>
+<text x="420.0" y="1064" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">publish_fn.on_timestep(rec) -&gt; records.append(rec)</text>
+<path d="M420 994 L420 1014" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="420,1121.0 519.0,1148 420,1175.0 321.0,1148" fill="#854F0B"/>
+<text x="420" y="1152" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">t % 96 == 0?</text>
+<path d="M420 1092 L420 1119" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="640" y="1117" width="240" height="62" rx="10" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="760.0" y="1137" text-anchor="middle" class="node-title" font-size="10.5" fill="#FFFFFF">Periodic progress</text>
+<text x="760.0" y="1152" text-anchor="middle" class="node-sub" font-size="8.3" fill="#FFFFFF" opacity="0.90">optional partial result -&gt; live CSV</text>
+<text x="760.0" y="1165" text-anchor="middle" class="node-sub" font-size="8.3" fill="#FFFFFF" opacity="0.90">log vm_svc / q_cmd / violations</text>
+<path d="M519 1148 L638 1148" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="527.0" y="1140" text-anchor="start" fill="#7A5C12" font-size="10" font-weight="700">yes</text>
+<path d="M420 1175 L420 1208" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="430" y="1191.0" text-anchor="start" fill="#111111" font-size="10" font-weight="700">no</text>
+<path d="M760 1179 L760 1222 L434 1222" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M72 330 L58 330" class="edge-hil"/>
+<path d="M58 330 L58 1222" class="edge-hil"/>
+<path d="M58 1222 L406 1222" class="edge-hil" marker-end="url(#arrowHil)"/>
+<circle cx="420" cy="1222" r="12" fill="#5F5E5A"/>
+<polygon points="420,1276.0 507.0,1300 420,1324.0 333.0,1300" fill="#854F0B"/>
+<text x="420" y="1304" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">more timesteps?</text>
+<path d="M420 1234 L420 1274" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="540" y="1278" width="220" height="44" rx="9" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="650.0" y="1298" text-anchor="middle" class="node-title" font-size="11" fill="#FFFFFF">loop complete</text>
+<text x="650.0" y="1313" text-anchor="middle" class="node-sub" font-size="8.5" fill="#FFFFFF" opacity="0.90">return to top-level cleanup</text>
+<path d="M507 1300 L538 1300" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="515.0" y="1293" text-anchor="start" fill="#111111" font-size="10" font-weight="700">no</text>
+<path d="M420 1324 L420 1370 L42 1370 L42 82 L343 82" class="edge-loop" marker-end="url(#arrowLoop)"/>
+<text x="432" y="1340.0" text-anchor="start" fill="#3D8FD9" font-size="10" font-weight="700">yes - next t</text>
+</svg>

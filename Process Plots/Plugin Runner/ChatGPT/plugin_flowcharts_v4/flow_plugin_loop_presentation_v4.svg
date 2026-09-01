@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<title>Custom controller plugin detailed loop - presentation</title>
+<defs>
+<marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+<marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+<marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+<marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+<marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+<marker id="arrowDry" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#6B9E26"/></marker>
+</defs><style>
+text {font-family:Helvetica,Arial,sans-serif} .node-title{font-weight:700} .node-sub{font-weight:400}
+.edge-dark{fill:none;stroke:#263238;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-hil{fill:none;stroke:#D85A30;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-gate{fill:none;stroke:#7A5C12;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-loop{fill:none;stroke:#3D8FD9;stroke-width:2.6;stroke-dasharray:7 5;stroke-linejoin:round;stroke-linecap:round}
+.edge-assoc{fill:none;stroke:#8A887F;stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round;stroke-linecap:round}
+.edge-dry{fill:none;stroke:#6B9E26;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+</style>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#F8FAFC" stroke="none" stroke-width="0"/>
+<rect x="210" y="16" width="620" height="44" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="520.0" y="33.842" text-anchor="middle" class="node-title" font-size="11.3" fill="#FFFFFF">adapt_profiles; require profiled DERs</text>
+<text x="520.0" y="49.842" text-anchor="middle" class="node-sub" font-size="7.7" fill="#FFFFFF" opacity="0.92">start publisher if present; initialize metadata/Q-clamp controller</text>
+<rect x="210" y="76" width="620" height="46" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="520.0" y="94.706" text-anchor="middle" class="node-title" font-size="10.9" fill="#FFFFFF">Clear stale controllers/results; recover checkpoint when enabled</text>
+<text x="520.0" y="110.706" text-anchor="middle" class="node-sub" font-size="7.5" fill="#FFFFFF" opacity="0.92">compute start_t from recovered records</text>
+<path d="M520 60 L520 74" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="520,143.0 635.0,164 520,185.0 405.0,164" fill="#854F0B"/>
+<text x="520" y="167.57" text-anchor="middle" class="node-title" font-size="10.5" fill="#FFFFFF">checkpoint covers all T?</text>
+<path d="M520 122 L520 141" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="760" y="141" width="245" height="46" rx="9" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="882.5" y="159.196" text-anchor="middle" class="node-title" font-size="9.4" fill="#FFFFFF">Return resumed ScenarioResult</text>
+<text x="882.5" y="175.196" text-anchor="middle" class="node-sub" font-size="7.0" fill="#FFFFFF" opacity="0.92">optional on_scenario_end</text>
+<path d="M635 164 L758 164" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="670.0" y="157" text-anchor="middle" fill="#7A5C12" font-size="8.2" font-weight="700">yes</text>
+<polygon points="520,203.0 615.0,222 520,241.0 425.0,222" fill="#5F5E5A"/>
+<text x="520" y="225.434" text-anchor="middle" class="node-title" font-size="10.1" fill="#FFFFFF">for each t from start_t</text>
+<path d="M520 185 L520 201" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="532" y="197.0" text-anchor="start" fill="#111111" font-size="8.2" font-weight="700">no</text>
+<rect x="170" y="260" width="700" height="50" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="520.0" y="280.468" text-anchor="middle" class="node-title" font-size="10.2" fill="#FFFFFF">[A,B,0,1] write p_target + load P/Q; derive totals; reset controlled DER Q=0</text>
+<text x="520.0" y="296.468" text-anchor="middle" class="node-sub" font-size="7.1" fill="#FFFFFF" opacity="0.92">pre-PF state is always uncontrolled reactive power at the controlled DERs</text>
+<rect x="170" y="326" width="700" height="46" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="520.0" y="344.536" text-anchor="middle" class="node-title" font-size="10.4" fill="#FFFFFF">[2] Pre-PF -&gt; detect_violations(v_min, v_max)</text>
+<text x="520.0" y="360.536" text-anchor="middle" class="node-sub" font-size="7.1" fill="#FFFFFF" opacity="0.92">runpp exceptions become a non-converged pre-state</text>
+<path d="M520 241 L520 258" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M520 310 L520 324" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="520,393.0 625.0,414 520,435.0 415.0,414" fill="#854F0B"/>
+<text x="520" y="417.468" text-anchor="middle" class="node-title" font-size="10.2" fill="#FFFFFF">pre-PF converged?</text>
+<path d="M520 372 L520 391" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="35" y="391" width="230" height="46" rx="9" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="150.0" y="409.06" text-anchor="middle" class="node-title" font-size="9.0" fill="#FFFFFF">Pre-PF failure</text>
+<text x="150.0" y="425.06" text-anchor="middle" class="node-sub" font-size="6.8" fill="#FFFFFF" opacity="0.92">failed record -&gt; publish -&gt; append -&gt; continue</text>
+<path d="M415 414 L267 414" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="380.0" y="407" text-anchor="middle" fill="#D85A30" font-size="8.2" font-weight="700">no</text>
+<polygon points="520,454.0 645.0,476 520,498.0 395.0,476" fill="#854F0B"/>
+<text x="520" y="479.332" text-anchor="middle" class="node-title" font-size="9.8" fill="#FFFFFF">gate enabled AND pre-state clean?</text>
+<path d="M520 435 L520 452" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="532" y="448.0" text-anchor="start" fill="#111111" font-size="8.2" font-weight="700">yes</text>
+<rect x="35" y="451" width="280" height="50" rx="9" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="175.0" y="471.06" text-anchor="middle" class="node-title" font-size="9.0" fill="#FFFFFF">Clean gate</text>
+<text x="175.0" y="487.06" text-anchor="middle" class="node-sub" font-size="6.8" fill="#FFFFFF" opacity="0.92">reuse pre-PF; Q=0; build settled record</text>
+<path d="M395 476 L317 476" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="360.0" y="469" text-anchor="middle" fill="#7A5C12" font-size="8.2" font-weight="700">yes</text>
+<rect x="360" y="526" width="320" height="54" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="520.0" y="548.332" text-anchor="middle" class="node-title" font-size="9.8" fill="#FFFFFF">[3] controller_fn(vm_pre, p_installed)</text>
+<text x="520.0" y="564.332" text-anchor="middle" class="node-sub" font-size="7.0" fill="#FFFFFF" opacity="0.92">software plugin or hardware wrapper; validate finite Q vector</text>
+<path d="M520 498 L520 524" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="532" y="511.0" text-anchor="start" fill="#111111" font-size="8.2" font-weight="700">no</text>
+<rect x="740" y="527" width="265" height="52" rx="9" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="872.5" y="548.026" text-anchor="middle" class="node-title" font-size="8.9" fill="#FFFFFF">Controller / serial exception</text>
+<text x="872.5" y="564.026" text-anchor="middle" class="node-sub" font-size="6.7" fill="#FFFFFF" opacity="0.92">propagates; benchmark marks this scenario failed</text>
+<path d="M680 553 L738 553" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="718" y="546.0" text-anchor="middle" fill="#D85A30" font-size="7.8" font-weight="700">exception</text>
+<polygon points="520,606.0 622.5,626 520,646.0 417.5,626" fill="#854F0B"/>
+<text x="520" y="629.298" text-anchor="middle" class="node-title" font-size="9.7" fill="#FFFFFF">clamp Q to net limits?</text>
+<path d="M520 580 L520 604" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="760" y="604" width="245" height="44" rx="9" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="882.5" y="620.992" text-anchor="middle" class="node-title" font-size="8.8" fill="#FFFFFF">Apply Q safety clamp</text>
+<text x="882.5" y="636.992" text-anchor="middle" class="node-sub" font-size="6.6" fill="#FFFFFF" opacity="0.92">explicit Q limits + inverter S-circle</text>
+<path d="M622.5 626 L758 626" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="655.5" y="619" text-anchor="middle" fill="#111111" font-size="8.0" font-weight="700">yes</text>
+<circle cx="520" cy="676" r="9" fill="#5F5E5A"/>
+<path d="M520 646 L520 665" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="532" y="658.0" text-anchor="start" fill="#111111" font-size="8.0" font-weight="700">no</text>
+<path d="M882.5 648 L882.5 676 L547 676 L531 676" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="360" y="700" width="320" height="44" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="520.0" y="717.196" text-anchor="middle" class="node-title" font-size="9.4" fill="#FFFFFF">[4] write Q; P remains p_target</text>
+<text x="520.0" y="733.196" text-anchor="middle" class="node-sub" font-size="6.8" fill="#FFFFFF" opacity="0.92">no coordination, PT1/ramp or curtailment layer</text>
+<path d="M520 685 L520 698" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="360" y="760" width="320" height="44" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="520.0" y="777.162" text-anchor="middle" class="node-title" font-size="9.3" fill="#FFFFFF">[5] Post-PF -&gt; detect_violations</text>
+<text x="520.0" y="793.162" text-anchor="middle" class="node-sub" font-size="6.8" fill="#FFFFFF" opacity="0.92">post-PF exception is recorded, not propagated</text>
+<path d="M520 744 L520 758" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="520,826.0 622.5,846 520,866.0 417.5,846" fill="#854F0B"/>
+<text x="520" y="849.298" text-anchor="middle" class="node-title" font-size="9.7" fill="#FFFFFF">post-PF converged?</text>
+<path d="M520 804 L520 824" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="95" y="824" width="180" height="44" rx="9" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="185.0" y="840.992" text-anchor="middle" class="node-title" font-size="8.8" fill="#FFFFFF">Post-PF failed record</text>
+<text x="185.0" y="856.992" text-anchor="middle" class="node-sub" font-size="6.5" fill="#FFFFFF" opacity="0.92">converged=False</text>
+<rect x="740" y="821" width="265" height="50" rx="9" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="872.5" y="840.992" text-anchor="middle" class="node-title" font-size="8.8" fill="#FFFFFF">Settled controlled record</text>
+<text x="872.5" y="856.992" text-anchor="middle" class="node-sub" font-size="6.5" fill="#FFFFFF" opacity="0.92">Q/P + losses/import; no curtailment</text>
+<path d="M417.5 846 L277 846" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="383.5" y="839" text-anchor="middle" fill="#D85A30" font-size="8.0" font-weight="700">no</text>
+<path d="M622.5 846 L738 846" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="656.5" y="839" text-anchor="middle" fill="#111111" font-size="8.0" font-weight="700">yes</text>
+<circle cx="305" cy="884" r="9" fill="#5F5E5A"/>
+<circle cx="520" cy="884" r="9" fill="#5F5E5A"/>
+<path d="M305 501 L305 873" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M185 868 L185 884 L294 884" class="edge-hil" marker-end="url(#arrowHil)"/>
+<path d="M314 884 L509 884" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M872.5 871 L872.5 884 L531 884" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="220" y="906" width="600" height="44" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="520.0" y="923.264" text-anchor="middle" class="node-title" font-size="9.6" fill="#FFFFFF">[F] populate record metrics -&gt; optional on_timestep -&gt; append</text>
+<text x="520.0" y="939.264" text-anchor="middle" class="node-sub" font-size="6.9" fill="#FFFFFF" opacity="0.92">timing, p_target, DER generation and load fields are added before publishing</text>
+<path d="M520 893 L520 904" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="520,963.0 615.0,981 520,999.0 425.0,981" fill="#854F0B"/>
+<text x="520" y="984.162" text-anchor="middle" class="node-title" font-size="9.3" fill="#FFFFFF">t % 96 == 0?</text>
+<path d="M520 950 L520 961" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="760" y="962" width="245" height="38" rx="9" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="882.5" y="975.856" text-anchor="middle" class="node-title" font-size="8.4" fill="#FFFFFF">Periodic progress</text>
+<text x="882.5" y="991.856" text-anchor="middle" class="node-sub" font-size="6.3" fill="#FFFFFF" opacity="0.92">optional partial CSV + daily log</text>
+<path d="M615 981 L758 981" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="645.0" y="975" text-anchor="middle" fill="#7A5C12" font-size="7.8" font-weight="700">yes</text>
+<circle cx="520" cy="1026" r="8" fill="#5F5E5A"/>
+<path d="M520 999 L520 1016" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="531" y="1010.0" text-anchor="start" fill="#111111" font-size="7.8" font-weight="700">no</text>
+<path d="M882.5 1000 L882.5 1026 L546 1026 L530 1026" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M35 414 L20 414 L20 1026 L494 1026 L510 1026" class="edge-hil" marker-end="url(#arrowHil)"/>
+<polygon points="520,1045.0 610.0,1058 520,1071.0 430.0,1058" fill="#854F0B"/>
+<text x="520" y="1061.06" text-anchor="middle" class="node-title" font-size="9.0" fill="#FFFFFF">more timesteps?</text>
+<path d="M520 1034 L520 1043" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="790" y="1044" width="215" height="28" rx="8" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="897.5" y="1052.822" text-anchor="middle" class="node-title" font-size="8.3" fill="#FFFFFF">Build ScenarioResult + return</text>
+<text x="897.5" y="1068.822" text-anchor="middle" class="node-sub" font-size="6.1" fill="#FFFFFF" opacity="0.92">optional on_scenario_end</text>
+<path d="M610 1058 L788 1058" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="638.0" y="1053" text-anchor="middle" fill="#111111" font-size="7.6" font-weight="700">no</text>
+<path d="M430 1058 L6 1058 L6 222 L423 222" class="edge-loop" marker-end="url(#arrowLoop)"/>
+<text x="410.0" y="1069" text-anchor="end" fill="#3D8FD9" font-size="7.2" font-weight="700">yes</text>
+<rect x="1080" y="24" width="800" height="260" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1080" y="306" width="800" height="342" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1080" y="670" width="800" height="368" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1104" y="57" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Scenario initialization and resume</text>
+<text x="1104" y="91" text-anchor="start" fill="#111111" font-size="11.1" font-weight="600">The runner adapts profile tables and requires at least one profiled DER before entering the custom-control path.</text>
+<text x="1104" y="122" text-anchor="start" fill="#111111" font-size="11.1" font-weight="600">A dry-run VoltVarController is created only to reproduce built-in DER ordering, bus mapping, installed-P resolution and Q limits.</text>
+<text x="1104" y="153" text-anchor="start" fill="#111111" font-size="11.1" font-weight="600">No serial interface is opened by that metadata controller. Hardware serial ownership remains in the controller_fn wrapper.</text>
+<text x="1104" y="184" text-anchor="start" fill="#111111" font-size="11.1" font-weight="600">Existing pandapower controllers/results are cleared so this scenario starts from an isolated simulation state.</text>
+<text x="1104" y="215" text-anchor="start" fill="#111111" font-size="11.1" font-weight="600">When checkpointing is available, prior TimestepRecords are recovered and start_t advances to the first missing timestep.</text>
+<text x="1104" y="246" text-anchor="start" fill="#111111" font-size="11.1" font-weight="600">A complete checkpoint is converted directly into ScenarioResult and returned without repeating any power-flow timestep.</text>
+<text x="1104" y="339" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Per-timestep control sequence</text>
+<text x="1104" y="374" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">Each timestep writes the current active-power/load profiles and enforces Q=0 before the uncontrolled pre-power-flow snapshot.</text>
+<text x="1104" y="406" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">If the pre-PF fails, a non-converged record is published/appended immediately and the controller is not evaluated.</text>
+<text x="1104" y="438" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">With gate_clean_timesteps enabled, a clean pre-state is already the settled state, so Q remains zero and no second PF is run.</text>
+<text x="1104" y="470" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">Otherwise controller_fn receives pre-control DER-bus voltages plus installed/rated active power in the same DER order.</text>
+<text x="1104" y="502" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">The return vector is validated before optional clamping to explicit Q limits and the inverter apparent-power capability circle.</text>
+<text x="1104" y="534" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">The accepted Q vector is written directly. Active power remains p_target because this custom path has no dynamics/ramp layer.</text>
+<text x="1104" y="566" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">A second PF evaluates the controlled state. Its non-convergence is recorded locally so later timesteps can still run.</text>
+<text x="1104" y="598" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">Residual voltage/thermal violations remain in the record; the custom path does not perform active-power curtailment.</text>
+<text x="1104" y="703" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Publishing, progress and hardware execution</text>
+<text x="1104" y="739" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">Normal, clean-gate and post-PF-failure records receive timing/profile metrics before optional on_timestep publishing and append.</text>
+<text x="1104" y="778" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">Every 96th normal/clean timestep may rewrite the partial benchmark CSV and emits the daily custom-controller progress log.</text>
+<text x="1104" y="817" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">The pre-PF-failure continue bypasses that periodic branch and goes directly to the next timestep.</text>
+<text x="1104" y="856" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">When controller_fn is software, the imported Python algorithm computes Q locally from vm_pu and installed P.</text>
+<text x="1104" y="895" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">When controller_fn is HardwareControllerFn, its first call opens/configures Arduino and each call exchanges V:/Q: setpoints.</text>
+<text x="1104" y="934" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">Controller-function errors, output-validation errors and serial errors propagate out of this scenario; benchmark_runner isolates the failure.</text>
+<text x="1104" y="973" text-anchor="start" fill="#111111" font-size="11.0" font-weight="600">After the final timestep, all records are aggregated into ScenarioResult and on_scenario_end is emitted when a publisher is attached.</text>
+</svg>

@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="1950" viewBox="0 0 1180 1950">
+<title>Hosting capacity Volt-Var sweep - IEEE</title>
+<defs>
+<marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+<marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+<marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+<marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+<marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+<marker id="arrowDry" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#6B9E26"/></marker>
+</defs>
+<style>
+text {font-family:Helvetica,Arial,sans-serif}
+.node-title {font-weight:700}
+.node-sub {font-weight:400}
+.edge-dark {fill:none;stroke:#263238;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-hil {fill:none;stroke:#D85A30;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-gate {fill:none;stroke:#7A5C12;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-loop {fill:none;stroke:#3D8FD9;stroke-width:2.6;stroke-dasharray:7 5;stroke-linejoin:round;stroke-linecap:round}
+.edge-assoc {fill:none;stroke:#8A887F;stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round;stroke-linecap:round}
+.edge-dry {fill:none;stroke:#6B9E26;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+</style>
+<rect x="14" y="14" width="1152" height="1922" rx="16" fill="#F8FAFC" stroke="#D9E1E8" stroke-width="1.5"/>
+<text x="590.0" y="38" text-anchor="middle" fill="#111111" font-size="17" font-weight="700">Hosting Capacity - Volt-Var Sweep (Case B, Q(V) fixed-point)</text>
+<rect x="290" y="60" width="660" height="58" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="620.0" y="85.012" text-anchor="middle" class="node-title" font-size="11.8" fill="#FFFFFF">run_hc_with_volt_var(net, network_id, runpp_kwargs)</text>
+<text x="620.0" y="101.012" text-anchor="middle" class="node-sub" font-size="8.3" fill="#FFFFFF" opacity="0.92">returns HCResult; caller network remains untouched</text>
+<rect x="260" y="145" width="720" height="82" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="620.0" y="173.57" text-anchor="middle" class="node-title" font-size="10.5" fill="#FFFFFF">Deep-copy + deterministic HC setup</text>
+<text x="620.0" y="189.57" text-anchor="middle" class="node-sub" font-size="7.5" fill="#FFFFFF" opacity="0.92">same voltage-class, HC_PARAMS, end-of-feeder and 10%-load/max-generation snapshot as Case A</text>
+<text x="620.0" y="205.57" text-anchor="middle" class="node-sub" font-size="7.5" fill="#FFFFFF" opacity="0.92">build runpp kwargs with voltage_depend_loads=False</text>
+<path d="M620 118 L620 143" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="250" y="250" width="740" height="84" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="620.0" y="279.468" text-anchor="middle" class="node-title" font-size="10.2" fill="#FFFFFF">Create dry-run VoltVarController and configure BEFORE HC sweep</text>
+<text x="620.0" y="295.468" text-anchor="middle" class="node-sub" font-size="7.3" fill="#FFFFFF" opacity="0.92">interface=None; controller resolves only the pre-existing in-service DER fleet</text>
+<text x="620.0" y="311.468" text-anchor="middle" class="node-sub" font-size="7.3" fill="#FFFFFF" opacity="0.92">PV sgens added later by the HC sweep are not in ctrl.sgen_indices and receive no Volt-Var Q</text>
+<path d="M620 227 L620 248" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="290" y="360" width="660" height="66" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="620.0" y="388.4" text-anchor="middle" class="node-title" font-size="10.0" fill="#FFFFFF">Initialize HC + Q(V) tracking</text>
+<text x="620.0" y="404.4" text-anchor="middle" class="node-sub" font-size="7.2" fill="#FFFFFF" opacity="0.92">all_qv_converged=True; qv_iters_max=0; step_mw and total_mw</text>
+<path d="M620 334 L620 358" class="edge-dark" marker-end="url(#arrowDark)"/>
+<circle cx="620" cy="445" r="10" fill="#5F5E5A"/>
+<path d="M620 426 L620 433" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="620,470.0 770.0,500 620,530.0 470.0,500" fill="#854F0B"/>
+<text x="620" y="503.672" text-anchor="middle" class="node-title" font-size="10.8" fill="#FFFFFF">total_mw &lt;= params[&#x27;max&#x27;]?</text>
+<path d="M620 455 L620 468" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="860" y="469" width="270" height="62" rx="9" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="995.0" y="495.128" text-anchor="middle" class="node-title" font-size="9.2" fill="#FFFFFF">Sweep completed without break</text>
+<text x="995.0" y="511.128" text-anchor="middle" class="node-sub" font-size="6.7" fill="#FFFFFF" opacity="0.92">hc_limit_reached=True</text>
+<path d="M770 500 L858 500" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="815.0" y="492" text-anchor="middle" fill="#7A5C12" font-size="8.0" font-weight="700">no</text>
+<rect x="420" y="560" width="400" height="68" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="620.0" y="589.366" text-anchor="middle" class="node-title" font-size="9.9" fill="#FFFFFF">Add one uncontrolled HC PV increment</text>
+<text x="620.0" y="605.366" text-anchor="middle" class="node-sub" font-size="7.2" fill="#FFFFFF" opacity="0.92">end-of-feeder; p_mw=step_mw; q_mvar=0; increment total_mw</text>
+<path d="M620 530 L620 558" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="635" y="544.0" text-anchor="start" fill="#7A5C12" font-size="8.1" font-weight="700">yes - next step</text>
+<polygon points="620,647.0 745.0,675 620,703.0 495.0,675" fill="#854F0B"/>
+<text x="620" y="678.57" text-anchor="middle" class="node-title" font-size="10.5" fill="#FFFFFF">ctrl.n_ders &gt; 0?</text>
+<path d="M620 628 L620 645" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="400" y="725" width="440" height="58" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="620.0" y="749.298" text-anchor="middle" class="node-title" font-size="9.7" fill="#FFFFFF">Reset controlled DER q_mvar = 0</text>
+<text x="620.0" y="765.298" text-anchor="middle" class="node-sub" font-size="7.0" fill="#FFFFFF" opacity="0.92">then call _qv_converge(net, ctrl, kwargs)</text>
+<path d="M620 703 L620 723" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="633" y="716.0" text-anchor="start" fill="#7A5C12" font-size="8.0" font-weight="700">yes</text>
+<rect x="420" y="810" width="400" height="64" rx="9" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="620.0" y="837.128" text-anchor="middle" class="node-title" font-size="9.2" fill="#FFFFFF">_qv_converge: q_prev=zeros; converged=False</text>
+<text x="620.0" y="853.128" text-anchor="middle" class="node-sub" font-size="6.7" fill="#FFFFFF" opacity="0.92">iterate n_iter = 1 .. MAX_QV_ITERS (10)</text>
+<path d="M620 783 L620 808" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="420" y="900" width="400" height="58" rx="9" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="620.0" y="932.23" text-anchor="middle" class="node-title" font-size="9.5" fill="#FFFFFF">try pp.runpp() for current Q iterate</text>
+<path d="M620 874 L620 898" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="620,973.0 745.0,1000 620,1027.0 495.0,1000" fill="#854F0B"/>
+<text x="620" y="1003.23" text-anchor="middle" class="node-title" font-size="9.5" fill="#FFFFFF">inner runpp succeeded?</text>
+<path d="M620 958 L620 971" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="390" y="1055" width="460" height="76" rx="8" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="620.0" y="1080.094" text-anchor="middle" class="node-title" font-size="9.1" fill="#FFFFFF">Compute and apply next Q iterate</text>
+<text x="620.0" y="1096.094" text-anchor="middle" class="node-sub" font-size="6.5" fill="#FFFFFF" opacity="0.92">read DER-bus vm_pu; QVCharacteristic.compute_setpoints(vm, p_installed)</text>
+<text x="620.0" y="1112.094" text-anchor="middle" class="node-sub" font-size="6.5" fill="#FFFFFF" opacity="0.92">clamp with ctrl._clamp_to_net_limits; write controlled sgen.q_mvar</text>
+<path d="M620 1027 L620 1053" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="632" y="1039.0" text-anchor="start" fill="#111111" font-size="7.6" font-weight="700">yes</text>
+<polygon points="620,1146.0 755.0,1175 620,1204.0 485.0,1175" fill="#854F0B"/>
+<text x="620" y="1178.094" text-anchor="middle" class="node-title" font-size="9.1" fill="#FFFFFF">max|q_new-q_prev| &lt; 1e-4?</text>
+<path d="M620 1131 L620 1144" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="350,1146.0 465.0,1175 350,1204.0 235.0,1175" fill="#854F0B"/>
+<text x="350" y="1170.992" text-anchor="middle" class="node-title" font-size="8.8" fill="#FFFFFF">n_iter &lt; MAX_QV_ITERS?</text>
+<text x="350" y="1184.992" text-anchor="middle" class="node-sub" font-size="6.5" fill="#FFFFFF" opacity="0.92">q_prev = q_new before next iteration</text>
+<path d="M485 1175 L467 1175" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="475.0" y="1168" text-anchor="middle" fill="#111111" font-size="7.5" font-weight="700">no</text>
+<path d="M235 1175 L195 1175 L195 929 L418 929" class="edge-loop" marker-end="url(#arrowLoop)"/>
+<text x="223.0" y="1168" text-anchor="end" fill="#3D8FD9" font-size="7.4" font-weight="700">yes</text>
+<rect x="510" y="1230" width="220" height="60" rx="8" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="620.0" y="1254.788" text-anchor="middle" class="node-title" font-size="8.2" fill="#FFFFFF">Return True, n_iter</text>
+<text x="620.0" y="1270.788" text-anchor="middle" class="node-sub" font-size="5.9" fill="#FFFFFF" opacity="0.92">fixed point reached</text>
+<path d="M620 1204 L620 1228" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="632" y="1216.0" text-anchor="start" fill="#7A5C12" font-size="7.6" font-weight="700">yes</text>
+<rect x="170" y="1300" width="360" height="60" rx="8" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="350.0" y="1324.856" text-anchor="middle" class="node-title" font-size="8.4" fill="#FFFFFF">Return False, MAX_QV_ITERS</text>
+<text x="350.0" y="1340.856" text-anchor="middle" class="node-sub" font-size="6.0" fill="#FFFFFF" opacity="0.92">last Q iterate remains applied; outer sweep continues</text>
+<path d="M350 1204 L350 1298" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="361" y="1215.0" text-anchor="start" fill="#D85A30" font-size="7.4" font-weight="700">no</text>
+<rect x="830" y="1300" width="220" height="60" rx="8" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="940.0" y="1324.754" text-anchor="middle" class="node-title" font-size="8.1" fill="#FFFFFF">Return False, n_iter</text>
+<text x="940.0" y="1340.754" text-anchor="middle" class="node-sub" font-size="5.8" fill="#FFFFFF" opacity="0.92">Q(V) PF failure; caller still attempts final PF</text>
+<path d="M745 1000 L940 1000 L940 1298" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="773.0" y="993" text-anchor="start" fill="#D85A30" font-size="7.6" font-weight="700">no</text>
+<circle cx="620" cy="1330" r="11" fill="#5F5E5A"/>
+<path d="M530 1330 L607 1330" class="edge-hil" marker-end="url(#arrowHil)"/>
+<path d="M620 1290 L620 1317" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M830 1330 L633 1330" class="edge-hil" marker-end="url(#arrowHil)"/>
+<rect x="370" y="1375" width="500" height="72" rx="8" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="620.0" y="1398.128" text-anchor="middle" class="node-title" font-size="9.2" fill="#FFFFFF">Update Q(V) sweep tracking</text>
+<text x="620.0" y="1414.128" text-anchor="middle" class="node-sub" font-size="6.6" fill="#FFFFFF" opacity="0.92">all_qv_converged &amp;= converged; qv_iters_max=max(...)</text>
+<text x="620.0" y="1430.128" text-anchor="middle" class="node-sub" font-size="6.6" fill="#FFFFFF" opacity="0.92">if not converged: warn and continue with the last iterate</text>
+<path d="M620 1341 L620 1373" class="edge-dark" marker-end="url(#arrowDark)"/>
+<circle cx="620" cy="1485" r="11" fill="#5F5E5A"/>
+<path d="M620 1447 L620 1472" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M745 675 L1080 675 L1080 1485 L633 1485" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="773.0" y="667" text-anchor="middle" fill="#111111" font-size="7.8" font-weight="700">no</text>
+<rect x="420" y="1520" width="400" height="58" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="620.0" y="1544.332" text-anchor="middle" class="node-title" font-size="9.8" fill="#FFFFFF">Final pp.runpp() with current Q applied</text>
+<text x="620.0" y="1560.332" text-anchor="middle" class="node-sub" font-size="7.0" fill="#FFFFFF" opacity="0.92">mandatory post-Q snapshot used for violation detection</text>
+<path d="M620 1496 L620 1518" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="620,1582.0 745.0,1610 620,1638.0 495.0,1610" fill="#854F0B"/>
+<text x="620" y="1613.298" text-anchor="middle" class="node-title" font-size="9.7" fill="#FFFFFF">final runpp succeeded?</text>
+<path d="M620 1578 L620 1580" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="60" y="1580" width="270" height="60" rx="8" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="195.0" y="1604.958" text-anchor="middle" class="node-title" font-size="8.7" fill="#FFFFFF">Treat final PF failure as violation</text>
+<text x="195.0" y="1620.958" text-anchor="middle" class="node-sub" font-size="6.3" fill="#FFFFFF" opacity="0.92">record violated_at; binding=-1/NaN; break</text>
+<path d="M495 1610 L332 1610" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="412.5" y="1603" text-anchor="middle" fill="#D85A30" font-size="7.6" font-weight="700">no</text>
+<rect x="420" y="1660" width="400" height="54" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="620.0" y="1690.23" text-anchor="middle" class="node-title" font-size="9.5" fill="#FFFFFF">detect_violations(net)</text>
+<path d="M620 1638 L620 1658" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="632" y="1650.0" text-anchor="start" fill="#111111" font-size="7.6" font-weight="700">yes</text>
+<polygon points="620,1723.0 745.0,1750 620,1777.0 495.0,1750" fill="#854F0B"/>
+<text x="620" y="1753.23" text-anchor="middle" class="node-title" font-size="9.5" fill="#FFFFFF">report.any_violations?</text>
+<path d="M620 1714 L620 1721" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="60" y="1720" width="270" height="60" rx="8" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="195.0" y="1744.924" text-anchor="middle" class="node-title" font-size="8.6" fill="#FFFFFF">Record violating step + break</text>
+<text x="195.0" y="1760.924" text-anchor="middle" class="node-sub" font-size="6.2" fill="#FFFFFF" opacity="0.92">extract binding; append sweep point</text>
+<path d="M495 1750 L332 1750" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="412.5" y="1743" text-anchor="middle" fill="#D85A30" font-size="7.5" font-weight="700">yes</text>
+<rect x="835" y="1720" width="270" height="60" rx="8" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="970.0" y="1744.924" text-anchor="middle" class="node-title" font-size="8.6" fill="#FFFFFF">Accept step and continue</text>
+<text x="970.0" y="1760.924" text-anchor="middle" class="node-sub" font-size="6.2" fill="#FFFFFF" opacity="0.92">hc_mw=total_mw; append sweep point</text>
+<path d="M745 1750 L833 1750" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="790.0" y="1743" text-anchor="middle" fill="#7A5C12" font-size="7.5" font-weight="700">no</text>
+<circle cx="195" cy="1840" r="10" fill="#5F5E5A"/>
+<path d="M195 1780 L195 1828" class="edge-hil" marker-end="url(#arrowHil)"/>
+<path d="M60 1610 L35 1610 L35 1840 L183 1840" class="edge-hil" marker-end="url(#arrowHil)"/>
+<circle cx="620" cy="1840" r="10" fill="#5F5E5A"/>
+<path d="M205 1840 L608 1840" class="edge-hil" marker-end="url(#arrowHil)"/>
+<path d="M1130 500 L1135 500 L1135 1840 L632 1840" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M1105 1750 L1158 1750 L1158 445 L632 445" class="edge-loop" marker-end="url(#arrowLoop)"/>
+<text x="1150" y="1741.0" text-anchor="end" fill="#3D8FD9" font-size="7.5" font-weight="700">next step</text>
+<rect x="430" y="1885" width="380" height="44" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="620.0" y="1910.06" text-anchor="middle" class="node-title" font-size="9.0" fill="#FFFFFF">return HCResult</text>
+<path d="M620 1850 L620 1883" class="edge-dark" marker-end="url(#arrowDark)"/>
+</svg>

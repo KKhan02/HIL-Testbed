@@ -1,0 +1,1 @@
+This paper presents results from [Laptop dry-run] and [RPi HIL] benchmarks on the HIL testbed. Scenario 4B reduced curtailment by [0.0]% compared to 4A on [1-MV-rural--2-sw]. The HIL coordination active rate was [93.9]% versus [6.5]% in dry-run mode, consistent with the hardware quantisation finding documented in [CITE].

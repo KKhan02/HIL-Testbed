@@ -1,0 +1,57 @@
+{
+  "controller_plugin_path": null,
+  "dataset": {
+    "col_map": null,
+    "custom_path": null,
+    "data_dir": null,
+    "file_map": null,
+    "source_type": "simbench_native",
+    "station_id": null,
+    "year": null
+  },
+  "execution_mode": "rerun",
+  "focus_buses": null,
+  "hardware": false,
+  "hc_stressed": false,
+  "network": {
+    "custom_function_name": "get_network",
+    "custom_path": null,
+    "der_placements": null,
+    "plugin_path": null,
+    "preset_family": "Simbench",
+    "preset_name": "1-MV-rural--2-sw",
+    "simbench_code": null,
+    "simbench_selections": null,
+    "source_type": "preset",
+    "switches_to_open": null
+  },
+  "output_dir": "runs",
+  "parameters": {
+    "der_scaling": {
+      "null": 1.0
+    },
+    "line_max_loading": 100,
+    "load_scaling": {
+      "null": 1.0
+    },
+    "q_ratio": null,
+    "timestep_resolution": 15,
+    "trafo_max_loading": 100,
+    "u1_pu": null,
+    "u2_pu": null,
+    "u3_pu": null,
+    "u4_pu": null,
+    "unbalance_max_percent": 2.0,
+    "v_max": 1.05,
+    "v_min": 0.95,
+    "va_diff_max_degree": 30
+  },
+  "port": null,
+  "remediation_profile": "interactive",
+  "rolling_window_n": 96,
+  "run_id": "25a2bd96-61d4-417d-8ffe-922d3d3b071e",
+  "stream_every_k": 4,
+  "study": "scenario_comparison",
+  "time_index": null,
+  "time_period": null
+}

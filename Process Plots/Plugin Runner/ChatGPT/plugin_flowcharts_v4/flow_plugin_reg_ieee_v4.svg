@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="1865" viewBox="0 0 980 1865">
+<title>Custom controller plugin registration and routing - IEEE</title>
+<defs>
+<marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+<marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+<marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+<marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+<marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+<marker id="arrowDry" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#6B9E26"/></marker>
+</defs><style>
+text {font-family:Helvetica,Arial,sans-serif} .node-title{font-weight:700} .node-sub{font-weight:400}
+.edge-dark{fill:none;stroke:#263238;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-hil{fill:none;stroke:#D85A30;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-gate{fill:none;stroke:#7A5C12;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-loop{fill:none;stroke:#3D8FD9;stroke-width:2.6;stroke-dasharray:7 5;stroke-linejoin:round;stroke-linecap:round}
+.edge-assoc{fill:none;stroke:#8A887F;stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round;stroke-linecap:round}
+.edge-dry{fill:none;stroke:#6B9E26;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+</style>
+<rect x="14" y="14" width="952" height="1837" rx="16" fill="#F8FAFC" stroke="#D9E1E8" stroke-width="1.5"/>
+<text x="490.0" y="38" text-anchor="middle" fill="#111111" font-size="17" font-weight="700">Custom Controller Plugin - Registration and Execution Routing</text>
+<rect x="225" y="62" width="550" height="58" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="87.59" text-anchor="middle" class="node-title" font-size="13.5" fill="#FFFFFF">register_and_run(...)</text>
+<text x="500.0" y="103.59" text-anchor="middle" class="node-sub" font-size="9.3" fill="#FFFFFF" opacity="0.92">YAML, net, profiles, network_id, config, port</text>
+<rect x="210" y="145" width="580" height="78" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="500.0" y="172.148" text-anchor="middle" class="node-title" font-size="12.2" fill="#FFFFFF">load_plugin(yaml) -&gt; cfg</text>
+<text x="500.0" y="188.148" text-anchor="middle" class="node-sub" font-size="8.7" fill="#FFFFFF" opacity="0.92">validate required fields, plugin name, paths, kwargs, gate/clamp flags</text>
+<text x="500.0" y="204.148" text-anchor="middle" class="node-sub" font-size="8.7" fill="#FFFFFF" opacity="0.92">hardware:true additionally validates an existing .ino path</text>
+<rect x="210" y="248" width="580" height="62" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="500.0" y="275.08" text-anchor="middle" class="node-title" font-size="12.0" fill="#FFFFFF">_import_controller_fn(module_path, function)</text>
+<text x="500.0" y="291.08" text-anchor="middle" class="node-sub" font-size="8.6" fill="#FFFFFF" opacity="0.92">unique sys.modules name; execute module; require named callable</text>
+<rect x="210" y="335" width="580" height="58" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="500.0" y="360.148" text-anchor="middle" class="node-title" font-size="12.2" fill="#FFFFFF">Bind YAML kwargs</text>
+<text x="500.0" y="376.148" text-anchor="middle" class="node-sub" font-size="8.8" fill="#FFFFFF" opacity="0.92">controller_fn = partial(fn, **kwargs) or fn</text>
+<path d="M500 120 L500 143" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 223 L500 246" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 310 L500 333" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="500,422.0 625.0,455 500,488.0 375.0,455" fill="#854F0B"/>
+<text x="500" y="459.352" text-anchor="middle" class="node-title" font-size="12.8" fill="#FFFFFF">cfg[&quot;hardware&quot;]?</text>
+<path d="M500 393 L500 420" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="690" y="420" width="250" height="70" rx="10" fill="#3B6D11" stroke="none" stroke-width="0"/>
+<text x="815.0" y="442.638" text-anchor="middle" class="node-title" font-size="10.7" fill="#FFFFFF">Use Python controller mirror</text>
+<text x="815.0" y="458.638" text-anchor="middle" class="node-sub" font-size="8.0" fill="#FFFFFF" opacity="0.92">software plugin path</text>
+<text x="815.0" y="474.638" text-anchor="middle" class="node-sub" font-size="8.0" fill="#FFFFFF" opacity="0.92">fn / functools.partial</text>
+<path d="M625 455 L688 455" class="edge-dry" marker-end="url(#arrowDry)"/>
+<text x="670.0" y="445" text-anchor="middle" fill="#3B6D11" font-size="9.5" font-weight="700">no</text>
+<polygon points="500,529.0 640.0,565 500,601.0 360.0,565" fill="#854F0B"/>
+<text x="500" y="562.012" text-anchor="middle" class="node-title" font-size="11.8" fill="#FFFFFF">dry_run=False AND</text>
+<text x="500" y="576.012" text-anchor="middle" class="node-sub" font-size="8.8" fill="#FFFFFF" opacity="0.92">serial port supplied?</text>
+<path d="M500 488 L500 527" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="518" y="506.0" text-anchor="start" fill="#D85A30" font-size="9.5" font-weight="700">yes</text>
+<rect x="670" y="530" width="270" height="70" rx="10" fill="#3B6D11" stroke="none" stroke-width="0"/>
+<text x="805.0" y="552.57" text-anchor="middle" class="node-title" font-size="10.5" fill="#FFFFFF">Warn + use Python mirror</text>
+<text x="805.0" y="568.57" text-anchor="middle" class="node-sub" font-size="7.8" fill="#FFFFFF" opacity="0.92">hardware requested but this run is dry</text>
+<text x="805.0" y="584.57" text-anchor="middle" class="node-sub" font-size="7.8" fill="#FFFFFF" opacity="0.92">or no serial port was supplied</text>
+<path d="M640 565 L668 565" class="edge-dry" marker-end="url(#arrowDry)"/>
+<text x="685.0" y="555" text-anchor="middle" fill="#3B6D11" font-size="9.5" font-weight="700">no</text>
+<rect x="360" y="640" width="280" height="80" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="500.0" y="667.672" text-anchor="middle" class="node-title" font-size="10.8" fill="#FFFFFF">HardwareControllerFn(port)</text>
+<text x="500.0" y="683.672" text-anchor="middle" class="node-sub" font-size="7.8" fill="#FFFFFF" opacity="0.92">controller_fn = hw_fn</text>
+<text x="500.0" y="699.672" text-anchor="middle" class="node-sub" font-size="7.8" fill="#FFFFFF" opacity="0.92">first call opens/configures serial; later calls exchange V:/Q:</text>
+<path d="M500 601 L500 638" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="518" y="619.0" text-anchor="start" fill="#D85A30" font-size="9.5" font-weight="700">yes</text>
+<circle cx="805.0" cy="625" r="11" fill="#5F5E5A"/>
+<path d="M940 455 L958 455 L958 625 L818 625" class="edge-dry" marker-end="url(#arrowDry)"/>
+<path d="M805 600 L805 612" class="edge-dry" marker-end="url(#arrowDry)"/>
+<circle cx="500" cy="790" r="13" fill="#5F5E5A"/>
+<path d="M805 636 L805 790 L515 790" class="edge-dry" marker-end="url(#arrowDry)"/>
+<path d="M500 720 L500 775" class="edge-hil" marker-end="url(#arrowHil)"/>
+<polygon points="500,844.0 627.5,875 500,906.0 372.5,875" fill="#854F0B"/>
+<text x="500" y="879.012" text-anchor="middle" class="node-title" font-size="11.8" fill="#FFFFFF">benchmark_config is None?</text>
+<path d="M500 803 L500 842" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="700" y="842" width="240" height="66" rx="10" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="820.0" y="870.604" text-anchor="middle" class="node-title" font-size="10.6" fill="#FFFFFF">Create BenchmarkConfig()</text>
+<text x="820.0" y="886.604" text-anchor="middle" class="node-sub" font-size="8.0" fill="#FFFFFF" opacity="0.92">framework defaults</text>
+<path d="M627.5 875 L698 875" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="672.5" y="865" text-anchor="middle" fill="#111111" font-size="9.5" font-weight="700">yes</text>
+<circle cx="500" cy="950" r="12" fill="#5F5E5A"/>
+<path d="M500 906 L500 936" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="518" y="924.0" text-anchor="start" fill="#111111" font-size="9.5" font-weight="700">no</text>
+<path d="M820 908 L820 950 L532 950 L514 950" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="205" y="990" width="590" height="66" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="1018.944" text-anchor="middle" class="node-title" font-size="11.6" fill="#FFFFFF">Allocate plugin number and build ScenarioSpec</text>
+<text x="500.0" y="1034.944" text-anchor="middle" class="node-sub" font-size="8.4" fill="#FFFFFF" opacity="0.92">num = max(existing keys, 9) + 1; runner = _plugin_runner; supports_lv=False</text>
+<rect x="205" y="1082" width="590" height="68" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="1111.91" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">Copy benchmark scenario list</text>
+<text x="500.0" y="1127.91" text-anchor="middle" class="node-sub" font-size="8.3" fill="#FFFFFF" opacity="0.92">append plugin number if absent; dataclasses.replace(config, scenarios=...)</text>
+<rect x="205" y="1176" width="590" height="58" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="1201.012" text-anchor="middle" class="node-title" font-size="11.8" fill="#FFFFFF">SCENARIO_REGISTRY[num] = spec</text>
+<text x="500.0" y="1217.012" text-anchor="middle" class="node-sub" font-size="8.5" fill="#FFFFFF" opacity="0.92">temporary process-global registration</text>
+<rect x="205" y="1260" width="590" height="66" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="1288.808" text-anchor="middle" class="node-title" font-size="11.2" fill="#FFFFFF">try: run_benchmark(..., config_run)</text>
+<text x="500.0" y="1304.808" text-anchor="middle" class="node-sub" font-size="8.1" fill="#FFFFFF" opacity="0.92">benchmark validates inputs, deep-copies net per scenario and dispatches plugin runner</text>
+<path d="M500 962 L500 988" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 1056 L500 1080" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 1150 L500 1174" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 1234 L500 1258" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="205" y="1360" width="590" height="72" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="500.0" y="1383.91" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">finally: cleanup always executes</text>
+<text x="500.0" y="1399.91" text-anchor="middle" class="node-sub" font-size="8.1" fill="#FFFFFF" opacity="0.92">SCENARIO_REGISTRY.pop(num)</text>
+<text x="500.0" y="1415.91" text-anchor="middle" class="node-sub" font-size="8.1" fill="#FFFFFF" opacity="0.92">if hw_fn exists: hw_fn.close() -&gt; Arduino END + port close</text>
+<path d="M500 1326 L500 1358" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="518.0" y="1346" text-anchor="start" fill="#111111" font-size="8.8" font-weight="700">normal</text>
+<path d="M205 1293 L160 1293 L160 1340 L263 1340 L263 1358" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="166" y="1334" text-anchor="start" fill="#D85A30" font-size="8.3" font-weight="700">exception -&gt; finally</text>
+<rect x="20" y="1362" width="160" height="68" rx="9" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="100.0" y="1391.23" text-anchor="middle" class="node-title" font-size="9.5" fill="#FFFFFF">Re-raise exception</text>
+<text x="100.0" y="1407.23" text-anchor="middle" class="node-sub" font-size="7.2" fill="#FFFFFF" opacity="0.92">after the same finally cleanup</text>
+<path d="M205 1396 L182 1396" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="193" y="1386.0" text-anchor="end" fill="#D85A30" font-size="8.1" font-weight="700">re-raise</text>
+<polygon points="500,1484.0 625.0,1515 500,1546.0 375.0,1515" fill="#854F0B"/>
+<text x="500" y="1519.012" text-anchor="middle" class="node-title" font-size="11.8" fill="#FFFFFF">custom_result is None?</text>
+<path d="M500 1432 L500 1482" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="518.0" y="1450" text-anchor="start" fill="#111111" font-size="8.5" font-weight="700">normal continuation</text>
+<rect x="35" y="1478" width="220" height="74" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="145.0" y="1502.468" text-anchor="middle" class="node-title" font-size="10.2" fill="#FFFFFF">Raise RuntimeError</text>
+<text x="145.0" y="1518.468" text-anchor="middle" class="node-sub" font-size="7.7" fill="#FFFFFF" opacity="0.92">custom scenario failed inside benchmark</text>
+<text x="145.0" y="1534.468" text-anchor="middle" class="node-sub" font-size="7.7" fill="#FFFFFF" opacity="0.92">include isolated runner traceback</text>
+<path d="M375 1515 L257 1515" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="325.0" y="1505" text-anchor="middle" fill="#D85A30" font-size="9.5" font-weight="700">yes</text>
+<polygon points="500,1594.0 635.0,1625 500,1656.0 365.0,1625" fill="#854F0B"/>
+<text x="500" y="1628.808" text-anchor="middle" class="node-title" font-size="11.2" fill="#FFFFFF">custom_result is summary dict?</text>
+<path d="M500 1546 L500 1592" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="518" y="1564.0" text-anchor="start" fill="#111111" font-size="9.5" font-weight="700">no</text>
+<rect x="690" y="1589" width="250" height="72" rx="10" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="815.0" y="1612.468" text-anchor="middle" class="node-title" font-size="10.2" fill="#FFFFFF">Reconstruct ScenarioResult</text>
+<text x="815.0" y="1628.468" text-anchor="middle" class="node-sub" font-size="7.6" fill="#FFFFFF" opacity="0.92">layer-1 already-complete shortcut</text>
+<text x="815.0" y="1644.468" text-anchor="middle" class="node-sub" font-size="7.6" fill="#FFFFFF" opacity="0.92">aggregate fields restored; records list empty</text>
+<path d="M635 1625 L688 1625" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="680.0" y="1615" text-anchor="middle" fill="#111111" font-size="9.5" font-weight="700">yes</text>
+<circle cx="500" cy="1688" r="12" fill="#5F5E5A"/>
+<path d="M500 1656 L500 1674" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="518" y="1674.0" text-anchor="start" fill="#111111" font-size="9.5" font-weight="700">no</text>
+<path d="M815 1661 L815 1688 L514 1688" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="500,1731.0 610.0,1760 500,1789.0 390.0,1760" fill="#854F0B"/>
+<text x="500" y="1763.944" text-anchor="middle" class="node-title" font-size="11.6" fill="#FFFFFF">return_benchmark?</text>
+<path d="M500 1700 L500 1729" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="175" y="1804" width="245" height="48" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="297.5" y="1831.672" text-anchor="middle" class="node-title" font-size="10.8" fill="#FFFFFF">return custom_result</text>
+<rect x="585" y="1804" width="310" height="48" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="740.0" y="1831.604" text-anchor="middle" class="node-title" font-size="10.6" fill="#FFFFFF">return (custom_result, bench)</text>
+<path d="M390 1760 L297.5 1760 L297.5 1802" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="355.0" y="1750" text-anchor="middle" fill="#111111" font-size="9.5" font-weight="700">no</text>
+<path d="M610 1760 L740 1760 L740 1802" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="645.0" y="1750" text-anchor="middle" fill="#111111" font-size="9.5" font-weight="700">yes</text>
+</svg>

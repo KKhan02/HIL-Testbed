@@ -1,0 +1,25 @@
+# Example plugin config — proportional Q-P droop controller.
+#
+# Run with:
+#     python run_benchmark_script.py --custom example_plugins/droop_controller.yaml
+#
+# 'module' is a FILE PATH resolved relative to this YAML's directory,
+# so the plugin folder is self-contained and portable to the RPi.
+
+name: my_droop_controller
+label: "Q-P Droop Controller (custom)"
+module: droop_controller.py
+function: compute_setpoints
+hardware: false          # true is reserved (Arduino-hosted plugins) and raises NotImplementedError
+kwargs:
+  # droop_slope units: 1/pu.  q = -slope * (vm - 1.0) * p_mw.
+  # slope = q_ratio / dV_sat  ->  5.0 saturates the 0.25*p_mw clamp at a
+  # 0.05 pu deviation.  A value like 0.05 exercises the plumbing but is far
+  # too weak for meaningful voltage control.
+  droop_slope: 5.0
+  deadband: 0.01
+  q_ratio: 0.25          # mirror Q_RATIO in volt_var_controller.py for fair comparison
+
+# Optional execution flags (defaults shown):
+# gate_clean_timesteps: false   # true = mirror Scenario 4's clean-timestep gate
+# clamp_to_net_limits: true     # apparent-power / min-max_q_mvar safety backstop

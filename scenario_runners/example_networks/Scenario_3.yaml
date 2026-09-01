@@ -1,0 +1,49 @@
+# ============================================================================
+# custom_function.yaml — function source (programmatic network construction)
+# ============================================================================
+# Demonstrates loading a network from a zero-argument Python function
+# instead of a serialised file — the same importlib file-path pattern as
+# the controller plugin (plugin_runner.py).  Use this when the network is
+# built programmatically (pandapower.networks factory, parametric feeder
+# generator, or a script that stitches multiple feeders together).
+#
+# 'module' is a FILE PATH to a .py file (resolved relative to this YAML's
+# folder), NOT a dotted import name.  'function' names a zero-argument
+# function inside that file returning a pandapowerNet.
+#
+# The stub module my_network_loader.py loads the CIGRE MV benchmark network
+# with PV + wind DERs as a demonstration.  CIGRE networks carry no native
+# profiles, so the dwd_pvlib strategy builds them from the DWD station 691
+# Bremen CSVs (pvlib Erbs + NOCT) + BDEW 2025 SLPs, exactly like the
+# built-in CIGRE path in profile_builder.py.  Substitute `strategy: flat`
+# to run without any weather data.
+#
+# Run:
+#     python run_benchmark_script.py --network example_networks/custom_function.yaml
+# ============================================================================
+
+name: cigre_mv_stress_demo
+label: "CIGRE MV -- Supervisor Stress Demo"
+source: function
+module: my_network_loader.py
+function: get_network
+notes: "CIGRE MV with_der=pv_wind, 5-min custom weather, full-stack demo."
+
+profiles:
+  strategy: custom
+  data_dir: ..\..\data\custom
+  file_map:
+    RAD-G: data_OBS_DEU_PT5M_RADG_998.csv
+    F:     data_OBS_DEU_PT5M_F_998.csv
+    T2M:   data_OBS_DEU_PT5M_T2M_998.csv
+  col_map:
+    timestamp: Zeitstempel
+    solar: Wert
+    wind: Wert
+    temp: Wert
+    sep: ","
+  year: 2024
+
+voltage_limits:
+  v_min: 0.94
+  v_max: 1.04

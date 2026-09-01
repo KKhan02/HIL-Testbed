@@ -1,0 +1,221 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<title>Scenario 4 per-timestep loop - presentation rebalanced</title>
+<defs>
+  <marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+  <marker id="arrowWhite" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#FFFFFF"/></marker>
+  <marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+  <marker id="arrowDry" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#6B9E26"/></marker>
+  <marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+  <marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+</defs>
+<style>
+text { font-family: Helvetica, Arial, sans-serif; }
+.node-title { font-weight:700; }
+.node-sub { font-weight:400; }
+.edge-dark { fill:none; stroke:#263238; stroke-width:2.6; stroke-linejoin:round; stroke-linecap:round; }
+.edge-white { fill:none; stroke:#FFFFFF; stroke-width:2.8; stroke-linejoin:round; stroke-linecap:round; }
+.edge-hil { fill:none; stroke:#D85A30; stroke-width:2.8; stroke-linejoin:round; stroke-linecap:round; }
+.edge-dry { fill:none; stroke:#6B9E26; stroke-width:2.8; stroke-linejoin:round; stroke-linecap:round; }
+.edge-gate { fill:none; stroke:#7A5C12; stroke-width:2.6; stroke-linejoin:round; stroke-linecap:round; }
+.edge-loop { fill:none; stroke:#3D8FD9; stroke-width:2.6; stroke-dasharray:7 5; stroke-linejoin:round; stroke-linecap:round; }
+</style>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#F8FAFC" stroke="none" stroke-width="0"/>
+<polygon points="430,2.0 505.0,18 430,34.0 355.0,18" fill="#5F5E5A"/>
+<text x="430" y="17" text-anchor="middle" class="node-title" font-size="14" fill="#FFFFFF">for each t</text>
+<text x="430" y="30" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">in time_steps</text>
+<rect x="180" y="50" width="500" height="36" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="430.0" y="70" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">[A][B] p_target + load profiles</text>
+<text x="430.0" y="85" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">reindex DER P ; write load p_mw / q_mvar</text>
+<path d="M430 34 L430 48" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="62" y="96" width="1024" height="780" rx="18" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="691" y="91" text-anchor="start" fill="#111111" font-size="13" font-weight="700">[C] run_coordinated_timestep() · sensitivity_coordinator.py</text>
+<rect x="180" y="100" width="500" height="36" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="430.0" y="123.0" text-anchor="middle" class="node-title" font-size="14" fill="#FFFFFF">[0][1] write P=p_target ; reset Q=0</text>
+<path d="M430 86 L430 98" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="180" y="158" width="500" height="38" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="430.0" y="178" text-anchor="middle" class="node-title" font-size="14" fill="#FFFFFF">[2] pre-PF -&gt; report_pre</text>
+<text x="430.0" y="193" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">runpp ; detect_violations</text>
+<path d="M430 136 L430 156" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="430,218.0 545.0,242 430,266.0 315.0,242" fill="#854F0B"/>
+<text x="430" y="246" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">pre-PF converged?</text>
+<path d="M430 196 L430 216" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="64" y="214" width="210" height="56" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="169.0" y="234" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">early return</text>
+<text x="169.0" y="249" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">no dynamics.step ; q=0 ; p=p_target</text>
+<path d="M315 242 L276 242" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="305.0" y="234" text-anchor="end" fill="#D85A30" font-size="11" font-weight="700">no</text>
+<polygon points="430,288.0 555.0,312 430,336.0 305.0,312" fill="#854F0B"/>
+<text x="430" y="316" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">report_pre has violations?</text>
+<path d="M430 266 L430 286" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="442" y="282.0" text-anchor="start" fill="#7A5C12" font-size="11" font-weight="700">yes</text>
+<rect x="64" y="284" width="210" height="56" rx="10" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="169.0" y="304" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">GATE: clean timestep</text>
+<text x="169.0" y="319" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">dynamics.step(q=0) ; reuse report_pre</text>
+<path d="M305 312 L276 312" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="295.0" y="304" text-anchor="end" fill="#7A5C12" font-size="11" font-weight="700">no</text>
+<rect x="180" y="358" width="500" height="36" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="430.0" y="381.0" text-anchor="middle" class="node-title" font-size="14" fill="#FFFFFF">[3] read vm_pu at DER buses</text>
+<path d="M430 336 L430 356" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="442" y="352.0" text-anchor="start" fill="#111111" font-size="11" font-weight="700">yes</text>
+<polygon points="430,412.0 550.0,435 430,458.0 310.0,435" fill="#854F0B"/>
+<text x="430" y="439" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">HIL interface active?</text>
+<path d="M430 394 L430 410" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="100" y="474" width="300" height="48" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="250.0" y="494" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">exchange_batched() -&gt; q_initial</text>
+<text x="250.0" y="509" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">serial failure -&gt; local Q(V)</text>
+<rect x="570" y="474" width="300" height="48" rx="10" fill="#3B6D11" stroke="none" stroke-width="0"/>
+<text x="720.0" y="494" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">QVCharacteristic -&gt; q_initial</text>
+<text x="720.0" y="509" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">piecewise Q(V)</text>
+<path d="M310 435 L250 435 L250 472" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="300.0" y="427" text-anchor="end" fill="#D85A30" font-size="11" font-weight="700">HIL</text>
+<path d="M550 435 L720 435 L720 472" class="edge-dry" marker-end="url(#arrowDry)"/>
+<text x="560.0" y="427" text-anchor="start" fill="#6B9E26" font-size="11" font-weight="700">dry / fallback</text>
+<path d="M250 522 L250 550 L414 550" class="edge-hil" marker-end="url(#arrowHil)"/>
+<path d="M720 522 L720 550 L446 550" class="edge-dry" marker-end="url(#arrowDry)"/>
+<circle cx="430" cy="550" r="14" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="462" y="543" text-anchor="start" fill="#111111" font-size="11" font-weight="700">q_initial</text>
+<polygon points="430,586.0 533.0,609 430,632.0 327.0,609" fill="#854F0B"/>
+<text x="430" y="613" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">coordination?</text>
+<path d="M430 564 L430 584" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="100" y="646" width="300" height="48" rx="10" fill="#3B6D11" stroke="none" stroke-width="0"/>
+<text x="250.0" y="666" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">4A - local Q(V)</text>
+<text x="250.0" y="681" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">q_adjusted = clip(q_initial, +/-q_max)</text>
+<rect x="570" y="646" width="300" height="48" rx="10" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="720.0" y="666" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">4B - coordinated Q(V)</text>
+<text x="720.0" y="681" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">q_adjusted = coordinate(q_initial)</text>
+<path d="M327 609 L250 609 L250 644" class="edge-dry" marker-end="url(#arrowDry)"/>
+<text x="317.0" y="601" text-anchor="end" fill="#6B9E26" font-size="11" font-weight="700">no -&gt; 4A</text>
+<path d="M533 609 L720 609 L720 644" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="543.0" y="601" text-anchor="start" fill="#111111" font-size="11" font-weight="700">yes -&gt; 4B</text>
+<path d="M250 694 L250 724 L414 724" class="edge-dry" marker-end="url(#arrowDry)"/>
+<path d="M720 694 L720 724 L446 724" class="edge-dark" marker-end="url(#arrowDark)"/>
+<circle cx="430" cy="724" r="14" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="462" y="717" text-anchor="start" fill="#111111" font-size="11" font-weight="700">q_adjusted</text>
+<rect x="180" y="760" width="500" height="38" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="430.0" y="780" text-anchor="middle" class="node-title" font-size="14" fill="#FFFFFF">[5] DERDynamics.step</text>
+<text x="430.0" y="795" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">PT1 on Q ; symmetric P ramp</text>
+<path d="M430 738 L430 758" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="180" y="820" width="500" height="44" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="430.0" y="840" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">[6][7][8] apply setpoints + post-PF</text>
+<text x="430.0" y="855" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">write p_applied ; clamp q ; report_post ; curtailment flag</text>
+<path d="M430 798 L430 818" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="430,886.0 580.0,912 430,938.0 280.0,912" fill="#854F0B"/>
+<text x="430" y="908" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">curtailment_needed</text>
+<text x="430" y="922" text-anchor="middle" class="node-sub" font-size="10" fill="#FFFFFF" opacity="0.90">and converged?</text>
+<path d="M430 864 L430 884" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="650" y="882" width="360" height="60" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="830.0" y="902" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">[E] curtailment sub-loop</text>
+<text x="830.0" y="917" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">-10% P / iter ; runpp ; detect ; max 10</text>
+<text x="830.0" y="930" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">success: update dynamics.p_prev once</text>
+<path d="M580 912 L648 912" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="590.0" y="904" text-anchor="start" fill="#D85A30" font-size="11" font-weight="700">yes</text>
+<path d="M430 938 L430 958" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="442" y="955.0" text-anchor="start" fill="#111111" font-size="11" font-weight="700">no</text>
+<path d="M830 942 L830 974 L446 974" class="edge-hil" marker-end="url(#arrowHil)"/>
+<path d="M64 242 L44 242" class="edge-gate"/>
+<path d="M64 312 L44 312" class="edge-gate"/>
+<path d="M44 242 L44 974" class="edge-gate"/>
+<path d="M44 974 L414 974" class="edge-gate" marker-end="url(#arrowGate)"/>
+<circle cx="430" cy="974" r="14" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<rect x="200" y="1010" width="460" height="40" rx="10" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="430.0" y="1030" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">[D][F] build TimestepRecord</text>
+<text x="430.0" y="1045" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">publish ; append ; checkpoint if t % 96 == 0</text>
+<path d="M430 988 L430 1008" class="edge-dark" marker-end="url(#arrowDark)"/>
+<polygon points="780,1010.0 870.0,1030 780,1050.0 690.0,1030" fill="#854F0B"/>
+<text x="780" y="1034" text-anchor="middle" class="node-title" font-size="13" fill="#FFFFFF">more timesteps?</text>
+<path d="M660 1030 L688 1030" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="890" y="1010" width="220" height="40" rx="10" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="1000.0" y="1035.0" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">ScenarioResult.from_records()</text>
+<path d="M870 1030 L888 1030" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M780 1050 L780 1070 L18 1070 L18 18 L353 18" class="edge-loop" marker-end="url(#arrowLoop)"/>
+<text x="792" y="1066.0" text-anchor="start" fill="#3D8FD9" font-size="11" font-weight="700">yes</text>
+<rect x="1160" y="20" width="350.0" height="300" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1530.0" y="20" width="350.0" height="300" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1160" y="340" width="350.0" height="300" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1530.0" y="340" width="350.0" height="300" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1160" y="660" width="720" height="360" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1335.0" y="46" text-anchor="middle" fill="#111111" font-size="15" font-weight="700">Item 2 - HIL / dry execution</text>
+<rect x="1176" y="66" width="318.0" height="62" rx="10" fill="#993C1D" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1335.0" y="86" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">exchange_batched()</text>
+<text x="1335.0" y="101" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">DER buses batched to ARDUINO_MAX_DERS</text>
+<text x="1335.0" y="114" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">V:&lt;vm&gt; sent at fixed serial precision</text>
+<rect x="1176" y="138" width="318.0" height="62" rx="10" fill="#993C1D" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1335.0" y="158" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">Arduino firmware</text>
+<text x="1335.0" y="173" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">parse V -&gt; compute_q() in float</text>
+<text x="1335.0" y="186" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">emit Q:&lt;q&gt; for the same DER order</text>
+<rect x="1176" y="210" width="318.0" height="62" rx="10" fill="#3B6D11" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1335.0" y="230" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">dry / serial fallback</text>
+<text x="1335.0" y="245" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">QVCharacteristic.compute_setpoints()</text>
+<text x="1335.0" y="258" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">used for dry-run or serial/protocol failure</text>
+<path d="M1335 128 L1335 136" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="1335.0" y="302" text-anchor="middle" fill="#111111" font-size="9" font-weight="600">Both routes return the same q_initial vector interface</text>
+<text x="1705.0" y="46" text-anchor="middle" fill="#111111" font-size="15" font-weight="700">Item 3 - 4A versus 4B</text>
+<rect x="1546.0" y="66" width="318.0" height="62" rx="10" fill="#3B6D11" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1705.0" y="86" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">4A - local Q(V)</text>
+<text x="1705.0" y="101" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">coordination=False</text>
+<text x="1705.0" y="114" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">clip q_initial directly to +/-q_max</text>
+<rect x="1546.0" y="138" width="318.0" height="62" rx="10" fill="#0F6E56" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1705.0" y="158" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">4B - coordinated Q(V)</text>
+<text x="1705.0" y="173" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">coordination=True</text>
+<text x="1705.0" y="186" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">coordinate(q_initial) before dynamics</text>
+<rect x="1546.0" y="210" width="318.0" height="72" rx="10" fill="#0F6E56" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1705.0" y="230" text-anchor="middle" class="node-title" font-size="11" fill="#FFFFFF">coordinate() internals</text>
+<text x="1705.0" y="245" text-anchor="middle" class="node-sub" font-size="8" fill="#FFFFFF" opacity="0.90">J blocks -&gt; splu(J_PP)</text>
+<text x="1705.0" y="258" text-anchor="middle" class="node-sub" font-size="8" fill="#FFFFFF" opacity="0.90">Schur J_red -&gt; residual dV/dQ solve</text>
+<text x="1705.0" y="271" text-anchor="middle" class="node-sub" font-size="8" fill="#FFFFFF" opacity="0.90">final q_adjusted clipped to +/-q_max</text>
+<text x="1705.0" y="304" text-anchor="middle" fill="#111111" font-size="9" font-weight="600">4A bypasses coordinate(); both modes rejoin at q_adjusted</text>
+<text x="1335.0" y="366" text-anchor="middle" fill="#111111" font-size="15" font-weight="700">Items 4-8 - physical response</text>
+<rect x="1176" y="386" width="318.0" height="68" rx="10" fill="#0F6E56" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1335.0" y="406" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">[5] DERDynamics.step</text>
+<text x="1335.0" y="421" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">Q: exact discrete PT1, tau=t95/3</text>
+<text x="1335.0" y="434" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">P: symmetric ramp limited by rated power</text>
+<rect x="1176" y="464" width="318.0" height="68" rx="10" fill="#0C447C" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1335.0" y="484" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">[6] apply setpoints</text>
+<text x="1335.0" y="499" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">write p_applied first</text>
+<text x="1335.0" y="512" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">clamp q_applied to network limits</text>
+<rect x="1176" y="542" width="318.0" height="68" rx="10" fill="#0C447C" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1335.0" y="562" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">[7][8] post-PF + trigger</text>
+<text x="1335.0" y="577" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">runpp -&gt; report_post</text>
+<text x="1335.0" y="590" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">residual violations set curtailment_needed</text>
+<text x="1705.0" y="366" text-anchor="middle" fill="#111111" font-size="15" font-weight="700">Outer runner - curtailment + record</text>
+<rect x="1546.0" y="386" width="318.0" height="68" rx="10" fill="#993C1D" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1705.0" y="406" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">Curtailment trigger</text>
+<text x="1705.0" y="421" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">only after converged post-PF</text>
+<text x="1705.0" y="434" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">and residual voltage violations remain</text>
+<rect x="1546.0" y="464" width="318.0" height="68" rx="10" fill="#993C1D" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1705.0" y="484" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">[E] active-P sub-loop</text>
+<text x="1705.0" y="499" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">-10% of original P target per iteration</text>
+<text x="1705.0" y="512" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">Q is held; no dynamics.step in the sub-loop</text>
+<rect x="1546.0" y="542" width="318.0" height="68" rx="10" fill="#3C3489" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1705.0" y="562" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">[D][F] record + publish</text>
+<text x="1705.0" y="577" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">record final post-curtailment/post-Q state</text>
+<text x="1705.0" y="590" text-anchor="middle" class="node-sub" font-size="9" fill="#FFFFFF" opacity="0.90">publish -&gt; append -&gt; periodic checkpoint</text>
+<text x="1520.0" y="688" text-anchor="middle" fill="#111111" font-size="15" font-weight="700">Execution invariants, state semantics and legend</text>
+<text x="1184" y="718" text-anchor="start" fill="#111111" font-size="11" font-weight="700">Execution invariants</text>
+<text x="1184" y="744" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">1. pre-PF always evaluates p_target with q=0.</text>
+<text x="1184" y="769" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">2. clean pre-PF skips Q(V), coordinate() and post-PF.</text>
+<text x="1184" y="794" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">3. failed pre-PF returns before DERDynamics state advances.</text>
+<text x="1184" y="819" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">4. 4A and 4B share q_initial acquisition and DERDynamics.</text>
+<text x="1184" y="844" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">5. q is clamped only after p_applied is written to the net.</text>
+<text x="1184" y="869" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">6. post-PF is the authoritative curtailment trigger.</text>
+<text x="1184" y="894" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">7. curtailment changes P only; Q remains at the applied value.</text>
+<text x="1184" y="919" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">8. p_prev is updated once after successful curtailment.</text>
+<text x="1542" y="718" text-anchor="start" fill="#111111" font-size="11" font-weight="700">State / branch semantics</text>
+<text x="1542" y="744" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">q_initial: raw local/HIL Q(V) setpoint</text>
+<text x="1542" y="769" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">q_adjusted: 4A clip or 4B coordinated setpoint</text>
+<text x="1542" y="794" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">q_applied / p_applied: dynamic actuator outputs</text>
+<text x="1542" y="819" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">report_pre: gate decision before Q control</text>
+<text x="1542" y="844" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">report_post: final Q-control voltage assessment</text>
+<text x="1542" y="869" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">record: final state after optional active-P curtailment</text>
+<text x="1542" y="904" text-anchor="start" fill="#111111" font-size="11" font-weight="700">Legend</text>
+<path d="M1542 926 L1594 926" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="1606" y="930" text-anchor="start" fill="#111111" font-size="9.5" font-weight="600">execution</text>
+<path d="M1542 945 L1594 945" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="1606" y="949" text-anchor="start" fill="#D85A30" font-size="9.5" font-weight="600">HIL / curtailment branch</text>
+<path d="M1542 964 L1594 964" class="edge-dry" marker-end="url(#arrowDry)"/>
+<text x="1606" y="968" text-anchor="start" fill="#6B9E26" font-size="9.5" font-weight="600">dry / 4A branch</text>
+<path d="M1542 983 L1594 983" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="1606" y="987" text-anchor="start" fill="#7A5C12" font-size="9.5" font-weight="600">gate / record bypass</text>
+<path d="M1542 1002 L1594 1002" class="edge-loop" marker-end="url(#arrowLoop)"/>
+<text x="1606" y="1006" text-anchor="start" fill="#3D8FD9" font-size="9.5" font-weight="600">next-timestep return</text>
+</svg>

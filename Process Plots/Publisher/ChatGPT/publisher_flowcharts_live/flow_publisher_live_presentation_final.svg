@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080"><title>Publisher live/checkpoint lifecycle - presentation</title>
+<defs>
+<marker id="arrowDark" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#263238"/></marker>
+<marker id="arrowHil" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#D85A30"/></marker>
+<marker id="arrowGate" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#7A5C12"/></marker>
+<marker id="arrowLoop" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#3D8FD9"/></marker>
+<marker id="arrowAssoc" markerWidth="6" markerHeight="6" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4.5 L0,9 z" fill="#8A887F"/></marker>
+</defs><style>
+text {font-family:Helvetica,Arial,sans-serif} .node-title{font-weight:700} .node-sub{font-weight:400}
+.edge-dark{fill:none;stroke:#263238;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-hil{fill:none;stroke:#D85A30;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+.edge-gate{fill:none;stroke:#7A5C12;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.edge-loop{fill:none;stroke:#3D8FD9;stroke-width:2.6;stroke-dasharray:7 5;stroke-linejoin:round;stroke-linecap:round}
+.edge-assoc{fill:none;stroke:#8A887F;stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round;stroke-linecap:round}
+</style>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#F8FAFC" stroke="none" stroke-width="0"/>
+<rect x="170" y="18" width="660" height="36" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="41.0" text-anchor="middle" class="node-title" font-size="14" fill="#FFFFFF">on_scenario_start(sid, label, T)</text>
+<polygon points="500,68.0 620.0,86 500,104.0 380.0,86" fill="#854F0B"/>
+<text x="500" y="90" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">old checkpoint handle open?</text>
+<rect x="720" y="66" width="250" height="40" rx="10" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="845.0" y="83.5" text-anchor="middle" class="node-title" font-size="10.5" fill="#FFFFFF">Close previous handle</text>
+<text x="845.0" y="98.5" text-anchor="middle" class="node-sub" font-size="7.8" fill="#FFFFFF" opacity="0.90">_checkpoint_fh=None</text>
+<rect x="170" y="118" width="660" height="42" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="500.0" y="136.5" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">Initialize scenario publish context</text>
+<text x="500.0" y="151.5" text-anchor="middle" class="node-sub" font-size="8.2" fill="#FFFFFF" opacity="0.90">truncate live stream; store sid/label/T; start timer</text>
+<polygon points="500,182.0 625.0,202 500,222.0 375.0,202" fill="#854F0B"/>
+<text x="500" y="206" text-anchor="middle" class="node-title" font-size="12" fill="#FFFFFF">checkpointing enabled?</text>
+<rect x="70" y="178" width="270" height="48" rx="10" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="205.0" y="199.5" text-anchor="middle" class="node-title" font-size="10.5" fill="#FFFFFF">No checkpoint stream</text>
+<text x="205.0" y="214.5" text-anchor="middle" class="node-sub" font-size="7.9" fill="#FFFFFF" opacity="0.90">clear checkpoint/elapsed state</text>
+<rect x="660" y="176" width="320" height="52" rx="10" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="820.0" y="199.5" text-anchor="middle" class="node-title" font-size="10.5" fill="#FFFFFF">Open checkpoint append stream</text>
+<text x="820.0" y="214.5" text-anchor="middle" class="node-sub" font-size="7.9" fill="#FFFFFF" opacity="0.90">read .elapsed; preserve existing JSONL</text>
+<rect x="180" y="280" width="640" height="40" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="305.0" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">runner: get_resume_records(sid) where implemented</text>
+<polygon points="500,344.0 630.0,366 500,388.0 370.0,366" fill="#854F0B"/>
+<text x="500" y="370" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">resume checkpoint available?</text>
+<rect x="80" y="342" width="240" height="48" rx="10" fill="#5F5E5A" stroke="none" stroke-width="0"/>
+<text x="200.0" y="363.5" text-anchor="middle" class="node-title" font-size="10.5" fill="#FFFFFF">Fresh scenario</text>
+<text x="200.0" y="378.5" text-anchor="middle" class="node-sub" font-size="7.9" fill="#FFFFFF" opacity="0.90">return []</text>
+<rect x="680" y="338" width="300" height="56" rx="10" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="830.0" y="357.0" text-anchor="middle" class="node-title" font-size="10.5" fill="#FFFFFF">Reconstruct records</text>
+<text x="830.0" y="372.0" text-anchor="middle" class="node-sub" font-size="7.8" fill="#FFFFFF" opacity="0.90">JSONL -&gt; TimestepRecord</text>
+<text x="830.0" y="385.0" text-anchor="middle" class="node-sub" font-size="7.8" fill="#FFFFFF" opacity="0.90">skip corrupt/partial lines</text>
+<polygon points="500,445.0 595.0,462 500,479.0 405.0,462" fill="#5F5E5A"/>
+<text x="500" y="460" text-anchor="middle" class="node-title" font-size="12.5" fill="#FFFFFF">on_timestep(rec)</text>
+<text x="500" y="472" text-anchor="middle" class="node-sub" font-size="8.5" fill="#FFFFFF" opacity="0.90">runner callback</text>
+<polygon points="500,498.0 615.0,516 500,534.0 385.0,516" fill="#854F0B"/>
+<text x="500" y="520" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">checkpoint file open?</text>
+<rect x="735" y="497" width="270" height="38" rx="10" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="870.0" y="513.5" text-anchor="middle" class="node-title" font-size="10.2" fill="#FFFFFF">Checkpoint every callback</text>
+<text x="870.0" y="528.5" text-anchor="middle" class="node-sub" font-size="7.6" fill="#FFFFFF" opacity="0.90">write full record + flush</text>
+<polygon points="500,600.0 615.0,618 500,636.0 385.0,618" fill="#854F0B"/>
+<text x="500" y="622" text-anchor="middle" class="node-title" font-size="11.2" fill="#FFFFFF">t % update_every_k == 0?</text>
+<polygon points="500,656.0 610.0,674 500,692.0 390.0,674" fill="#854F0B"/>
+<text x="500" y="678" text-anchor="middle" class="node-title" font-size="11.2" fill="#FFFFFF">live path initialized?</text>
+<rect x="90" y="651" width="260" height="46" rx="10" fill="#993C1D" stroke="none" stroke-width="0"/>
+<text x="220.0" y="671.5" text-anchor="middle" class="node-title" font-size="10.2" fill="#FFFFFF">Warn + return</text>
+<text x="220.0" y="686.5" text-anchor="middle" class="node-sub" font-size="7.7" fill="#FFFFFF" opacity="0.90">on_scenario_start not called</text>
+<rect x="680" y="647" width="300" height="54" rx="10" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="830.0" y="671.5" text-anchor="middle" class="node-title" font-size="10.2" fill="#FFFFFF">Dashboard sample</text>
+<text x="830.0" y="686.5" text-anchor="middle" class="node-sub" font-size="7.7" fill="#FFFFFF" opacity="0.90">persist elapsed; build frame; append JSONL</text>
+<path d="M500 54 L500 66" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M620 86 L718 86" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="628.0" y="79" text-anchor="start" fill="#7A5C12" font-size="10" font-weight="700">yes</text>
+<path d="M845 106 L845 139 L832 139" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M500 104 L500 116" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="510" y="118.0" text-anchor="start" fill="#111111" font-size="10" font-weight="700">no</text>
+<path d="M500 160 L500 180" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M375 202 L342 202" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="367.0" y="195" text-anchor="end" fill="#7A5C12" font-size="10" font-weight="700">no</text>
+<path d="M625 202 L658 202" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="633.0" y="195" text-anchor="start" fill="#7A5C12" font-size="10" font-weight="700">yes</text>
+<path d="M205 226 L205 256 L486 256" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M820 228 L820 256 L514 256" class="edge-gate" marker-end="url(#arrowGate)"/>
+<circle cx="500" cy="256" r="12" fill="#5F5E5A"/>
+<path d="M500 268 L500 278" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 320 L500 342" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M370 366 L322 366" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="362.0" y="359" text-anchor="end" fill="#7A5C12" font-size="10" font-weight="700">no</text>
+<path d="M630 366 L678 366" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="638.0" y="359" text-anchor="start" fill="#7A5C12" font-size="10" font-weight="700">yes</text>
+<path d="M200 390 L200 422 L486 422" class="edge-gate" marker-end="url(#arrowGate)"/>
+<path d="M830 394 L830 422 L514 422" class="edge-gate" marker-end="url(#arrowGate)"/>
+<circle cx="500" cy="422" r="12" fill="#5F5E5A"/>
+<path d="M500 434 L500 443" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 479 L500 496" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M615 516 L733 516" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="623.0" y="509" text-anchor="start" fill="#7A5C12" font-size="10" font-weight="700">yes</text>
+<path d="M500 534 L500 550" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="510" y="548.0" text-anchor="start" fill="#111111" font-size="10" font-weight="700">no</text>
+<path d="M870 535 L870 564 L514 564" class="edge-gate" marker-end="url(#arrowGate)"/>
+<circle cx="500" cy="564" r="12" fill="#5F5E5A"/>
+<path d="M500 576 L500 598" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M500 636 L500 654" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="510" y="650.0" text-anchor="start" fill="#111111" font-size="10" font-weight="700">yes</text>
+<path d="M390 674 L352 674" class="edge-hil" marker-end="url(#arrowHil)"/>
+<text x="382.0" y="667" text-anchor="end" fill="#D85A30" font-size="10" font-weight="700">no</text>
+<path d="M610 674 L678 674" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="618.0" y="667" text-anchor="start" fill="#7A5C12" font-size="10" font-weight="700">yes</text>
+<path d="M385 618 L46 618 L46 744 L486 744" class="edge-gate" marker-end="url(#arrowGate)"/>
+<text x="377.0" y="611" text-anchor="end" fill="#7A5C12" font-size="10" font-weight="700">no -&gt; return</text>
+<path d="M220 697 L220 717 L500 717 L500 730" class="edge-hil" marker-end="url(#arrowHil)"/>
+<path d="M830 701 L830 744 L514 744" class="edge-gate" marker-end="url(#arrowGate)"/>
+<circle cx="500" cy="744" r="12" fill="#5F5E5A"/>
+<polygon points="500,777.0 595.0,794 500,811.0 405.0,794" fill="#854F0B"/>
+<text x="500" y="798" text-anchor="middle" class="node-title" font-size="11.8" fill="#FFFFFF">scenario finished?</text>
+<path d="M500 756 L500 775" class="edge-dark" marker-end="url(#arrowDark)"/>
+<path d="M405 794 L18 794 L18 462 L403 462" class="edge-loop" marker-end="url(#arrowLoop)"/>
+<text x="397.0" y="787" text-anchor="end" fill="#3D8FD9" font-size="10" font-weight="700">no</text>
+<rect x="170" y="824" width="660" height="44" rx="12" fill="#0C447C" stroke="none" stroke-width="0"/>
+<text x="500.0" y="843.5" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">on_scenario_end(result)</text>
+<text x="500.0" y="858.5" text-anchor="middle" class="node-sub" font-size="8.2" fill="#FFFFFF" opacity="0.90">close checkpoint; persist elapsed; append scenario_complete live event</text>
+<path d="M500 811 L500 822" class="edge-dark" marker-end="url(#arrowDark)"/>
+<text x="510" y="825.0" text-anchor="start" fill="#111111" font-size="10" font-weight="700">yes</text>
+<rect x="170" y="894" width="660" height="40" rx="12" fill="#3C3489" stroke="none" stroke-width="0"/>
+<text x="500.0" y="911.5" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">benchmark_runner writes scenarios/&lt;sid&gt;.json</text>
+<text x="500.0" y="926.5" text-anchor="middle" class="node-sub" font-size="8.2" fill="#FFFFFF" opacity="0.90">publish_scenario_result(result)</text>
+<path d="M500 868 L500 892" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="170" y="960" width="660" height="44" rx="12" fill="#0F6E56" stroke="none" stroke-width="0"/>
+<text x="500.0" y="979.5" text-anchor="middle" class="node-title" font-size="11.5" fill="#FFFFFF">Archive checkpoint as .jsonl.completed</text>
+<text x="500.0" y="994.5" text-anchor="middle" class="node-sub" font-size="8.2" fill="#FFFFFF" opacity="0.90">final scenario JSON is confirmed before rename</text>
+<path d="M500 934 L500 958" class="edge-dark" marker-end="url(#arrowDark)"/>
+<rect x="1100" y="24" width="780" height="288" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1100" y="334" width="780" height="314" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<rect x="1100" y="670" width="780" height="358" rx="16" fill="#FFFFFF" stroke="#8A887F" stroke-width="1.2"/>
+<text x="1122" y="56" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Two independent JSONL streams</text>
+<text x="1122" y="94" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">live/&lt;sid&gt;.jsonl: dashboard-only compact frames; always truncated at on_scenario_start().</text>
+<text x="1122" y="133" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">checkpoint/&lt;sid&gt;.jsonl: full TimestepRecord serialization; opened in append mode and never truncated by PublishHandle.</text>
+<text x="1122" y="172" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">update_every_k affects only live dashboard frames. Checkpoint writes occur on every on_timestep() callback.</text>
+<text x="1122" y="211" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">.elapsed stores cumulative wall-clock time across crash/restart attempts.</text>
+<text x="1122" y="250" text-anchor="start" fill="#111111" font-size="12.0" font-weight="600">cumulative_elapsed_s() = prior persisted elapsed + current attempt runtime.</text>
+<text x="1122" y="368" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Resume and completion semantics</text>
+<text x="1122" y="406" text-anchor="start" fill="#111111" font-size="11.8" font-weight="600">get_resume_records() first checks checkpoint/&lt;sid&gt;.jsonl, then .jsonl.completed if the live path is absent.</text>
+<text x="1122" y="450" text-anchor="start" fill="#111111" font-size="11.8" font-weight="600">Valid JSONL rows are reconstructed with TimestepRecord.from_checkpoint_dict().</text>
+<text x="1122" y="494" text-anchor="start" fill="#111111" font-size="11.8" font-weight="600">Corrupt or partial lines are skipped, which protects against a crash during the final append.</text>
+<text x="1122" y="538" text-anchor="start" fill="#111111" font-size="11.8" font-weight="600">After a successful runner return, benchmark_runner writes the final scenario JSON and then renames the checkpoint to .completed.</text>
+<text x="1122" y="582" text-anchor="start" fill="#111111" font-size="11.8" font-weight="600">Layer 1 resume in benchmark_runner can skip the runner entirely when scenarios/&lt;sid&gt;.json already exists and loads correctly.</text>
+<text x="1122" y="704" text-anchor="start" fill="#111111" font-size="17" font-weight="700">Runner-integration caveats</text>
+<text x="1122" y="742" text-anchor="start" fill="#111111" font-size="11.8" font-weight="600">PublishHandle can only checkpoint records that a scenario runner actually passes to on_timestep().</text>
+<text x="1122" y="791" text-anchor="start" fill="#111111" font-size="11.8" font-weight="600">S2/S3 pre-PF failure branches append failed records directly and therefore skip publisher checkpoint/live callbacks for those steps.</text>
+<text x="1122" y="840" text-anchor="start" fill="#111111" font-size="11.8" font-weight="600">S1 accepts the publisher handle but does not call get_resume_records(), so crash-resume is not implemented for its run_timeseries sweep.</text>
+<text x="1122" y="889" text-anchor="start" fill="#111111" font-size="11.8" font-weight="600">S2-S5 call on_scenario_start() before get_resume_records(); partial resumes continue from the last recovered record.</text>
+<text x="1122" y="938" text-anchor="start" fill="#111111" font-size="11.8" font-weight="600">on_scenario_end() closes the open checkpoint handle before appending the terminal live event.</text>
+</svg>
