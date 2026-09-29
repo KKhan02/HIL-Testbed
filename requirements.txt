@@ -1,0 +1,45 @@
+# ============================================================================
+# HIL Testbed — Python dependencies
+# ----------------------------------------------------------------------------
+# Curated list of the DIRECT dependencies the testbed imports. Transitive
+# dependencies (installed automatically) are not listed.
+#
+# For an exactly reproducible environment, regenerate from your working env:
+#     pip freeze > requirements.txt
+#
+# Python >= 3.11 recommended (developed on 3.12 / RPi 3.13).
+# ============================================================================
+
+# --- Core power-system simulation -------------------------------------------
+pandapower>=3.4          # AC power flow, OLTC/SVC, runopp OPF (3.x geodata API)
+simbench>=1.6            # MV benchmark networks + native profiles
+
+# --- Numerics ---------------------------------------------------------------
+numpy
+pandas
+scipy                    # least-squares for the dV/dQ sensitivity coordinator
+
+# --- Profiles / weather -----------------------------------------------------
+pvlib                    # PV modelling from DWD irradiance/temperature
+oemof.demand>=0.2.2      # BDEW 2025 H25/G25/L25 standard load profiles
+
+# --- Hardware-in-the-loop serial link ---------------------------------------
+pyserial                 # RPi/laptop <-> Arduino Q(V) exchange
+
+# --- CLI / plugins / config -------------------------------------------------
+pyyaml                   # controller & network plugin YAML configs
+rich                     # CLI wizard console + logging
+
+# --- Dashboard --------------------------------------------------------------
+streamlit                # live/results dashboard (Streamlit/Home.py)
+
+# --- Plotting ---------------------------------------------------------------
+matplotlib
+networkx                 # schematic layout fallback for coordinate-free networks
+
+# ============================================================================
+# Optional / scenario-specific — uncomment if needed
+# ============================================================================
+# contextily             # OSM basemaps for geographic (SimBench) network plots
+# cyipopt                # OPF scenario (Scenario 6) only — needs a working
+#                        # Ipopt install; skip if you do not run the OPF study
