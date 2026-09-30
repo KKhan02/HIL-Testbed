@@ -98,6 +98,7 @@ streamlit run Streamlit/Home.py
 ```
 
 The wizard walks you through network, profiles, scenarios, parameters, and (optional) hardware, then runs and publishes the benchmark. Run outputs land under `runs/<run_id>/` (or `outputs/…` for the direct-run script). See [**How to Run**](#🖥️-how-to-run-detailed) for the direct script, plugins, and hardware setup.
+Two short demo runs are committed with the repository (runs/demo_day_1-MV-rural--2-sw and runs/demo_week_1-MV-rural--2-sw), so the dashboard has something to open before you have run anything yourself. Point its project root at the repository root and it will discover them.
 
 ---
 
@@ -261,7 +262,7 @@ conda activate hil
 pip install -r requirements.txt
 ```
 
-Core dependencies (full list in [`requirements.txt`](requirements.txt)): `pandapower`, `simbench`, `numpy`, `pandas`, `scipy`, `pvlib`, `oemof.demand`, `pyserial`, `matplotlib`, `networkx`, `streamlit`, `rich`, `pyyaml`. Two dependencies are **optional** and left commented in `requirements.txt`: `contextily` (OSM basemaps for geographic network plots) and `cyipopt` (needed only for the OPF scenario — it requires a working Ipopt install). The Arduino firmware (`volt_var_arduino/volt_var_arduino.ino`) is flashed with the Arduino IDE / `arduino-cli`.
+Core dependencies (full list in [`requirements.txt`](requirements.txt)): `pandapower`, `simbench`, `numpy`, `pandas`, `scipy`, `pvlib`, `oemof.demand`, `pyserial`, `matplotlib`, `networkx`, `streamlit`,`plotly`, `rich`, `pyyaml`. Two dependencies are **optional** and left commented in `requirements.txt`: `contextily` (OSM basemaps for geographic network plots) and `cyipopt` (needed only for the OPF scenario — it requires a working Ipopt install). The Arduino firmware (`volt_var_arduino/volt_var_arduino.ino`) is flashed with the Arduino IDE / `arduino-cli`.
 
 ### Benchmark via the interactive wizard (recommended)
 
@@ -270,6 +271,7 @@ python -m Command_Line_Interface
 ```
 
 The wizard covers study, network, profile strategy, parameters, hardware (dry-run vs a serial port), and streaming, then executes and publishes the run. Configurations can be saved/reloaded as presets.
+The defaults are chosen to work on a fresh clone: step 4 of 9 (Dataset) uses SimBench native profiles, which ship with the simbench package and need no downloaded data. The one default to change deliberately is step 5 of 9 (Time window), which is Full annual — 35,136 timesteps at 15-minute resolution and several hours of runtime. Choose One day, One week or One month for anything exploratory.
 
 ### Benchmark via the direct script (fast iteration)
 
@@ -307,7 +309,7 @@ The dashboard discovers runs and shows the scenario comparison, network view, pr
 
 ## 📁 Repository Structure
 
-Run outputs (`outputs/`, `runs/`, `outputs (RPi)/`) are **regenerable and not committed** — run a benchmark to produce them.
+Run outputs (`outputs/`, `runs/`, `outputs (RPi)/`) are regenerable and are not committed, with two deliberate exceptions: `runs/demo_day_1-MV-rural--2-sw` and `runs/demo_week_1-MV-rural--2-sw`, short dry-run benchmarks kept in the repository so the dashboard is usable immediately. Everything else — run a benchmark to produce it
 
 ```
 HIL-Testbed/
