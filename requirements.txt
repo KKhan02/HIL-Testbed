@@ -32,6 +32,7 @@ rich                     # CLI wizard console + logging
 
 # --- Dashboard --------------------------------------------------------------
 streamlit                # live/results dashboard (Streamlit/Home.py)
+plotly                   # every dashboard figure (plotly.express + graph_objects)
 
 # --- Plotting ---------------------------------------------------------------
 matplotlib
