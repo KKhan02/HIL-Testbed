@@ -1,7 +1,7 @@
 from rich.prompt import IntPrompt, FloatPrompt, Prompt, Confirm
 from .run_plan import NetworkConfig, DatasetConfig, ParameterConfig, RunPlan
 from .network_catalogue import get_preset_families, get_presets_for_family
-from .executor import _preset_loaders, _import_custom_network_fn
+from .executor import _preset_loaders, _import_custom_network_fn, _PRESET_SIMBENCH_CODES
 import ast
 from volt_var_controller import PLAUSIBLE_PU_RANGE
 from violation_detector import THERMAL_LOADING_PLAUSIBLE_MAX
@@ -442,12 +442,19 @@ def _ask_optional_dict(prompt: str) -> dict | None:
         
         return parsed_value
     
-def _ask_dataset() -> DatasetConfig:
+def _ask_dataset(network_config: NetworkConfig | None = None) -> DatasetConfig:
     '''
     Ask which dataset source should be used for this run.
 
     Returns a fully populated DatasetConfig for the selected source type.
     '''
+    simbench_selected = bool(
+        network_config is not None
+        and (
+            network_config.source_type == "simbench_code"
+            or network_config.preset_name in _PRESET_SIMBENCH_CODES
+        )
+    )
 
     source_type = _ask(
         "Select dataset source",
@@ -465,7 +472,7 @@ def _ask_dataset() -> DatasetConfig:
                 "custom",
             ),
         ],
-        default=1,
+        default=0 if simbench_selected else 1,
         allow_back=True,
     )
 
@@ -894,7 +901,7 @@ def run_wizard() -> RunPlan:
             )
             s["dataset"] = DatasetConfig(source_type="plugin")
             return
-        s["dataset"] = _ask_dataset()
+        s["dataset"] = _ask_dataset(s["network"])
 
     def step_parameters(s):
         s["parameters"] = _ask_parameters()

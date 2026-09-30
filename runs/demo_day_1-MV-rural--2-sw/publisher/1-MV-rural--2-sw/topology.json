@@ -1,0 +1,3429 @@
+{
+  "buses": [
+    {
+      "index": 0,
+      "name": "HV1 Bus 17",
+      "vn_kv": 110.0,
+      "x": 11.4096,
+      "y": 53.6414
+    },
+    {
+      "index": 1,
+      "name": "HV1 Bus 18",
+      "vn_kv": 110.0,
+      "x": 11.4096,
+      "y": 53.6414
+    },
+    {
+      "index": 2,
+      "name": "MV1.101 busbar1.1",
+      "vn_kv": 20.0,
+      "x": 11.4096,
+      "y": 53.6414
+    },
+    {
+      "index": 3,
+      "name": "MV1.101 busbar1.2",
+      "vn_kv": 20.0,
+      "x": 11.4096,
+      "y": 53.6414
+    },
+    {
+      "index": 4,
+      "name": "MV1.101 Bus 4",
+      "vn_kv": 20.0,
+      "x": 11.4098,
+      "y": 53.6419
+    },
+    {
+      "index": 5,
+      "name": "MV1.101 Bus 5",
+      "vn_kv": 20.0,
+      "x": 11.4098,
+      "y": 53.6424
+    },
+    {
+      "index": 6,
+      "name": "MV1.101 Bus 6",
+      "vn_kv": 20.0,
+      "x": 11.4097,
+      "y": 53.6427
+    },
+    {
+      "index": 7,
+      "name": "MV1.101 Bus 7",
+      "vn_kv": 20.0,
+      "x": 11.4119,
+      "y": 53.6514
+    },
+    {
+      "index": 8,
+      "name": "MV1.101 Bus 8",
+      "vn_kv": 20.0,
+      "x": 11.4118,
+      "y": 53.6517
+    },
+    {
+      "index": 9,
+      "name": "MV1.101 Bus 9",
+      "vn_kv": 20.0,
+      "x": 11.4117,
+      "y": 53.6521
+    },
+    {
+      "index": 10,
+      "name": "MV1.101 Bus 10",
+      "vn_kv": 20.0,
+      "x": 11.4103,
+      "y": 53.6525
+    },
+    {
+      "index": 11,
+      "name": "MV1.101 Bus 11",
+      "vn_kv": 20.0,
+      "x": 11.4099,
+      "y": 53.6525
+    },
+    {
+      "index": 12,
+      "name": "MV1.101 Bus 12",
+      "vn_kv": 20.0,
+      "x": 11.4096,
+      "y": 53.6531
+    },
+    {
+      "index": 13,
+      "name": "MV1.101 Bus 13",
+      "vn_kv": 20.0,
+      "x": 11.4125,
+      "y": 53.6528
+    },
+    {
+      "index": 14,
+      "name": "MV1.101 Bus 14",
+      "vn_kv": 20.0,
+      "x": 11.4089,
+      "y": 53.6506
+    },
+    {
+      "index": 15,
+      "name": "MV1.101 Bus 15",
+      "vn_kv": 20.0,
+      "x": 11.4091,
+      "y": 53.6512
+    },
+    {
+      "index": 16,
+      "name": "MV1.101 Bus 16",
+      "vn_kv": 20.0,
+      "x": 11.4086,
+      "y": 53.6409
+    },
+    {
+      "index": 17,
+      "name": "MV1.101 Bus 17",
+      "vn_kv": 20.0,
+      "x": 11.4083,
+      "y": 53.6407
+    },
+    {
+      "index": 18,
+      "name": "MV1.101 Bus 18",
+      "vn_kv": 20.0,
+      "x": 11.4078,
+      "y": 53.6403
+    },
+    {
+      "index": 19,
+      "name": "MV1.101 Bus 19",
+      "vn_kv": 20.0,
+      "x": 11.4039,
+      "y": 53.6365
+    },
+    {
+      "index": 20,
+      "name": "MV1.101 Bus 20",
+      "vn_kv": 20.0,
+      "x": 11.3991,
+      "y": 53.6313
+    },
+    {
+      "index": 21,
+      "name": "MV1.101 Bus 21",
+      "vn_kv": 20.0,
+      "x": 11.3983,
+      "y": 53.6308
+    },
+    {
+      "index": 22,
+      "name": "MV1.101 Bus 22",
+      "vn_kv": 20.0,
+      "x": 11.3976,
+      "y": 53.6305
+    },
+    {
+      "index": 23,
+      "name": "MV1.101 Bus 23",
+      "vn_kv": 20.0,
+      "x": 11.3973,
+      "y": 53.6303
+    },
+    {
+      "index": 24,
+      "name": "MV1.101 Bus 24",
+      "vn_kv": 20.0,
+      "x": 11.3953,
+      "y": 53.6298
+    },
+    {
+      "index": 25,
+      "name": "MV1.101 Bus 25",
+      "vn_kv": 20.0,
+      "x": 11.41,
+      "y": 53.636
+    },
+    {
+      "index": 26,
+      "name": "MV1.101 Bus 26",
+      "vn_kv": 20.0,
+      "x": 11.4109,
+      "y": 53.6334
+    },
+    {
+      "index": 27,
+      "name": "MV1.101 Bus 27",
+      "vn_kv": 20.0,
+      "x": 11.4099,
+      "y": 53.6302
+    },
+    {
+      "index": 28,
+      "name": "MV1.101 Bus 28",
+      "vn_kv": 20.0,
+      "x": 11.4129,
+      "y": 53.6237
+    },
+    {
+      "index": 29,
+      "name": "MV1.101 Bus 29",
+      "vn_kv": 20.0,
+      "x": 11.4096,
+      "y": 53.6267
+    },
+    {
+      "index": 30,
+      "name": "MV1.101 Bus 30",
+      "vn_kv": 20.0,
+      "x": 11.4092,
+      "y": 53.6418
+    },
+    {
+      "index": 31,
+      "name": "MV1.101 Bus 31",
+      "vn_kv": 20.0,
+      "x": 11.4136,
+      "y": 53.6432
+    },
+    {
+      "index": 32,
+      "name": "MV1.101 Bus 32",
+      "vn_kv": 20.0,
+      "x": 11.4141,
+      "y": 53.6433
+    },
+    {
+      "index": 33,
+      "name": "MV1.101 Bus 33",
+      "vn_kv": 20.0,
+      "x": 11.4145,
+      "y": 53.6434
+    },
+    {
+      "index": 34,
+      "name": "MV1.101 Bus 34",
+      "vn_kv": 20.0,
+      "x": 11.415,
+      "y": 53.6435
+    },
+    {
+      "index": 35,
+      "name": "MV1.101 Bus 35",
+      "vn_kv": 20.0,
+      "x": 11.4174,
+      "y": 53.6439
+    },
+    {
+      "index": 36,
+      "name": "MV1.101 Bus 36",
+      "vn_kv": 20.0,
+      "x": 11.4201,
+      "y": 53.6443
+    },
+    {
+      "index": 37,
+      "name": "MV1.101 Bus 37",
+      "vn_kv": 20.0,
+      "x": 11.4207,
+      "y": 53.6445
+    },
+    {
+      "index": 38,
+      "name": "MV1.101 Bus 38",
+      "vn_kv": 20.0,
+      "x": 11.4215,
+      "y": 53.6446
+    },
+    {
+      "index": 39,
+      "name": "MV1.101 Bus 39",
+      "vn_kv": 20.0,
+      "x": 11.4221,
+      "y": 53.6446
+    },
+    {
+      "index": 40,
+      "name": "MV1.101 Bus 40",
+      "vn_kv": 20.0,
+      "x": 11.4066,
+      "y": 53.6448
+    },
+    {
+      "index": 41,
+      "name": "MV1.101 Bus 41",
+      "vn_kv": 20.0,
+      "x": 11.4062,
+      "y": 53.6453
+    },
+    {
+      "index": 42,
+      "name": "MV1.101 Bus 42",
+      "vn_kv": 20.0,
+      "x": 11.4023,
+      "y": 53.6551
+    },
+    {
+      "index": 43,
+      "name": "MV1.101 Bus 43",
+      "vn_kv": 20.0,
+      "x": 11.4024,
+      "y": 53.6563
+    },
+    {
+      "index": 44,
+      "name": "MV1.101 Bus 44",
+      "vn_kv": 20.0,
+      "x": 11.4077,
+      "y": 53.6599
+    },
+    {
+      "index": 45,
+      "name": "MV1.101 Bus 45",
+      "vn_kv": 20.0,
+      "x": 11.4094,
+      "y": 53.6576
+    },
+    {
+      "index": 46,
+      "name": "MV1.101 Bus 46",
+      "vn_kv": 20.0,
+      "x": 11.4095,
+      "y": 53.6568
+    },
+    {
+      "index": 47,
+      "name": "MV1.101 Bus 47",
+      "vn_kv": 20.0,
+      "x": 11.4095,
+      "y": 53.6554
+    },
+    {
+      "index": 48,
+      "name": "MV1.101 Bus 48",
+      "vn_kv": 20.0,
+      "x": 11.4065,
+      "y": 53.6418
+    },
+    {
+      "index": 49,
+      "name": "MV1.101 Bus 49",
+      "vn_kv": 20.0,
+      "x": 11.4018,
+      "y": 53.6428
+    },
+    {
+      "index": 50,
+      "name": "MV1.101 Bus 50",
+      "vn_kv": 20.0,
+      "x": 11.399,
+      "y": 53.6436
+    },
+    {
+      "index": 51,
+      "name": "MV1.101 Bus 51",
+      "vn_kv": 20.0,
+      "x": 11.3943,
+      "y": 53.644
+    },
+    {
+      "index": 52,
+      "name": "MV1.101 Bus 52",
+      "vn_kv": 20.0,
+      "x": 11.3931,
+      "y": 53.644
+    },
+    {
+      "index": 53,
+      "name": "MV1.101 Bus 53",
+      "vn_kv": 20.0,
+      "x": 11.3926,
+      "y": 53.644
+    },
+    {
+      "index": 54,
+      "name": "MV1.101 Bus 54",
+      "vn_kv": 20.0,
+      "x": 11.3922,
+      "y": 53.6435
+    },
+    {
+      "index": 55,
+      "name": "MV1.101 Bus 55",
+      "vn_kv": 20.0,
+      "x": 11.3917,
+      "y": 53.6431
+    },
+    {
+      "index": 56,
+      "name": "MV1.101 Bus 56",
+      "vn_kv": 20.0,
+      "x": 11.3914,
+      "y": 53.6429
+    },
+    {
+      "index": 57,
+      "name": "MV1.101 Bus 57",
+      "vn_kv": 20.0,
+      "x": 11.3898,
+      "y": 53.6418
+    },
+    {
+      "index": 58,
+      "name": "MV1.101 Bus 58",
+      "vn_kv": 20.0,
+      "x": 11.3873,
+      "y": 53.6385
+    },
+    {
+      "index": 59,
+      "name": "MV1.101 Bus 59",
+      "vn_kv": 20.0,
+      "x": 11.3867,
+      "y": 53.6353
+    },
+    {
+      "index": 60,
+      "name": "MV1.101 Bus 60",
+      "vn_kv": 20.0,
+      "x": 11.3906,
+      "y": 53.6307
+    },
+    {
+      "index": 61,
+      "name": "MV1.101 Bus 61",
+      "vn_kv": 20.0,
+      "x": 11.3913,
+      "y": 53.6301
+    },
+    {
+      "index": 62,
+      "name": "MV1.101 Bus 62",
+      "vn_kv": 20.0,
+      "x": 11.3917,
+      "y": 53.6296
+    },
+    {
+      "index": 63,
+      "name": "MV1.101 Bus 63",
+      "vn_kv": 20.0,
+      "x": 11.3919,
+      "y": 53.6293
+    },
+    {
+      "index": 64,
+      "name": "MV1.101 Bus 64",
+      "vn_kv": 20.0,
+      "x": 11.3918,
+      "y": 53.6278
+    },
+    {
+      "index": 65,
+      "name": "MV1.101 Bus 65",
+      "vn_kv": 20.0,
+      "x": 11.3912,
+      "y": 53.6267
+    },
+    {
+      "index": 66,
+      "name": "MV1.101 Bus 66",
+      "vn_kv": 20.0,
+      "x": 11.3906,
+      "y": 53.6266
+    },
+    {
+      "index": 67,
+      "name": "MV1.101 Bus 67",
+      "vn_kv": 20.0,
+      "x": 11.3901,
+      "y": 53.6269
+    },
+    {
+      "index": 68,
+      "name": "MV1.101 Bus 68",
+      "vn_kv": 20.0,
+      "x": 11.39,
+      "y": 53.6275
+    },
+    {
+      "index": 69,
+      "name": "MV1.101 Bus 69",
+      "vn_kv": 20.0,
+      "x": 11.3922,
+      "y": 53.645
+    },
+    {
+      "index": 70,
+      "name": "MV1.101 Bus 70",
+      "vn_kv": 20.0,
+      "x": 11.3916,
+      "y": 53.646
+    },
+    {
+      "index": 71,
+      "name": "MV1.101 Bus 71",
+      "vn_kv": 20.0,
+      "x": 11.4086,
+      "y": 53.6372
+    },
+    {
+      "index": 72,
+      "name": "MV1.101 Bus 72",
+      "vn_kv": 20.0,
+      "x": 11.4179,
+      "y": 53.6303
+    },
+    {
+      "index": 73,
+      "name": "MV1.101 Bus 73",
+      "vn_kv": 20.0,
+      "x": 11.4179,
+      "y": 53.6299
+    },
+    {
+      "index": 74,
+      "name": "MV1.101 Bus 74",
+      "vn_kv": 20.0,
+      "x": 11.4179,
+      "y": 53.6291
+    },
+    {
+      "index": 75,
+      "name": "MV1.101 Bus 75",
+      "vn_kv": 20.0,
+      "x": 11.4152,
+      "y": 53.6281
+    },
+    {
+      "index": 76,
+      "name": "MV1.101 Bus 76",
+      "vn_kv": 20.0,
+      "x": 11.4138,
+      "y": 53.6297
+    },
+    {
+      "index": 77,
+      "name": "MV1.101 Bus 77",
+      "vn_kv": 20.0,
+      "x": 11.4115,
+      "y": 53.6329
+    },
+    {
+      "index": 78,
+      "name": "MV1.101 Bus 78",
+      "vn_kv": 20.0,
+      "x": 11.4098,
+      "y": 53.6412
+    },
+    {
+      "index": 79,
+      "name": "MV1.101 Bus 79",
+      "vn_kv": 20.0,
+      "x": 11.41,
+      "y": 53.641
+    },
+    {
+      "index": 80,
+      "name": "MV1.101 Bus 80",
+      "vn_kv": 20.0,
+      "x": 11.4102,
+      "y": 53.6408
+    },
+    {
+      "index": 81,
+      "name": "MV1.101 Bus 81",
+      "vn_kv": 20.0,
+      "x": 11.4105,
+      "y": 53.6406
+    },
+    {
+      "index": 82,
+      "name": "MV1.101 Bus 82",
+      "vn_kv": 20.0,
+      "x": 11.4108,
+      "y": 53.6403
+    },
+    {
+      "index": 83,
+      "name": "MV1.101 Bus 83",
+      "vn_kv": 20.0,
+      "x": 11.4111,
+      "y": 53.64
+    },
+    {
+      "index": 84,
+      "name": "MV1.101 Bus 84",
+      "vn_kv": 20.0,
+      "x": 11.4116,
+      "y": 53.6397
+    },
+    {
+      "index": 85,
+      "name": "MV1.101 Bus 85",
+      "vn_kv": 20.0,
+      "x": 11.4121,
+      "y": 53.6393
+    },
+    {
+      "index": 86,
+      "name": "MV1.101 Bus 86",
+      "vn_kv": 20.0,
+      "x": 11.4126,
+      "y": 53.6391
+    },
+    {
+      "index": 87,
+      "name": "MV1.101 Bus 87",
+      "vn_kv": 20.0,
+      "x": 11.4134,
+      "y": 53.6387
+    },
+    {
+      "index": 88,
+      "name": "MV1.101 Bus 88",
+      "vn_kv": 20.0,
+      "x": 11.4162,
+      "y": 53.6378
+    },
+    {
+      "index": 89,
+      "name": "MV1.101 Bus 89",
+      "vn_kv": 20.0,
+      "x": 11.4209,
+      "y": 53.637
+    },
+    {
+      "index": 90,
+      "name": "MV1.101 Bus 90",
+      "vn_kv": 20.0,
+      "x": 11.4233,
+      "y": 53.6369
+    },
+    {
+      "index": 91,
+      "name": "MV1.101 Bus 91",
+      "vn_kv": 20.0,
+      "x": 11.429,
+      "y": 53.6404
+    },
+    {
+      "index": 92,
+      "name": "MV1.101 Bus 92",
+      "vn_kv": 20.0,
+      "x": 11.4291,
+      "y": 53.6423
+    },
+    {
+      "index": 93,
+      "name": "MV1.101 Bus 93",
+      "vn_kv": 20.0,
+      "x": 11.4286,
+      "y": 53.6431
+    },
+    {
+      "index": 94,
+      "name": "MV1.101 Bus 94",
+      "vn_kv": 20.0,
+      "x": 11.4281,
+      "y": 53.6435
+    },
+    {
+      "index": 95,
+      "name": "MV1.101 Bus 95",
+      "vn_kv": 20.0,
+      "x": 11.4277,
+      "y": 53.6439
+    },
+    {
+      "index": 96,
+      "name": "MV1.101 Bus 96",
+      "vn_kv": 20.0,
+      "x": 11.4271,
+      "y": 53.6442
+    },
+    {
+      "index": 97,
+      "name": "MV1.101 Bus 97",
+      "vn_kv": 20.0,
+      "x": 11.4272,
+      "y": 53.6555
+    },
+    {
+      "index": 98,
+      "name": "MV1.101 Bus 98",
+      "vn_kv": 20.0,
+      "x": 11.3972,
+      "y": 53.6178
+    }
+  ],
+  "lines": [
+    {
+      "index": 0,
+      "name": "MV1.101 Line 1",
+      "from_bus": 2,
+      "to_bus": 4,
+      "max_i_ka": 0.22,
+      "length_km": 0.3
+    },
+    {
+      "index": 1,
+      "name": "MV1.101 Line 2",
+      "from_bus": 4,
+      "to_bus": 5,
+      "max_i_ka": 0.22,
+      "length_km": 0.25
+    },
+    {
+      "index": 2,
+      "name": "MV1.101 Line 3",
+      "from_bus": 5,
+      "to_bus": 6,
+      "max_i_ka": 0.22,
+      "length_km": 0.2
+    },
+    {
+      "index": 3,
+      "name": "MV1.101 Line 4",
+      "from_bus": 6,
+      "to_bus": 7,
+      "max_i_ka": 0.29,
+      "length_km": 4.9
+    },
+    {
+      "index": 4,
+      "name": "MV1.101 Line 5",
+      "from_bus": 7,
+      "to_bus": 8,
+      "max_i_ka": 0.22,
+      "length_km": 0.15
+    },
+    {
+      "index": 5,
+      "name": "MV1.101 Line 6",
+      "from_bus": 8,
+      "to_bus": 9,
+      "max_i_ka": 0.22,
+      "length_km": 0.3
+    },
+    {
+      "index": 6,
+      "name": "MV1.101 Line 7",
+      "from_bus": 9,
+      "to_bus": 10,
+      "max_i_ka": 0.22,
+      "length_km": 0.8
+    },
+    {
+      "index": 7,
+      "name": "MV1.101 Line 8",
+      "from_bus": 10,
+      "to_bus": 11,
+      "max_i_ka": 0.22,
+      "length_km": 0.25
+    },
+    {
+      "index": 8,
+      "name": "MV1.101 Line 9",
+      "from_bus": 11,
+      "to_bus": 12,
+      "max_i_ka": 0.22,
+      "length_km": 0.36
+    },
+    {
+      "index": 9,
+      "name": "MV1.101 Line 10",
+      "from_bus": 9,
+      "to_bus": 13,
+      "max_i_ka": 0.22,
+      "length_km": 0.6
+    },
+    {
+      "index": 10,
+      "name": "MV1.101 Line 11",
+      "from_bus": 6,
+      "to_bus": 14,
+      "max_i_ka": 0.17,
+      "length_km": 4.2
+    },
+    {
+      "index": 11,
+      "name": "MV1.101 Line 12",
+      "from_bus": 14,
+      "to_bus": 15,
+      "max_i_ka": 0.17,
+      "length_km": 0.4
+    },
+    {
+      "index": 12,
+      "name": "MV1.101 Line 13",
+      "from_bus": 2,
+      "to_bus": 16,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.6
+    },
+    {
+      "index": 13,
+      "name": "MV1.101 Line 14",
+      "from_bus": 16,
+      "to_bus": 17,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.25
+    },
+    {
+      "index": 14,
+      "name": "MV1.101 Line 15",
+      "from_bus": 17,
+      "to_bus": 18,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.35
+    },
+    {
+      "index": 15,
+      "name": "MV1.101 Line 16",
+      "from_bus": 18,
+      "to_bus": 19,
+      "max_i_ka": 0.29,
+      "length_km": 2.9
+    },
+    {
+      "index": 16,
+      "name": "MV1.101 Line 17",
+      "from_bus": 19,
+      "to_bus": 20,
+      "max_i_ka": 0.29,
+      "length_km": 3.6
+    },
+    {
+      "index": 17,
+      "name": "MV1.101 Line 18",
+      "from_bus": 20,
+      "to_bus": 21,
+      "max_i_ka": 0.22,
+      "length_km": 0.6
+    },
+    {
+      "index": 18,
+      "name": "MV1.101 Line 19",
+      "from_bus": 21,
+      "to_bus": 22,
+      "max_i_ka": 0.22,
+      "length_km": 0.5
+    },
+    {
+      "index": 19,
+      "name": "MV1.101 Line 20",
+      "from_bus": 22,
+      "to_bus": 23,
+      "max_i_ka": 0.22,
+      "length_km": 0.2
+    },
+    {
+      "index": 20,
+      "name": "MV1.101 Line 21",
+      "from_bus": 23,
+      "to_bus": 24,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 1.2
+    },
+    {
+      "index": 21,
+      "name": "MV1.101 Line 22",
+      "from_bus": 2,
+      "to_bus": 25,
+      "max_i_ka": 0.22,
+      "length_km": 2.6
+    },
+    {
+      "index": 22,
+      "name": "MV1.101 Line 23",
+      "from_bus": 25,
+      "to_bus": 26,
+      "max_i_ka": 0.22,
+      "length_km": 1.5
+    },
+    {
+      "index": 23,
+      "name": "MV1.101 Line 24",
+      "from_bus": 26,
+      "to_bus": 27,
+      "max_i_ka": 0.17,
+      "length_km": 1.8
+    },
+    {
+      "index": 24,
+      "name": "MV1.101 Line 25",
+      "from_bus": 27,
+      "to_bus": 28,
+      "max_i_ka": 0.17,
+      "length_km": 3.3
+    },
+    {
+      "index": 25,
+      "name": "MV1.101 Line 26",
+      "from_bus": 27,
+      "to_bus": 29,
+      "max_i_ka": 0.17,
+      "length_km": 2.0
+    },
+    {
+      "index": 26,
+      "name": "MV1.101 Line 27",
+      "from_bus": 2,
+      "to_bus": 30,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.4
+    },
+    {
+      "index": 27,
+      "name": "MV1.101 Line 28",
+      "from_bus": 30,
+      "to_bus": 31,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 1.9
+    },
+    {
+      "index": 28,
+      "name": "MV1.101 Line 29",
+      "from_bus": 31,
+      "to_bus": 32,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.3
+    },
+    {
+      "index": 29,
+      "name": "MV1.101 Line 30",
+      "from_bus": 32,
+      "to_bus": 33,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.25
+    },
+    {
+      "index": 30,
+      "name": "MV1.101 Line 31",
+      "from_bus": 33,
+      "to_bus": 34,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.35
+    },
+    {
+      "index": 31,
+      "name": "MV1.101 Line 32",
+      "from_bus": 34,
+      "to_bus": 35,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 1.3
+    },
+    {
+      "index": 32,
+      "name": "MV1.101 Line 33",
+      "from_bus": 35,
+      "to_bus": 36,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 1.5
+    },
+    {
+      "index": 33,
+      "name": "MV1.101 Line 34",
+      "from_bus": 36,
+      "to_bus": 37,
+      "max_i_ka": 0.22,
+      "length_km": 0.4
+    },
+    {
+      "index": 34,
+      "name": "MV1.101 Line 35",
+      "from_bus": 37,
+      "to_bus": 38,
+      "max_i_ka": 0.22,
+      "length_km": 0.45
+    },
+    {
+      "index": 35,
+      "name": "MV1.101 Line 36",
+      "from_bus": 38,
+      "to_bus": 39,
+      "max_i_ka": 0.22,
+      "length_km": 0.4
+    },
+    {
+      "index": 36,
+      "name": "MV1.101 Line 37",
+      "from_bus": 3,
+      "to_bus": 40,
+      "max_i_ka": 0.17,
+      "length_km": 2.7
+    },
+    {
+      "index": 37,
+      "name": "MV1.101 Line 38",
+      "from_bus": 40,
+      "to_bus": 41,
+      "max_i_ka": 0.17,
+      "length_km": 0.4
+    },
+    {
+      "index": 38,
+      "name": "MV1.101 Line 39",
+      "from_bus": 41,
+      "to_bus": 42,
+      "max_i_ka": 0.17,
+      "length_km": 5.0
+    },
+    {
+      "index": 39,
+      "name": "MV1.101 Line 40",
+      "from_bus": 42,
+      "to_bus": 43,
+      "max_i_ka": 0.22,
+      "length_km": 0.7
+    },
+    {
+      "index": 40,
+      "name": "MV1.101 Line 41",
+      "from_bus": 43,
+      "to_bus": 44,
+      "max_i_ka": 0.22,
+      "length_km": 3.4
+    },
+    {
+      "index": 41,
+      "name": "MV1.101 Line 42",
+      "from_bus": 44,
+      "to_bus": 45,
+      "max_i_ka": 0.22,
+      "length_km": 1.7
+    },
+    {
+      "index": 42,
+      "name": "MV1.101 Line 43",
+      "from_bus": 45,
+      "to_bus": 46,
+      "max_i_ka": 0.22,
+      "length_km": 0.5
+    },
+    {
+      "index": 43,
+      "name": "MV1.101 Line 44",
+      "from_bus": 46,
+      "to_bus": 47,
+      "max_i_ka": 0.22,
+      "length_km": 0.8
+    },
+    {
+      "index": 44,
+      "name": "MV1.101 Line 45",
+      "from_bus": 3,
+      "to_bus": 48,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 1.7
+    },
+    {
+      "index": 45,
+      "name": "MV1.101 Line 46",
+      "from_bus": 48,
+      "to_bus": 49,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 2.6
+    },
+    {
+      "index": 46,
+      "name": "MV1.101 Line 47",
+      "from_bus": 49,
+      "to_bus": 50,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 1.6
+    },
+    {
+      "index": 47,
+      "name": "MV1.101 Line 48",
+      "from_bus": 50,
+      "to_bus": 51,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 2.5
+    },
+    {
+      "index": 48,
+      "name": "MV1.101 Line 49",
+      "from_bus": 51,
+      "to_bus": 52,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.7
+    },
+    {
+      "index": 49,
+      "name": "MV1.101 Line 50",
+      "from_bus": 52,
+      "to_bus": 53,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.3
+    },
+    {
+      "index": 50,
+      "name": "MV1.101 Line 51",
+      "from_bus": 53,
+      "to_bus": 54,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.35
+    },
+    {
+      "index": 51,
+      "name": "MV1.101 Line 52",
+      "from_bus": 54,
+      "to_bus": 55,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.4
+    },
+    {
+      "index": 52,
+      "name": "MV1.101 Line 53",
+      "from_bus": 55,
+      "to_bus": 56,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.25
+    },
+    {
+      "index": 53,
+      "name": "MV1.101 Line 54",
+      "from_bus": 56,
+      "to_bus": 57,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 1.1
+    },
+    {
+      "index": 54,
+      "name": "MV1.101 Line 55",
+      "from_bus": 57,
+      "to_bus": 58,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 2.2
+    },
+    {
+      "index": 55,
+      "name": "MV1.101 Line 56",
+      "from_bus": 58,
+      "to_bus": 59,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 1.7
+    },
+    {
+      "index": 56,
+      "name": "MV1.101 Line 57",
+      "from_bus": 59,
+      "to_bus": 60,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 3.1
+    },
+    {
+      "index": 57,
+      "name": "MV1.101 Line 58",
+      "from_bus": 60,
+      "to_bus": 61,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.6
+    },
+    {
+      "index": 58,
+      "name": "MV1.101 Line 59",
+      "from_bus": 61,
+      "to_bus": 62,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.35
+    },
+    {
+      "index": 59,
+      "name": "MV1.101 Line 60",
+      "from_bus": 62,
+      "to_bus": 63,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.2
+    },
+    {
+      "index": 60,
+      "name": "MV1.101 Line 61",
+      "from_bus": 63,
+      "to_bus": 64,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.9
+    },
+    {
+      "index": 61,
+      "name": "MV1.101 Line 62",
+      "from_bus": 64,
+      "to_bus": 65,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.7
+    },
+    {
+      "index": 62,
+      "name": "MV1.101 Line 63",
+      "from_bus": 65,
+      "to_bus": 66,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.35
+    },
+    {
+      "index": 63,
+      "name": "MV1.101 Line 64",
+      "from_bus": 66,
+      "to_bus": 67,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.35
+    },
+    {
+      "index": 64,
+      "name": "MV1.101 Line 65",
+      "from_bus": 67,
+      "to_bus": 68,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.35
+    },
+    {
+      "index": 65,
+      "name": "MV1.101 Line 66",
+      "from_bus": 53,
+      "to_bus": 69,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.6
+    },
+    {
+      "index": 66,
+      "name": "MV1.101 Line 67",
+      "from_bus": 69,
+      "to_bus": 70,
+      "max_i_ka": 0.28300000000000003,
+      "length_km": 0.7
+    },
+    {
+      "index": 67,
+      "name": "MV1.101 Line 68",
+      "from_bus": 3,
+      "to_bus": 71,
+      "max_i_ka": 0.17,
+      "length_km": 2.4
+    },
+    {
+      "index": 68,
+      "name": "MV1.101 Line 69",
+      "from_bus": 71,
+      "to_bus": 72,
+      "max_i_ka": 0.17,
+      "length_km": 4.6
+    },
+    {
+      "index": 69,
+      "name": "MV1.101 Line 70",
+      "from_bus": 72,
+      "to_bus": 73,
+      "max_i_ka": 0.22,
+      "length_km": 0.3
+    },
+    {
+      "index": 70,
+      "name": "MV1.101 Line 71",
+      "from_bus": 73,
+      "to_bus": 74,
+      "max_i_ka": 0.22,
+      "length_km": 0.5
+    },
+    {
+      "index": 71,
+      "name": "MV1.101 Line 72",
+      "from_bus": 74,
+      "to_bus": 75,
+      "max_i_ka": 0.22,
+      "length_km": 1.8
+    },
+    {
+      "index": 72,
+      "name": "MV1.101 Line 73",
+      "from_bus": 75,
+      "to_bus": 76,
+      "max_i_ka": 0.22,
+      "length_km": 1.2
+    },
+    {
+      "index": 73,
+      "name": "MV1.101 Line 74",
+      "from_bus": 76,
+      "to_bus": 77,
+      "max_i_ka": 0.22,
+      "length_km": 2.1
+    },
+    {
+      "index": 74,
+      "name": "MV1.101 Line 75",
+      "from_bus": 3,
+      "to_bus": 78,
+      "max_i_ka": 0.22,
+      "length_km": 0.15
+    },
+    {
+      "index": 75,
+      "name": "MV1.101 Line 76",
+      "from_bus": 78,
+      "to_bus": 79,
+      "max_i_ka": 0.22,
+      "length_km": 0.18
+    },
+    {
+      "index": 76,
+      "name": "MV1.101 Line 77",
+      "from_bus": 79,
+      "to_bus": 80,
+      "max_i_ka": 0.22,
+      "length_km": 0.2
+    },
+    {
+      "index": 77,
+      "name": "MV1.101 Line 78",
+      "from_bus": 80,
+      "to_bus": 81,
+      "max_i_ka": 0.22,
+      "length_km": 0.25
+    },
+    {
+      "index": 78,
+      "name": "MV1.101 Line 79",
+      "from_bus": 81,
+      "to_bus": 82,
+      "max_i_ka": 0.22,
+      "length_km": 0.25
+    },
+    {
+      "index": 79,
+      "name": "MV1.101 Line 80",
+      "from_bus": 82,
+      "to_bus": 83,
+      "max_i_ka": 0.22,
+      "length_km": 0.3
+    },
+    {
+      "index": 80,
+      "name": "MV1.101 Line 81",
+      "from_bus": 83,
+      "to_bus": 84,
+      "max_i_ka": 0.22,
+      "length_km": 0.35
+    },
+    {
+      "index": 81,
+      "name": "MV1.101 Line 82",
+      "from_bus": 84,
+      "to_bus": 85,
+      "max_i_ka": 0.22,
+      "length_km": 0.4
+    },
+    {
+      "index": 82,
+      "name": "MV1.101 Line 83",
+      "from_bus": 85,
+      "to_bus": 86,
+      "max_i_ka": 0.22,
+      "length_km": 0.35
+    },
+    {
+      "index": 83,
+      "name": "MV1.101 Line 84",
+      "from_bus": 86,
+      "to_bus": 87,
+      "max_i_ka": 0.22,
+      "length_km": 0.5
+    },
+    {
+      "index": 84,
+      "name": "MV1.101 Line 85",
+      "from_bus": 87,
+      "to_bus": 88,
+      "max_i_ka": 0.17,
+      "length_km": 1.6
+    },
+    {
+      "index": 85,
+      "name": "MV1.101 Line 86",
+      "from_bus": 88,
+      "to_bus": 89,
+      "max_i_ka": 0.17,
+      "length_km": 2.4
+    },
+    {
+      "index": 86,
+      "name": "MV1.101 Line 87",
+      "from_bus": 89,
+      "to_bus": 90,
+      "max_i_ka": 0.17,
+      "length_km": 1.3
+    },
+    {
+      "index": 87,
+      "name": "MV1.101 Line 88",
+      "from_bus": 90,
+      "to_bus": 91,
+      "max_i_ka": 0.17,
+      "length_km": 3.3
+    },
+    {
+      "index": 88,
+      "name": "MV1.101 Line 89",
+      "from_bus": 91,
+      "to_bus": 92,
+      "max_i_ka": 0.22,
+      "length_km": 1.1
+    },
+    {
+      "index": 89,
+      "name": "MV1.101 Line 90",
+      "from_bus": 92,
+      "to_bus": 93,
+      "max_i_ka": 0.22,
+      "length_km": 0.55
+    },
+    {
+      "index": 90,
+      "name": "MV1.101 Line 91",
+      "from_bus": 93,
+      "to_bus": 94,
+      "max_i_ka": 0.22,
+      "length_km": 0.4
+    },
+    {
+      "index": 91,
+      "name": "MV1.101 Line 92",
+      "from_bus": 94,
+      "to_bus": 95,
+      "max_i_ka": 0.22,
+      "length_km": 0.35
+    },
+    {
+      "index": 92,
+      "name": "MV1.101 Line 93",
+      "from_bus": 95,
+      "to_bus": 96,
+      "max_i_ka": 0.22,
+      "length_km": 0.4
+    },
+    {
+      "index": 93,
+      "name": "MV1.101 loop_line 1",
+      "from_bus": 12,
+      "to_bus": 47,
+      "max_i_ka": 0.22,
+      "length_km": 1.3
+    },
+    {
+      "index": 94,
+      "name": "MV1.101 loop_line 2",
+      "from_bus": 24,
+      "to_bus": 63,
+      "max_i_ka": 0.22,
+      "length_km": 1.8
+    },
+    {
+      "index": 95,
+      "name": "MV1.101 loop_line 3",
+      "from_bus": 26,
+      "to_bus": 77,
+      "max_i_ka": 0.22,
+      "length_km": 0.5
+    },
+    {
+      "index": 96,
+      "name": "MV1.101 loop_line 4",
+      "from_bus": 39,
+      "to_bus": 96,
+      "max_i_ka": 0.22,
+      "length_km": 2.8
+    },
+    {
+      "index": 97,
+      "name": "MV1.101 loop_line 5",
+      "from_bus": 15,
+      "to_bus": 11,
+      "max_i_ka": 0.22,
+      "length_km": 0.8
+    },
+    {
+      "index": 98,
+      "name": "MV1.101 loop_line 6",
+      "from_bus": 68,
+      "to_bus": 63,
+      "max_i_ka": 0.22,
+      "length_km": 1.4
+    },
+    {
+      "index": 99,
+      "name": "MV1.101 Line 94",
+      "from_bus": 13,
+      "to_bus": 97,
+      "max_i_ka": 0.421,
+      "length_km": 1.01809
+    },
+    {
+      "index": 100,
+      "name": "MV1.101 Line 95",
+      "from_bus": 65,
+      "to_bus": 98,
+      "max_i_ka": 0.421,
+      "length_km": 1.0628
+    }
+  ],
+  "trafos": [
+    {
+      "index": 0,
+      "name": "HV1-MV1.101-Trafo1",
+      "hv_bus": 0,
+      "lv_bus": 2,
+      "sn_mva": 25.0,
+      "tap_min": -9,
+      "tap_max": 9,
+      "tap_neutral": 0,
+      "tap_pos": 0
+    },
+    {
+      "index": 1,
+      "name": "HV1-MV1.101-Trafo2",
+      "hv_bus": 1,
+      "lv_bus": 3,
+      "sn_mva": 25.0,
+      "tap_min": -9,
+      "tap_max": 9,
+      "tap_neutral": 0,
+      "tap_pos": 0
+    }
+  ],
+  "sgens": [
+    {
+      "index": 0,
+      "name": "MV1.101 SGen 1",
+      "bus": 2,
+      "type": "Wind_MV",
+      "p_mw": 2.0,
+      "q_mvar": 0.0,
+      "sn_mva": 2.0,
+      "in_service": true
+    },
+    {
+      "index": 1,
+      "name": "MV1.101 SGen 2",
+      "bus": 4,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 2,
+      "name": "MV1.101 SGen 3",
+      "bus": 5,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 3,
+      "name": "MV1.101 SGen 4",
+      "bus": 6,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 4,
+      "name": "MV1.101 SGen 5",
+      "bus": 7,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 5,
+      "name": "MV1.101 SGen 6",
+      "bus": 8,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 6,
+      "name": "MV1.101 SGen 7",
+      "bus": 9,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 7,
+      "name": "MV1.101 SGen 8",
+      "bus": 10,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 8,
+      "name": "MV1.101 SGen 9",
+      "bus": 11,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 9,
+      "name": "MV1.101 SGen 10",
+      "bus": 12,
+      "type": "lv_RES",
+      "p_mw": 0.2523,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2523,
+      "in_service": true
+    },
+    {
+      "index": 10,
+      "name": "MV1.101 SGen 11",
+      "bus": 13,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 11,
+      "name": "MV1.101 SGen 12",
+      "bus": 16,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 12,
+      "name": "MV1.101 SGen 13",
+      "bus": 17,
+      "type": "lv_RES",
+      "p_mw": 0.2523,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2523,
+      "in_service": true
+    },
+    {
+      "index": 13,
+      "name": "MV1.101 SGen 14",
+      "bus": 18,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 14,
+      "name": "MV1.101 SGen 15",
+      "bus": 19,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 15,
+      "name": "MV1.101 SGen 16",
+      "bus": 20,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 16,
+      "name": "MV1.101 SGen 17",
+      "bus": 21,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 17,
+      "name": "MV1.101 SGen 18",
+      "bus": 22,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 18,
+      "name": "MV1.101 SGen 19",
+      "bus": 23,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 19,
+      "name": "MV1.101 SGen 20",
+      "bus": 24,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 20,
+      "name": "MV1.101 SGen 21",
+      "bus": 25,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 21,
+      "name": "MV1.101 SGen 22",
+      "bus": 26,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 22,
+      "name": "MV1.101 SGen 23",
+      "bus": 27,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 23,
+      "name": "MV1.101 SGen 24",
+      "bus": 28,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 24,
+      "name": "MV1.101 SGen 25",
+      "bus": 29,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 25,
+      "name": "MV1.101 SGen 26",
+      "bus": 30,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 26,
+      "name": "MV1.101 SGen 27",
+      "bus": 31,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 27,
+      "name": "MV1.101 SGen 28",
+      "bus": 32,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 28,
+      "name": "MV1.101 SGen 29",
+      "bus": 33,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 29,
+      "name": "MV1.101 SGen 30",
+      "bus": 34,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 30,
+      "name": "MV1.101 SGen 31",
+      "bus": 35,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 31,
+      "name": "MV1.101 SGen 32",
+      "bus": 36,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 32,
+      "name": "MV1.101 SGen 33",
+      "bus": 37,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 33,
+      "name": "MV1.101 SGen 34",
+      "bus": 38,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 34,
+      "name": "MV1.101 SGen 35",
+      "bus": 39,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 35,
+      "name": "MV1.101 SGen 36",
+      "bus": 40,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 36,
+      "name": "MV1.101 SGen 37",
+      "bus": 41,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 37,
+      "name": "MV1.101 SGen 38",
+      "bus": 42,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 38,
+      "name": "MV1.101 SGen 39",
+      "bus": 43,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 39,
+      "name": "MV1.101 SGen 40",
+      "bus": 44,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 40,
+      "name": "MV1.101 SGen 41",
+      "bus": 45,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 41,
+      "name": "MV1.101 SGen 42",
+      "bus": 46,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 42,
+      "name": "MV1.101 SGen 43",
+      "bus": 47,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 43,
+      "name": "MV1.101 SGen 44",
+      "bus": 48,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 44,
+      "name": "MV1.101 SGen 45",
+      "bus": 49,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 45,
+      "name": "MV1.101 SGen 46",
+      "bus": 50,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 46,
+      "name": "MV1.101 SGen 47",
+      "bus": 51,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 47,
+      "name": "MV1.101 SGen 48",
+      "bus": 52,
+      "type": "lv_RES",
+      "p_mw": 0.1722,
+      "q_mvar": 0.0,
+      "sn_mva": 0.1722,
+      "in_service": true
+    },
+    {
+      "index": 48,
+      "name": "MV1.101 SGen 49",
+      "bus": 53,
+      "type": "lv_RES",
+      "p_mw": 0.1722,
+      "q_mvar": 0.0,
+      "sn_mva": 0.1722,
+      "in_service": true
+    },
+    {
+      "index": 49,
+      "name": "MV1.101 SGen 50",
+      "bus": 54,
+      "type": "lv_RES",
+      "p_mw": 0.1722,
+      "q_mvar": 0.0,
+      "sn_mva": 0.1722,
+      "in_service": true
+    },
+    {
+      "index": 50,
+      "name": "MV1.101 SGen 51",
+      "bus": 55,
+      "type": "lv_RES",
+      "p_mw": 0.1722,
+      "q_mvar": 0.0,
+      "sn_mva": 0.1722,
+      "in_service": true
+    },
+    {
+      "index": 51,
+      "name": "MV1.101 SGen 52",
+      "bus": 56,
+      "type": "lv_RES",
+      "p_mw": 0.1722,
+      "q_mvar": 0.0,
+      "sn_mva": 0.1722,
+      "in_service": true
+    },
+    {
+      "index": 52,
+      "name": "MV1.101 SGen 53",
+      "bus": 57,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 53,
+      "name": "MV1.101 SGen 54",
+      "bus": 58,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 54,
+      "name": "MV1.101 SGen 55",
+      "bus": 59,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 55,
+      "name": "MV1.101 SGen 56",
+      "bus": 60,
+      "type": "lv_RES",
+      "p_mw": 0.1722,
+      "q_mvar": 0.0,
+      "sn_mva": 0.1722,
+      "in_service": true
+    },
+    {
+      "index": 56,
+      "name": "MV1.101 SGen 57",
+      "bus": 61,
+      "type": "lv_RES",
+      "p_mw": 0.1722,
+      "q_mvar": 0.0,
+      "sn_mva": 0.1722,
+      "in_service": true
+    },
+    {
+      "index": 57,
+      "name": "MV1.101 SGen 58",
+      "bus": 62,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 58,
+      "name": "MV1.101 SGen 59",
+      "bus": 63,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 59,
+      "name": "MV1.101 SGen 60",
+      "bus": 64,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 60,
+      "name": "MV1.101 SGen 61",
+      "bus": 65,
+      "type": "lv_RES",
+      "p_mw": 0.1722,
+      "q_mvar": 0.0,
+      "sn_mva": 0.1722,
+      "in_service": true
+    },
+    {
+      "index": 61,
+      "name": "MV1.101 SGen 62",
+      "bus": 66,
+      "type": "lv_RES",
+      "p_mw": 0.1722,
+      "q_mvar": 0.0,
+      "sn_mva": 0.1722,
+      "in_service": true
+    },
+    {
+      "index": 62,
+      "name": "MV1.101 SGen 63",
+      "bus": 67,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 63,
+      "name": "MV1.101 SGen 64",
+      "bus": 68,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 64,
+      "name": "MV1.101 SGen 65",
+      "bus": 70,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 65,
+      "name": "MV1.101 SGen 66",
+      "bus": 71,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 66,
+      "name": "MV1.101 SGen 67",
+      "bus": 72,
+      "type": "lv_RES",
+      "p_mw": 0.2523,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2523,
+      "in_service": true
+    },
+    {
+      "index": 67,
+      "name": "MV1.101 SGen 68",
+      "bus": 73,
+      "type": "lv_RES",
+      "p_mw": 0.1722,
+      "q_mvar": 0.0,
+      "sn_mva": 0.1722,
+      "in_service": true
+    },
+    {
+      "index": 68,
+      "name": "MV1.101 SGen 69",
+      "bus": 74,
+      "type": "lv_RES",
+      "p_mw": 0.2523,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2523,
+      "in_service": true
+    },
+    {
+      "index": 69,
+      "name": "MV1.101 SGen 70",
+      "bus": 75,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 70,
+      "name": "MV1.101 SGen 71",
+      "bus": 76,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 71,
+      "name": "MV1.101 SGen 72",
+      "bus": 77,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 72,
+      "name": "MV1.101 SGen 73",
+      "bus": 78,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 73,
+      "name": "MV1.101 SGen 74",
+      "bus": 79,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 74,
+      "name": "MV1.101 SGen 75",
+      "bus": 80,
+      "type": "lv_RES",
+      "p_mw": 0.2523,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2523,
+      "in_service": true
+    },
+    {
+      "index": 75,
+      "name": "MV1.101 SGen 76",
+      "bus": 81,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 76,
+      "name": "MV1.101 SGen 77",
+      "bus": 82,
+      "type": "lv_RES",
+      "p_mw": 0.2523,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2523,
+      "in_service": true
+    },
+    {
+      "index": 77,
+      "name": "MV1.101 SGen 78",
+      "bus": 83,
+      "type": "lv_RES",
+      "p_mw": 0.2523,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2523,
+      "in_service": true
+    },
+    {
+      "index": 78,
+      "name": "MV1.101 SGen 79",
+      "bus": 84,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 79,
+      "name": "MV1.101 SGen 80",
+      "bus": 85,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 80,
+      "name": "MV1.101 SGen 81",
+      "bus": 86,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 81,
+      "name": "MV1.101 SGen 82",
+      "bus": 87,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 82,
+      "name": "MV1.101 SGen 83",
+      "bus": 88,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 83,
+      "name": "MV1.101 SGen 84",
+      "bus": 89,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 84,
+      "name": "MV1.101 SGen 85",
+      "bus": 90,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 85,
+      "name": "MV1.101 SGen 86",
+      "bus": 91,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 86,
+      "name": "MV1.101 SGen 87",
+      "bus": 92,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 87,
+      "name": "MV1.101 SGen 88",
+      "bus": 93,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 88,
+      "name": "MV1.101 SGen 89",
+      "bus": 94,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 89,
+      "name": "MV1.101 SGen 90",
+      "bus": 95,
+      "type": "lv_RES",
+      "p_mw": 0.2335,
+      "q_mvar": 0.0,
+      "sn_mva": 0.2335,
+      "in_service": true
+    },
+    {
+      "index": 90,
+      "name": "MV1.101 SGen 91",
+      "bus": 96,
+      "type": "lv_RES",
+      "p_mw": 0.4682,
+      "q_mvar": 0.0,
+      "sn_mva": 0.4682,
+      "in_service": true
+    },
+    {
+      "index": 91,
+      "name": "MV1.101 MV SGen 2",
+      "bus": 14,
+      "type": "Wind_MV",
+      "p_mw": 4.0,
+      "q_mvar": 0.0,
+      "sn_mva": 4.0,
+      "in_service": true
+    },
+    {
+      "index": 92,
+      "name": "MV1.101 MV SGen 3",
+      "bus": 15,
+      "type": "Wind_MV",
+      "p_mw": 1.7,
+      "q_mvar": 0.0,
+      "sn_mva": 1.7,
+      "in_service": true
+    },
+    {
+      "index": 93,
+      "name": "MV1.101 MV SGen 4",
+      "bus": 49,
+      "type": "Wind_MV",
+      "p_mw": 4.9,
+      "q_mvar": 0.0,
+      "sn_mva": 4.9,
+      "in_service": true
+    },
+    {
+      "index": 94,
+      "name": "MV1.101 MV SGen 5",
+      "bus": 59,
+      "type": "Biomass_MV",
+      "p_mw": 0.31,
+      "q_mvar": 0.0,
+      "sn_mva": 0.31,
+      "in_service": true
+    },
+    {
+      "index": 95,
+      "name": "MV1.101 MV SGen 6",
+      "bus": 61,
+      "type": "Biomass_MV",
+      "p_mw": 0.35,
+      "q_mvar": 0.0,
+      "sn_mva": 0.35,
+      "in_service": true
+    },
+    {
+      "index": 96,
+      "name": "MV1.101 MV SGen 7",
+      "bus": 69,
+      "type": "Wind_MV",
+      "p_mw": 1.8,
+      "q_mvar": 0.0,
+      "sn_mva": 1.8,
+      "in_service": true
+    },
+    {
+      "index": 97,
+      "name": "MV1.101 MV SGen 8",
+      "bus": 26,
+      "type": "Wind_MV",
+      "p_mw": 2.0,
+      "q_mvar": 0.0,
+      "sn_mva": 2.0,
+      "in_service": true
+    },
+    {
+      "index": 98,
+      "name": "MV1.101 MV SGen 9",
+      "bus": 28,
+      "type": "PV_MV",
+      "p_mw": 0.195,
+      "q_mvar": 0.0,
+      "sn_mva": 0.195,
+      "in_service": true
+    },
+    {
+      "index": 99,
+      "name": "MV1.101 MV SGen 10",
+      "bus": 41,
+      "type": "PV_MV",
+      "p_mw": 0.125,
+      "q_mvar": 0.0,
+      "sn_mva": 0.125,
+      "in_service": true
+    },
+    {
+      "index": 100,
+      "name": "MV1.101 MV SGen 11",
+      "bus": 44,
+      "type": "Hydro_MV",
+      "p_mw": 0.385,
+      "q_mvar": 0.0,
+      "sn_mva": 0.385,
+      "in_service": true
+    },
+    {
+      "index": 101,
+      "name": "MV1.101 MV SGen 12",
+      "bus": 46,
+      "type": "Biomass_MV",
+      "p_mw": 0.28,
+      "q_mvar": 0.0,
+      "sn_mva": 0.28,
+      "in_service": true
+    }
+  ],
+  "loads": [
+    {
+      "index": 0,
+      "name": "HV1_MV1.101_load",
+      "bus": 2,
+      "p_mw": 0.2257,
+      "q_mvar": 0.0891,
+      "in_service": true
+    },
+    {
+      "index": 1,
+      "name": "MV1.101 Load 2",
+      "bus": 4,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 2,
+      "name": "MV1.101 Load 3",
+      "bus": 5,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 3,
+      "name": "MV1.101 Load 4",
+      "bus": 6,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 4,
+      "name": "MV1.101 Load 5",
+      "bus": 7,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 5,
+      "name": "MV1.101 Load 6",
+      "bus": 8,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 6,
+      "name": "MV1.101 Load 7",
+      "bus": 9,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 7,
+      "name": "MV1.101 Load 8",
+      "bus": 10,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 8,
+      "name": "MV1.101 Load 9",
+      "bus": 11,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 9,
+      "name": "MV1.101 Load 10",
+      "bus": 12,
+      "p_mw": 0.5528,
+      "q_mvar": 0.2201,
+      "in_service": true
+    },
+    {
+      "index": 10,
+      "name": "MV1.101 Load 11",
+      "bus": 13,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 11,
+      "name": "MV1.101 Load 12",
+      "bus": 16,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 12,
+      "name": "MV1.101 Load 13",
+      "bus": 17,
+      "p_mw": 0.5528,
+      "q_mvar": 0.2201,
+      "in_service": true
+    },
+    {
+      "index": 13,
+      "name": "MV1.101 Load 14",
+      "bus": 18,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 14,
+      "name": "MV1.101 Load 15",
+      "bus": 19,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 15,
+      "name": "MV1.101 Load 16",
+      "bus": 20,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 16,
+      "name": "MV1.101 Load 17",
+      "bus": 21,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 17,
+      "name": "MV1.101 Load 18",
+      "bus": 22,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 18,
+      "name": "MV1.101 Load 19",
+      "bus": 23,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 19,
+      "name": "MV1.101 Load 20",
+      "bus": 24,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 20,
+      "name": "MV1.101 Load 21",
+      "bus": 25,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 21,
+      "name": "MV1.101 Load 22",
+      "bus": 26,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 22,
+      "name": "MV1.101 Load 23",
+      "bus": 27,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 23,
+      "name": "MV1.101 Load 24",
+      "bus": 28,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 24,
+      "name": "MV1.101 Load 25",
+      "bus": 29,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 25,
+      "name": "MV1.101 Load 26",
+      "bus": 30,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 26,
+      "name": "MV1.101 Load 27",
+      "bus": 31,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 27,
+      "name": "MV1.101 Load 28",
+      "bus": 32,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 28,
+      "name": "MV1.101 Load 29",
+      "bus": 33,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 29,
+      "name": "MV1.101 Load 30",
+      "bus": 34,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 30,
+      "name": "MV1.101 Load 31",
+      "bus": 35,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 31,
+      "name": "MV1.101 Load 32",
+      "bus": 36,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 32,
+      "name": "MV1.101 Load 33",
+      "bus": 37,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 33,
+      "name": "MV1.101 Load 34",
+      "bus": 38,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 34,
+      "name": "MV1.101 Load 35",
+      "bus": 39,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 35,
+      "name": "MV1.101 Load 36",
+      "bus": 40,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 36,
+      "name": "MV1.101 Load 37",
+      "bus": 41,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 37,
+      "name": "MV1.101 Load 38",
+      "bus": 42,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 38,
+      "name": "MV1.101 Load 39",
+      "bus": 43,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 39,
+      "name": "MV1.101 Load 40",
+      "bus": 44,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 40,
+      "name": "MV1.101 Load 41",
+      "bus": 45,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 41,
+      "name": "MV1.101 Load 42",
+      "bus": 46,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 42,
+      "name": "MV1.101 Load 43",
+      "bus": 47,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 43,
+      "name": "MV1.101 Load 44",
+      "bus": 48,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 44,
+      "name": "MV1.101 Load 45",
+      "bus": 49,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 45,
+      "name": "MV1.101 Load 46",
+      "bus": 50,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 46,
+      "name": "MV1.101 Load 47",
+      "bus": 51,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 47,
+      "name": "MV1.101 Load 48",
+      "bus": 52,
+      "p_mw": 0.3373,
+      "q_mvar": 0.134,
+      "in_service": true
+    },
+    {
+      "index": 48,
+      "name": "MV1.101 Load 49",
+      "bus": 53,
+      "p_mw": 0.3373,
+      "q_mvar": 0.134,
+      "in_service": true
+    },
+    {
+      "index": 49,
+      "name": "MV1.101 Load 50",
+      "bus": 54,
+      "p_mw": 0.3373,
+      "q_mvar": 0.134,
+      "in_service": true
+    },
+    {
+      "index": 50,
+      "name": "MV1.101 Load 51",
+      "bus": 55,
+      "p_mw": 0.3373,
+      "q_mvar": 0.134,
+      "in_service": true
+    },
+    {
+      "index": 51,
+      "name": "MV1.101 Load 52",
+      "bus": 56,
+      "p_mw": 0.3373,
+      "q_mvar": 0.134,
+      "in_service": true
+    },
+    {
+      "index": 52,
+      "name": "MV1.101 Load 53",
+      "bus": 57,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 53,
+      "name": "MV1.101 Load 54",
+      "bus": 58,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 54,
+      "name": "MV1.101 Load 55",
+      "bus": 59,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 55,
+      "name": "MV1.101 Load 56",
+      "bus": 60,
+      "p_mw": 0.3373,
+      "q_mvar": 0.134,
+      "in_service": true
+    },
+    {
+      "index": 56,
+      "name": "MV1.101 Load 57",
+      "bus": 61,
+      "p_mw": 0.3373,
+      "q_mvar": 0.134,
+      "in_service": true
+    },
+    {
+      "index": 57,
+      "name": "MV1.101 Load 58",
+      "bus": 62,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 58,
+      "name": "MV1.101 Load 59",
+      "bus": 63,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 59,
+      "name": "MV1.101 Load 60",
+      "bus": 64,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 60,
+      "name": "MV1.101 Load 61",
+      "bus": 65,
+      "p_mw": 0.3373,
+      "q_mvar": 0.134,
+      "in_service": true
+    },
+    {
+      "index": 61,
+      "name": "MV1.101 Load 62",
+      "bus": 66,
+      "p_mw": 0.3373,
+      "q_mvar": 0.134,
+      "in_service": true
+    },
+    {
+      "index": 62,
+      "name": "MV1.101 Load 63",
+      "bus": 67,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 63,
+      "name": "MV1.101 Load 64",
+      "bus": 68,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 64,
+      "name": "MV1.101 Load 65",
+      "bus": 70,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 65,
+      "name": "MV1.101 Load 66",
+      "bus": 71,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 66,
+      "name": "MV1.101 Load 67",
+      "bus": 72,
+      "p_mw": 0.5528,
+      "q_mvar": 0.2201,
+      "in_service": true
+    },
+    {
+      "index": 67,
+      "name": "MV1.101 Load 68",
+      "bus": 73,
+      "p_mw": 0.3373,
+      "q_mvar": 0.134,
+      "in_service": true
+    },
+    {
+      "index": 68,
+      "name": "MV1.101 Load 69",
+      "bus": 74,
+      "p_mw": 0.5528,
+      "q_mvar": 0.2201,
+      "in_service": true
+    },
+    {
+      "index": 69,
+      "name": "MV1.101 Load 70",
+      "bus": 75,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 70,
+      "name": "MV1.101 Load 71",
+      "bus": 76,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 71,
+      "name": "MV1.101 Load 72",
+      "bus": 77,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 72,
+      "name": "MV1.101 Load 73",
+      "bus": 78,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 73,
+      "name": "MV1.101 Load 74",
+      "bus": 79,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 74,
+      "name": "MV1.101 Load 75",
+      "bus": 80,
+      "p_mw": 0.5528,
+      "q_mvar": 0.2201,
+      "in_service": true
+    },
+    {
+      "index": 75,
+      "name": "MV1.101 Load 76",
+      "bus": 81,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 76,
+      "name": "MV1.101 Load 77",
+      "bus": 82,
+      "p_mw": 0.5528,
+      "q_mvar": 0.2201,
+      "in_service": true
+    },
+    {
+      "index": 77,
+      "name": "MV1.101 Load 78",
+      "bus": 83,
+      "p_mw": 0.5528,
+      "q_mvar": 0.2201,
+      "in_service": true
+    },
+    {
+      "index": 78,
+      "name": "MV1.101 Load 79",
+      "bus": 84,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 79,
+      "name": "MV1.101 Load 80",
+      "bus": 85,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 80,
+      "name": "MV1.101 Load 81",
+      "bus": 86,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 81,
+      "name": "MV1.101 Load 82",
+      "bus": 87,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 82,
+      "name": "MV1.101 Load 83",
+      "bus": 88,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 83,
+      "name": "MV1.101 Load 84",
+      "bus": 89,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 84,
+      "name": "MV1.101 Load 85",
+      "bus": 90,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 85,
+      "name": "MV1.101 Load 86",
+      "bus": 91,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 86,
+      "name": "MV1.101 Load 87",
+      "bus": 92,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 87,
+      "name": "MV1.101 Load 88",
+      "bus": 93,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 88,
+      "name": "MV1.101 Load 89",
+      "bus": 94,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 89,
+      "name": "MV1.101 Load 90",
+      "bus": 95,
+      "p_mw": 0.3272,
+      "q_mvar": 0.1303,
+      "in_service": true
+    },
+    {
+      "index": 90,
+      "name": "MV1.101 Load 91",
+      "bus": 96,
+      "p_mw": 0.1813,
+      "q_mvar": 0.0717,
+      "in_service": true
+    },
+    {
+      "index": 91,
+      "name": "MV1.101 MV Load 1",
+      "bus": 15,
+      "p_mw": 0.3434,
+      "q_mvar": 0.1356,
+      "in_service": true
+    },
+    {
+      "index": 92,
+      "name": "MV1.101 MV Load 2",
+      "bus": 54,
+      "p_mw": 0.5494,
+      "q_mvar": 0.2171,
+      "in_service": true
+    },
+    {
+      "index": 93,
+      "name": "MV1.101 MV Load 3",
+      "bus": 64,
+      "p_mw": 0.4415,
+      "q_mvar": 0.1745,
+      "in_service": true
+    },
+    {
+      "index": 94,
+      "name": "MV1.101 MV Load 4",
+      "bus": 27,
+      "p_mw": 0.2649,
+      "q_mvar": 0.1047,
+      "in_service": true
+    },
+    {
+      "index": 95,
+      "name": "MV1.101 MV Load 5",
+      "bus": 94,
+      "p_mw": 0.2894,
+      "q_mvar": 0.1144,
+      "in_service": true
+    }
+  ],
+  "feeder_dist": {
+    "0": 0.0,
+    "2": 0.0,
+    "1": 0.0,
+    "3": 0.0,
+    "78": 0.15,
+    "4": 0.3,
+    "79": 0.32999999999999996,
+    "30": 0.4,
+    "80": 0.53,
+    "5": 0.55,
+    "16": 0.6,
+    "6": 0.75,
+    "81": 0.78,
+    "17": 0.85,
+    "82": 1.03,
+    "18": 1.2,
+    "83": 1.33,
+    "84": 1.6800000000000002,
+    "48": 1.7,
+    "85": 2.08,
+    "31": 2.3,
+    "71": 2.4,
+    "86": 2.43,
+    "32": 2.5999999999999996,
+    "25": 2.6,
+    "40": 2.7,
+    "33": 2.8499999999999996,
+    "87": 2.93,
+    "41": 3.1,
+    "34": 3.1999999999999997,
+    "19": 4.1,
+    "26": 4.1,
+    "49": 4.3,
+    "35": 4.5,
+    "88": 4.53,
+    "14": 4.95,
+    "15": 5.3500000000000005,
+    "7": 5.65,
+    "8": 5.800000000000001,
+    "27": 5.8999999999999995,
+    "50": 5.9,
+    "36": 6.0,
+    "9": 6.1000000000000005,
+    "37": 6.4,
+    "13": 6.7,
+    "38": 6.8500000000000005,
+    "10": 6.9,
+    "89": 6.93,
+    "72": 7.0,
+    "11": 7.15,
+    "39": 7.250000000000001,
+    "73": 7.3,
+    "12": 7.510000000000001,
+    "20": 7.699999999999999,
+    "97": 7.71809,
+    "74": 7.8,
+    "29": 7.8999999999999995,
+    "42": 8.1,
+    "90": 8.23,
+    "21": 8.299999999999999,
+    "51": 8.4,
+    "43": 8.799999999999999,
+    "22": 8.799999999999999,
+    "23": 8.999999999999998,
+    "52": 9.1,
+    "28": 9.2,
+    "53": 9.4,
+    "75": 9.6,
+    "54": 9.75,
+    "69": 10.0,
+    "55": 10.15,
+    "24": 10.199999999999998,
+    "56": 10.4,
+    "70": 10.7,
+    "76": 10.799999999999999,
+    "57": 11.5,
+    "91": 11.530000000000001,
+    "44": 12.2,
+    "92": 12.63,
+    "77": 12.899999999999999,
+    "93": 13.180000000000001,
+    "94": 13.580000000000002,
+    "58": 13.7,
+    "45": 13.899999999999999,
+    "95": 13.930000000000001,
+    "96": 14.330000000000002,
+    "46": 14.399999999999999,
+    "47": 15.2,
+    "59": 15.399999999999999,
+    "60": 18.5,
+    "61": 19.1,
+    "62": 19.450000000000003,
+    "63": 19.650000000000002,
+    "64": 20.55,
+    "65": 21.25,
+    "66": 21.6,
+    "67": 21.950000000000003,
+    "68": 22.300000000000004,
+    "98": 22.3128
+  },
+  "voltage_limits": {
+    "v_min": 0.95,
+    "v_max": 1.05
+  },
+  "network_id": "1-MV-rural--2-sw"
+}

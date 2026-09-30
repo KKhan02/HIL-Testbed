@@ -1,0 +1,54 @@
+{
+  "controller_plugin_path": null,
+  "dataset": {
+    "col_map": null,
+    "custom_path": null,
+    "data_dir": null,
+    "file_map": null,
+    "source_type": "simbench_native",
+    "station_id": null,
+    "year": null
+  },
+  "focus_buses": null,
+  "hardware": false,
+  "hc_stressed": false,
+  "network": {
+    "custom_function_name": "get_network",
+    "custom_path": null,
+    "der_placements": null,
+    "plugin_path": null,
+    "preset_family": "Simbench",
+    "preset_name": "1-MV-rural--2-sw",
+    "simbench_code": null,
+    "simbench_selections": null,
+    "source_type": "preset",
+    "switches_to_flip": null
+  },
+  "output_dir": "runs",
+  "parameters": {
+    "der_scaling": {
+      "null": 1.0
+    },
+    "line_max_loading": 100,
+    "load_scaling": {
+      "null": 1.0
+    },
+    "q_ratio": null,
+    "timestep_resolution": 15.0,
+    "trafo_max_loading": 100,
+    "u1_pu": null,
+    "u2_pu": null,
+    "u3_pu": null,
+    "u4_pu": null,
+    "unbalance_max_percent": 2.0,
+    "v_max": 1.05,
+    "v_min": 0.95,
+    "va_diff_max_degree": 30
+  },
+  "port": null,
+  "run_id": "4a144e21-467f-446e-8bb1-5dc4d5be2d82",
+  "stream_every_k": 4,
+  "study": "scenario_comparison",
+  "time_index": 172,
+  "time_period": "day"
+}
