@@ -30,16 +30,25 @@ pyserial                 # RPi/laptop <-> Arduino Q(V) exchange
 pyyaml                   # controller & network plugin YAML configs
 rich                     # CLI wizard console + logging
 
-# --- Dashboard --------------------------------------------------------------
-streamlit                # live/results dashboard (Streamlit/Home.py)
-
 # --- Plotting ---------------------------------------------------------------
 matplotlib
 networkx                 # schematic layout fallback for coordinate-free networks
 
+# --- Dashboard --------------------------------------------------------------
+streamlit>=1.52          # live/results dashboard; width= API (was use_container_width)
+plotly                   # every dashboard figure (plotly.express + graph_objects)
+
+# --- Performance ------------------------------------------------------------
+numba                    # pandapower runpp uses numba=True by default and warns
+                         # on every call without it
+
 # ============================================================================
 # Optional / scenario-specific — uncomment if needed
 # ============================================================================
-# contextily             # OSM basemaps for geographic (SimBench) network plots
-# cyipopt                # OPF scenario (Scenario 6) only — needs a working
-#                        # Ipopt install; skip if you do not run the OPF study
+contextily             # OSM basemaps for geographic (SimBench) network plots
+cyipopt                # OPF scenario only — needs a working Ipopt install
+workalendar            # German holiday calendar for BDEW load profiles
+# pillow                 # image handling in plot_results.py
+# reportlab              # PDF report generation
+# cairosvg               # figure generation in Process Plots/ (needs Cairo)
+# graphviz               # figure generation in Process Plots/ (needs Graphviz binaries)
