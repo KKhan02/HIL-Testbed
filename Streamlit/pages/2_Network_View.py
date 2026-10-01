@@ -173,7 +173,7 @@ if has_coords:
             x=0, y=-0.05, len=1.0, currentvalue=dict(prefix="Time: "),
         )],
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     st.info("Use the ▶ Play button on the chart itself (top-left) — playback runs in your browser.")
 else:
     st.warning(
@@ -198,7 +198,7 @@ if not has_coords:
     vm_by = frame.get("vm_pu_by_bus") or {}
     tbl = buses_df.copy()
     tbl["vm_pu"] = tbl["index"].astype(str).map(vm_by)
-    st.dataframe(tbl[["index", "name", "vn_kv", "vm_pu"]], use_container_width=True)
+    st.dataframe(tbl[["index", "name", "vn_kv", "vm_pu"]], width="stretch")
 
 ts = frame.get("timestamp")
 formatted = pd.to_datetime(ts).strftime("%d/%m %H:%M") if ts else "—"
@@ -222,4 +222,4 @@ if pd.notna(cur_ts):
     env.add_vline(x=cur_ts, line_color="black")
 env.update_xaxes(tickformat="%d %b\n%H:%M", hoverformat="%d %b %Y %H:%M")
 env.update_layout(height=280, margin=dict(l=10, r=10, t=10, b=10))
-st.plotly_chart(env, use_container_width=True)
+st.plotly_chart(env, width="stretch")

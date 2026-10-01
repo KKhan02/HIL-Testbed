@@ -158,10 +158,10 @@ if has_coords:
     ))
     fig.update_layout(height=520, xaxis=dict(visible=False), yaxis=dict(visible=False, scaleanchor="x"),
                       margin=dict(l=10, r=10, t=10, b=10))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 else:
     st.warning("No bus coordinates — showing the table view.")
-    st.dataframe(buses_df[["index", "name", "vn_kv", "vm_pu"]], use_container_width=True)
+    st.dataframe(buses_df[["index", "name", "vn_kv", "vm_pu"]], width="stretch")
 
 # ---------------------------------------------------------------------------
 # FRAME DETAIL — voltages, convergence, and whichever control scalar applies
@@ -216,7 +216,7 @@ if pd.notna(cur_ts):
     env.add_vline(x=cur_ts, line_color="black")
 env.update_xaxes(tickformat="%d %b\n%H:%M", hoverformat="%d %b %Y %H:%M")
 env.update_layout(height=260, margin=dict(l=10, r=10, t=10, b=10))
-st.plotly_chart(env, use_container_width=True)
+st.plotly_chart(env, width="stretch")
 
 # ---------------------------------------------------------------------------
 # LOAD & GENERATION (input profile) — fixed element structure so the tree
@@ -248,7 +248,7 @@ else:
     lg.add_annotation(text="No profiles.json for this run", showarrow=False)
 lg.update_layout(height=240, margin=dict(l=10, r=10, t=10, b=10),
                  yaxis_title="MW", legend=dict(orientation="h"))
-st.plotly_chart(lg, use_container_width=True)
+st.plotly_chart(lg, width="stretch")
 
 # ---------------------------------------------------------------------------
 # LIVE REFRESH LOOP

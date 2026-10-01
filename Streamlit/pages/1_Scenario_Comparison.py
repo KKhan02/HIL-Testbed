@@ -97,14 +97,14 @@ else:
             )
             fig.update_layout(showlegend=False, height=440,
                               margin=dict(l=10, r=10, t=40, b=10))
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
         elif metric:
             st.bar_chart(df.set_index(df.columns[0])[metric])
         else:
             st.info("No comparable metrics present in comparison.json.")
 
     with st.expander("Raw comparison table"):
-        st.dataframe(df, use_container_width=True)
+        st.dataframe(df, width="stretch")
 
 # ---------------------------------------------------------------------------
 # 2. Pre-generated static figures (plot_results.py output), if available
@@ -199,4 +199,4 @@ else:
         for j, name in enumerate(names[start:start + ncols]):
             with row[j]:
                 st.markdown(f"**{_data.figure_title(name)}**")
-                st.image(str(all_pngs[name]), use_container_width=True)
+                st.image(str(all_pngs[name]), width="stretch")

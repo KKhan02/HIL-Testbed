@@ -74,7 +74,7 @@ fig.update_layout(
     xaxis_title="Added DER capacity [MW]", yaxis_title="max vm_pu",
     legend=dict(orientation="h"),
 )
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 st.caption(
     "Dotted verticals mark each case's hosting capacity (last non-violating "
     "step). The curve has terminal points only — per-step voltages aren't "
@@ -92,4 +92,4 @@ with st.expander("HC detail"):
         "sweep_start_mw", "sweep_step_mw", "sweep_max_mw",
     ]
     rows = {f: {"baseline": baseline.get(f), "volt_var": volt_var.get(f)} for f in fields}
-    st.dataframe(rows, use_container_width=True)
+    st.dataframe(rows, width="stretch")

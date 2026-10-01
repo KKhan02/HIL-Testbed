@@ -71,7 +71,7 @@ st.success(f"Loaded `{csv_path.name}` — {len(df)} scenarios")
 
 # --- Raw table (always useful, cheap to show) ---
 with st.expander("Raw comparison table"):
-    st.dataframe(df, use_container_width=True)
+    st.dataframe(df, width="stretch")
 
 # --- Pick metrics to compare across scenarios ---
 st.subheader("Scenario comparison")
@@ -109,7 +109,7 @@ with col2:
         title=f"{metric} by scenario",
     )
     fig.update_layout(showlegend=False)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 # --- Existing static figures the simulation already generated ---
 st.subheader("Pre-generated figures")
@@ -118,7 +118,7 @@ if FIGURES_DIR.exists():
     figs = sorted(FIGURES_DIR.glob("*.png"))
     if figs:
         pick = st.selectbox("Choose a figure", [f.name for f in figs])
-        st.image(str(FIGURES_DIR / pick), use_container_width=True)
+        st.image(str(FIGURES_DIR / pick), width="stretch")
     else:
         st.info("No PNG figures found in the figures folder.")
 else:

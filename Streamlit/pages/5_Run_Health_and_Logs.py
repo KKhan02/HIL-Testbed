@@ -103,7 +103,7 @@ else:
     cols = [c for c in ["scenario_id", "status", "n_converged", "n_timesteps",
                         "n_violation_steps", "max_vm_pu", "min_vm_pu"] if c in df.columns]
     with st.expander("Per-scenario detail"):
-        st.dataframe(df[cols] if cols else df, use_container_width=True)
+        st.dataframe(df[cols] if cols else df, width="stretch")
 
 # ===========================================================================
 # 2. CONSOLE (log tail)

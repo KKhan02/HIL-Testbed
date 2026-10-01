@@ -49,7 +49,7 @@ overview.add_hline(y=0, line_dash="dot", line_color="gray")
 overview.update_layout(height=340, margin=dict(l=10, r=10, t=10, b=10),
                        yaxis_title="MW", legend=dict(orientation="h"))
 overview.update_xaxes(tickformat="%d %b", hoverformat="%d %b %Y %H:%M")
-st.plotly_chart(overview, use_container_width=True)
+st.plotly_chart(overview, width="stretch")
 
 # ---------------------------------------------------------------------------
 # Single-day 10-min detail
@@ -104,4 +104,4 @@ detail.add_hline(y=0, line_dash="dot", line_color="gray")
 detail.update_layout(height=340, margin=dict(l=10, r=10, t=10, b=10),
                      yaxis_title="MW", legend=dict(orientation="h"))
 detail.update_xaxes(tickformat="%H:%M", hoverformat="%d %b %Y %H:%M")
-st.plotly_chart(detail, use_container_width=True)
+st.plotly_chart(detail, width="stretch")
