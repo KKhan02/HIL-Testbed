@@ -7,3 +7,11 @@ __pycache__/
 /runs/
 /outputs (RPi)/
 "void/" 
+
+# --- Local-only files: kept on the laptop, deliberately out of the repo ---
+/CIGRE_MV_SCR_Check.py
+/Resilient_Ops_project.py
+/side_projects.md
+/sync-repos.ps1
+/cigre_mv_day_profiles.mat
+/network_plugin_bundle.zip
