@@ -53,7 +53,17 @@ import numpy as np
 import pandas as pd
 import pandapower as pp
 import pandapower.optimal_powerflow
-import cyipopt
+
+# cyipopt is imported defensively. benchmark_runner.py imports this module at
+# top level, so an unguarded ImportError here would make EVERY scenario
+# unrunnable, not just OPF. The failure is deferred to run_scenario_5().
+try:
+    import cyipopt            # noqa: F401
+    _HAS_CYIPOPT = True
+    _CYIPOPT_IMPORT_ERROR = None
+except Exception as _exc:     # ImportError, or a broken native build
+    _HAS_CYIPOPT = False
+    _CYIPOPT_IMPORT_ERROR = _exc
 
 from pandapower.toolbox import create_continuous_bus_index
 from scenario_result import (
@@ -65,14 +75,32 @@ from scenario_result import (
 from violation_detector import (
     V_MIN,
     V_MAX,
-    LINE_MAX_LOADING,
-    TRAFO_MAX_LOADING,
     VOLTAGE_EPSILON,
     LOADING_EPSILON,
 )
-from volt_var_controller import Q_RATIO
+# LINE_MAX_LOADING / TRAFO_MAX_LOADING are read through the module at CALL
+# time, not from-imported: executor.apply_violation_limits() and
+# run_benchmark_script.py rebind them per run, and a from-import would freeze
+# the import-time value, so the per-record violation lists would disagree with
+# detect_violations() (which resolves them late).
+import violation_detector as _vd
+# Q_RATIO is read through the module at USE time so that a runtime override
+# via volt_var_controller.set_qv_parameters() (CLI executor / direct script)
+# sizes the OPF reactive bound with the SAME value the rest of the stack uses.
+# A from-import would freeze the import-time value.
+import volt_var_controller as _vvc
 
 logger = logging.getLogger(__name__)
+
+# Sentinel distinguishing "caller said nothing" (resolve the limit from
+# violation_detector at call time) from an explicit None, which disables
+# that class of thermal constraint for diagnostics.
+class _Sentinel:
+    def __repr__(self):
+        return "<use violation_detector default>"
+
+
+_SENTINEL = _Sentinel()
 
 _EXT_GRID_COST = 0.001
 _DER_COST = -1.0
@@ -213,7 +241,9 @@ def _setup_opf(
         line_limit_percent=line_limit_percent,
         trafo_limit_percent=trafo_limit_percent,
     )
-    pp.diagnostic(net, warnings_only=False)
+    # warnings_only=True: the full dump is a debugging aid, not something an
+    # annual run should print unconditionally.
+    pp.diagnostic(net, warnings_only=True)
     logger.info(
         "_setup_opf: prepared %d profiled DERs. DER flexibility and costs "
         "will be rebuilt per timestep. line_limit=%s trafo_limit=%s",
@@ -271,7 +301,7 @@ def _write_timestep_opf_state(
 
     active_der_idx = p_bound_ser.index[p_bound_ser > _ACTIVE_POWER_EPS]
 
-    q_vde = Q_RATIO * sn_rated
+    q_vde = _vvc.Q_RATIO * sn_rated
     q_circle = np.sqrt(np.maximum(0.0, sn_rated.pow(2) - p_bound_ser.pow(2)))
     q_lim_ser = pd.Series(
         np.minimum(q_vde.values, q_circle),
@@ -373,8 +403,8 @@ def run_scenario_5(
     v_max: float = V_MAX,
     verbose_opf: bool = False,
     opf_init: str = "flat",
-    line_limit_percent: Optional[float] = LINE_MAX_LOADING,
-    trafo_limit_percent: Optional[float] = TRAFO_MAX_LOADING,
+    line_limit_percent: Optional[float] = _SENTINEL,
+    trafo_limit_percent: Optional[float] = _SENTINEL,
     debug_opf_task: bool = False,
     debug_first_only: bool = True,
     max_warning_timesteps: int = 3,
@@ -400,8 +430,10 @@ def run_scenario_5(
     opf_init:
         "flat" or "pf".
     line_limit_percent, trafo_limit_percent:
-        Thermal constraints. Use None to disable that class of thermal
-        constraint during diagnostics.
+        Thermal constraints in percent. Left unset they resolve to
+        violation_detector.LINE_MAX_LOADING / TRAFO_MAX_LOADING at call
+        time, so a per-run override reaches the OPF. Pass None explicitly
+        to disable that class of thermal constraint during diagnostics.
     debug_opf_task:
         If True, prints pp.opf_task() and bound checks before runopp().
     debug_first_only:
@@ -412,6 +444,22 @@ def run_scenario_5(
     """
     if opf_init not in {"flat", "pf"}:
         raise ValueError("opf_init must be either 'flat' or 'pf'.")
+
+    if not _HAS_CYIPOPT:
+        raise ImportError(
+            "Scenario 5 (OPF) needs cyipopt, which failed to import: "
+            f"{_CYIPOPT_IMPORT_ERROR!r}. Install it in hil_env, or exclude\n"
+            "scenario 6 from BenchmarkConfig.scenarios -- the other five\n"
+            "scenarios do not need it."
+        )
+
+    # Resolve the thermal constraints at CALL time so a per-run override
+    # (executor.apply_violation_limits) reaches the OPF. An explicit None
+    # still means "disable this constraint class".
+    if isinstance(line_limit_percent, _Sentinel):
+        line_limit_percent = _vd.LINE_MAX_LOADING
+    if isinstance(trafo_limit_percent, _Sentinel):
+        trafo_limit_percent = _vd.TRAFO_MAX_LOADING
 
     t_start = time.perf_counter()
 
@@ -544,8 +592,8 @@ def run_scenario_5(
 
             ov_buses = vm.index[vm > v_max + VOLTAGE_EPSILON].tolist()
             uv_buses = vm.index[vm < v_min - VOLTAGE_EPSILON].tolist()
-            ov_lines = ll.index[ll > LINE_MAX_LOADING + LOADING_EPSILON].tolist()
-            ov_trafos = tl.index[tl > TRAFO_MAX_LOADING + LOADING_EPSILON].tolist()
+            ov_lines = ll.index[ll > _vd.LINE_MAX_LOADING + LOADING_EPSILON].tolist()
+            ov_trafos = tl.index[tl > _vd.TRAFO_MAX_LOADING + LOADING_EPSILON].tolist()
 
             p_result = net.res_sgen["p_mw"].reindex(der_idx).fillna(0.0).copy()
             q_result = net.res_sgen["q_mvar"].reindex(der_idx).fillna(0.0).copy()

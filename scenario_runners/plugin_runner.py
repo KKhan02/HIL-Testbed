@@ -376,6 +376,7 @@ class HardwareControllerFn:
         self._scenario_id = scenario_id
         self._iface       = None
         self._configured_p = None
+        self.last_n_retries = 0
 
     def __call__(self, vm_pu, p_mw):
         import numpy as _np
@@ -397,9 +398,13 @@ class HardwareControllerFn:
                 "[HW plugin '%s'] Arduino configured for %d DERs.",
                 self._scenario_id, len(p),
             )
-        q, _latency_ms = self._iface.exchange_batched(
+        # exchange_batched returns (q_arr, total_attempts) — an attempt
+        # count, NOT a latency. Named correctly so nobody reads a retry
+        # count as milliseconds.
+        q, n_attempts = self._iface.exchange_batched(
             _np.asarray(vm_pu, dtype=float), p,
         )
+        self.last_n_retries = max(0, n_attempts - 1)
         return q
 
     def close(self) -> None:

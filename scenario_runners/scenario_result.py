@@ -52,11 +52,15 @@ import pandas as pd
 from violation_detector import (
     V_MIN,
     V_MAX,
-    LINE_MAX_LOADING,
-    TRAFO_MAX_LOADING,
     VOLTAGE_EPSILON,
     LOADING_EPSILON,
 )
+# LINE_MAX_LOADING / TRAFO_MAX_LOADING are read through the module at CALL
+# time, not from-imported: executor.apply_violation_limits() and
+# run_benchmark_script.py rebind them per run, and a from-import would freeze
+# the import-time value, so the per-record violation lists would disagree with
+# detect_violations() (which resolves them late).
+import violation_detector as _vd
 from collections import Counter
 
 logger = logging.getLogger(__name__)
@@ -265,10 +269,10 @@ def oversize_inverters(net, factor: float = 1.1) -> None:
     SensitivityCoordinator, DERDynamics all use Q_RATIO × sn_mva).
 
     The standard case is ``factor = 1.1`` (10 % oversizing), which gives:
-        Q_max = Q_RATIO × (1.1 × P_rated) = 0.48 × 1.1 × P_rated = 0.528 × P_rated
+        Q_max = Q_RATIO × (1.1 × P_rated) = 0.25 × 1.1 × P_rated = 0.275 × P_rated
 
     versus the baseline:
-        Q_max = Q_RATIO × P_rated = 0.48 × P_rated
+        Q_max = Q_RATIO × P_rated = 0.25 × P_rated
 
     Parameters
     ----------
@@ -398,8 +402,9 @@ def slice_profiles(
     ----------
     profiles : dict
         Output of profile_builder.build_annual_profiles().  Must contain at
-        minimum "load", "pv", "wind", "times".  Any extra keys whose values
-        are DataFrames or Series with a DatetimeIndex are sliced as well.
+        minimum "load", "pv", "wind", "times".  NOTE: only those three
+        frames and "times" are sliced; any other DataFrame key is passed
+        through unsliced.
     period : {"month", "week", "day"}
         Granularity of the slice.
         - "month" : calendar month (Jan=1 … Dec=12).
@@ -583,7 +588,9 @@ class TimestepRecord:
 
     curtailment_needed : bool
         True if the Tier 1 chain exhausted Q capacity and violations remain.
-        Always False for Scenarios 1 and 5.
+        Always False for Scenario 1. Scenario 5 (OPF) sets it from its own
+        post-solve violation check, and also populates p_target_mw /
+        p_applied_mw, so curtailed_energy_mwh IS computed for it.
 
     converged : bool
         True if the power flow (runpp / runopp) converged this timestep.
@@ -869,8 +876,8 @@ def make_record_from_report(
 
     ov_buses  = vm.index[vm > v_max + VOLTAGE_EPSILON].tolist()
     uv_buses  = vm.index[vm < v_min - VOLTAGE_EPSILON].tolist()
-    ov_lines  = ll.index[ll > LINE_MAX_LOADING  + LOADING_EPSILON].tolist()
-    ov_trafos = tl.index[tl > TRAFO_MAX_LOADING + LOADING_EPSILON].tolist()
+    ov_lines  = ll.index[ll > _vd.LINE_MAX_LOADING  + LOADING_EPSILON].tolist()
+    ov_trafos = tl.index[tl > _vd.TRAFO_MAX_LOADING + LOADING_EPSILON].tolist()
 
     return TimestepRecord(
         t=t, timestamp=timestamp,
@@ -899,7 +906,8 @@ class ScenarioResult:
     Attributes
     ----------
     scenario_id : str
-        One of "baseline" | "oltc" | "svc" | "volt_var" | "opf".
+        One of "baseline" | "oltc" | "svc" | "volt_var_local" |
+        "volt_var_coord" | "opf", or a plugin's own name.
 
     network_id : str
         Human-readable network identifier, e.g. "1-MV-rural--2-sw".

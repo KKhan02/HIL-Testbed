@@ -62,11 +62,15 @@ from scenario_result import (
 from violation_detector import (
     V_MIN,
     V_MAX,
-    LINE_MAX_LOADING,
-    TRAFO_MAX_LOADING,
     VOLTAGE_EPSILON,
     LOADING_EPSILON,
 )
+# LINE_MAX_LOADING / TRAFO_MAX_LOADING are read through the module at CALL
+# time, not from-imported: executor.apply_violation_limits() and
+# run_benchmark_script.py rebind them per run, and a from-import would freeze
+# the import-time value, so the per-record violation lists would disagree with
+# detect_violations() (which resolves them late).
+import violation_detector as _vd
 
 logger = logging.getLogger(__name__)
 
@@ -117,6 +121,13 @@ def run_scenario_1(
     ScenarioResult  with scenario_id="baseline".
     """
     t_start = time.perf_counter()
+
+    # _RUNPP_TIMING is module-level and _timed_runpp ACCUMULATES into it.
+    # Without this reset a second baseline run in the same process (the
+    # HC-stressed re-benchmark, a notebook, two benchmarks in one script)
+    # reports t_total_ms as the sum of every run so far, corrupting
+    # analyze_timing.py's input.
+    _RUNPP_TIMING.clear()
 
     ap: AdaptedProfiles = adapt_profiles(net, profiles)
     _T = len(ap.times)
@@ -289,8 +300,8 @@ def run_scenario_1(
 
         ov_buses = vm.index[vm > v_max + VOLTAGE_EPSILON].tolist()
         uv_buses = vm.index[vm < v_min - VOLTAGE_EPSILON].tolist()
-        ov_lines = ll.index[ll > LINE_MAX_LOADING + LOADING_EPSILON].tolist()
-        ov_trafos = tl.index[tl > TRAFO_MAX_LOADING + LOADING_EPSILON].tolist()
+        ov_lines = ll.index[ll > _vd.LINE_MAX_LOADING + LOADING_EPSILON].tolist()
+        ov_trafos = tl.index[tl > _vd.TRAFO_MAX_LOADING + LOADING_EPSILON].tolist()
 
         # Energy balance for this converged timestep
         losses_mw_t = (

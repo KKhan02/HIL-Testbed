@@ -146,6 +146,16 @@ _parser.add_argument(
     help="Override violation_detector.TRAFO_MAX_LOADING (trafo thermal limit, %%).",
 )
 _parser.add_argument(
+    "--va-diff-max-degree", type=float, default=None, metavar="DEG",
+    help="Override violation_detector.VA_DIFF_MAX_DEGREE (max voltage angle "
+         "difference across a line, degrees). Default 30.",
+)
+_parser.add_argument(
+    "--unbalance-max-percent", type=float, default=None, metavar="PCT",
+    help="Override violation_detector.UNBALANCE_MAX_PERCENT (IEC 62749 "
+         "voltage unbalance limit, %%). Only reaches 3-phase runs.",
+)
+_parser.add_argument(
     "--u1", type=float, default=None, metavar="PU",
     help="Override Q(V) lower saturation breakpoint U1 (full +Q at/below, "
          "pu). Default 0.96. Must satisfy U1 < U2 < U3 < U4.",
@@ -193,13 +203,20 @@ vvc.set_qv_parameters(
 # detect_violations()/detect_violations_3ph() with no explicit kwargs picks
 # these up at CALL time (late-bound defaults), so this reaches Scenario 4's
 # bare detect_violations(net) with no other code changes needed.
-vd.V_MIN              = _args.v_min if _args.v_min is not None else 0.95   # pu, lower voltage limit
-vd.V_MAX              = _args.v_max if _args.v_max is not None else 1.05   # pu, upper voltage limit
-vd.set_limit("LINE_MAX_LOADING",  _args.line_max_loading,  0.0, vd.THERMAL_LOADING_PLAUSIBLE_MAX, "%", confirm = print)
-vd.set_limit("TRAFO_MAX_LOADING", _args.trafo_max_loading, 0.0, vd.THERMAL_LOADING_PLAUSIBLE_MAX, "%", confirm = print)
-vd.VA_DIFF_MAX_DEGREE = 22.0    # deg — max angle difference across a line, DEFAULT 30.0
-vd.UNBALANCE_MAX_PERCENT = 2.0  # % — IEC 62749 voltage unbalance limit (currently reaches no
-                                 # result: no runner in the benchmark stack calls detect_violations_3ph())
+# Every limit now goes through vd.set_limit(), which range-checks the value
+# and keeps the framework default on anything invalid. Previously V_MIN/V_MAX
+# were plain assignments with no validation, and VA_DIFF_MAX_DEGREE was
+# hardcoded to 22.0 with no flag — silently tightening the angle criterion on
+# every direct-script run relative to the CLI wizard path, which used 30.0.
+# The two entry points now agree unless a flag says otherwise.
+vd.set_limit("V_MIN",                 _args.v_min,                 0.0, 2.0,    "pu",  confirm=print)
+vd.set_limit("V_MAX",                 _args.v_max,                 0.0, 2.0,    "pu",  confirm=print)
+vd.set_limit("LINE_MAX_LOADING",      _args.line_max_loading,      0.0, vd.THERMAL_LOADING_PLAUSIBLE_MAX, "%", confirm=print)
+vd.set_limit("TRAFO_MAX_LOADING",     _args.trafo_max_loading,     0.0, vd.THERMAL_LOADING_PLAUSIBLE_MAX, "%", confirm=print)
+vd.set_limit("VA_DIFF_MAX_DEGREE",    _args.va_diff_max_degree,    0.0, 180.0,  "deg", confirm=print)
+vd.set_limit("UNBALANCE_MAX_PERCENT", _args.unbalance_max_percent, 0.0, 100.0,  "%",   confirm=print)
+# Note: unbalance_max_percent currently reaches no result — no runner in the
+# benchmark stack calls detect_violations_3ph().
 
 RUN_NAME = "_HC_Run"
 OVERSIZE_FACTOR = None   # set to None to disable oversizing for this run
@@ -301,7 +318,9 @@ if not _args.network:
 # ===========================================================================
 # ── Optional: oversize inverters (increases Q_max for Scenarios 4A/4B)
 #    None = no change | 1.1 = 10% oversize | 1.3 = 30% oversize
-#    Only scales PV and wind sgens — load-sgens are not affected.
+#    NOTE: the inline scaling below hits EVERY sgen, including SimBench's
+#    negative-p_mw load-sgens. scenario_result.oversize_inverters() is the
+#    one that filters to PV/wind by type — use it if that matters.
 #    Set OVERSIZE_FACTOR = None to skip oversizing entirely — net_os then
 #    just points at net, so every call site below that already reads
 #    net_os keeps working unchanged.
@@ -428,7 +447,11 @@ config = BenchmarkConfig(
                                     # /dev/ttyACM0 for RPi, COM for Windows
     run_hc           = True,
     run_hc_scenarios = False,
-    hc_stress_scenarios = [1, 2, 3, 4, 5, 10],  # scenarios to run on the HC-stressed net
+    # 1-6 only: SCENARIO_REGISTRY has no entry 10, and _validate_inputs()
+    # raises ValueError on an unknown number the moment run_hc_scenarios
+    # is turned on. (Plugin scenarios are allocated >= 10 at runtime by
+    # plugin_runner and cannot be requested here by number.)
+    hc_stress_scenarios = [1, 2, 3, 4, 5],  # scenarios to run on the HC-stressed net
     
     # For a full annual HC re-benchmark.  On the --network plugin path the
     # factory rebuilds profiles with the YAML's own strategy (flat /

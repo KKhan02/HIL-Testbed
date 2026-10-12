@@ -453,6 +453,8 @@ def build_benchmark_config(
         verbose_opf         = False,
         v_min               = plan.parameters.v_min,
         v_max               = plan.parameters.v_max,
+        t95_q_s             = plan.parameters.t95_q_s,
+        ramp_rate_p_frac_s  = plan.parameters.ramp_rate_p_frac_s,
         run_hc              = run_hc,
         run_hc_scenarios    = run_hc_scenarios,
         hc_stress_scenarios = _HC_STRESS_SCENARIOS if run_hc_scenarios else None,
@@ -526,6 +528,12 @@ def apply_violation_limits(plan: RunPlan) -> None:
     unbalance_max_percent is applied but currently reaches no result: no
     runner performs a 3-phase power flow (detect_violations_3ph has no
     caller in the benchmark stack).
+
+    The per-record line/trafo loading fields now follow these constants too:
+    every runner reads violation_detector.LINE_MAX_LOADING through the
+    module at call time. They previously from-imported it, freezing the
+    import-time value, so a run with an overridden thermal limit counted
+    violations against the override but RECORDED them against 100 %.
     """
     _ensure_framework_on_path()
     import violation_detector as vd
@@ -1181,7 +1189,8 @@ def check_hardware_port(plan: RunPlan) -> None:
     This pre-check therefore (a) confirms pyserial is installed, (b)
     checks the configured port against serial.tools.list_ports, and (c)
     probe-opens it once. The probe costs one extra DTR reset cycle, which
-    is harmless — scenario 4's own open() waits the mandatory 2 s
+    is harmless — scenario 4's own open() waits the mandatory
+    ARDUINO_RESET_DELAY_S (3 s)
     ARDUINO_RESET_DELAY_S regardless.
     """
     if not _study_uses_hardware(plan):
@@ -1220,7 +1229,7 @@ def check_hardware_port(plan: RunPlan) -> None:
     console.print(
         f"[ok]Hardware pre-check passed:[/ok] [muted]{plan.port} present "
         f"and openable. The Arduino resets on each port open; scenario 4 "
-        f"waits the mandatory 2 s before the INIT/CFG/P handshake.[/muted]"
+        f"waits the mandatory reset delay before the INIT/CFG/P handshake.[/muted]"
     )
 
 
@@ -1362,7 +1371,6 @@ def execute(plan: RunPlan) -> int:
     t_start = time.perf_counter()
     out_dir = Path(plan.output_dir or "runs") / plan.run_id
     _configure_cli_logging(log_path=out_dir / "session.log")
-    out_dir = Path(plan.output_dir or "runs") / plan.run_id
 
     # ---------------------------------------------------------------- #
     # Phase 0 — configuration-level validation and runtime channels     #

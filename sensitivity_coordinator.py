@@ -832,8 +832,10 @@ class SensitivityCoordinator:
                     n_resid,
                     self._n_ders,
                 )
-            # Rank-deficient: lstsq null-space components worsen voltages.
-            # Pass q_initial through unchanged rather than corrupt it.
+            # Rank-deficient: some violated buses are weakly controllable.
+            # The early return that used to pass q_initial through unchanged
+            # was removed deliberately — lstsq now proceeds on a
+            # rank-deficient S_viol and the flag below marks the timestep.
             self.curtailment_needed = True
         # return np.clip(q_initial, -self._q_max, self._q_max)   # ← THIS LINE
 
@@ -1001,6 +1003,12 @@ def run_coordinated_timestep(
             p_applied          = p_applied,
             curtailment_needed = False,
             post_pf_ok         = True,        # pre-PF converged → valid
+            # Without these the gate returns the dataclass defaults (0.0),
+            # and since most timesteps of a clean run take this branch the
+            # whole timing distribution collapses to zeros — the "exact-zero
+            # anomaly" diagnose_outliers.py hunts for.
+            t_total_ms         = (time.perf_counter() - t0) * 1e3,
+            t_exchange_ms      = t_exchange_ms,
         )
     # ── END GATE ───────────────────────────────────────────────────────────
 

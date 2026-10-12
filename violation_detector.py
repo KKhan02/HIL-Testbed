@@ -81,8 +81,6 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
-import warnings
-
 warnings.filterwarnings(
     "ignore",
     category=FutureWarning,
@@ -112,6 +110,10 @@ _LIMIT_DEFAULTS = {
     "TRAFO_MAX_LOADING": TRAFO_MAX_LOADING,
     "VA_DIFF_MAX_DEGREE": VA_DIFF_MAX_DEGREE,
     "UNBALANCE_MAX_PERCENT": UNBALANCE_MAX_PERCENT,
+    # Included so reset_limits() restores it too — it is the upper bound
+    # set_limit() range-checks the thermal limits against, and a caller
+    # that rebinds it would otherwise leak that change into the next run.
+    "THERMAL_LOADING_PLAUSIBLE_MAX": THERMAL_LOADING_PLAUSIBLE_MAX,
 }
 
 def reset_limits() -> None:

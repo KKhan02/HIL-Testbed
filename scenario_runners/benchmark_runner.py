@@ -102,7 +102,8 @@ from scenario_3_svc      import run_scenario_3
 from scenario_4_volt_var import run_scenario_4
 from scenario_5_opf      import run_scenario_5
 from scenario_result     import ScenarioResult
-from violation_detector  import V_MIN, V_MAX
+from violation_detector  import V_MIN, V_MAX   # noqa: F401  (re-exported)
+import violation_detector as _vd
 from hosting_capacity import run_baseline_hc, run_hc_with_volt_var, HCResult
 from publisher import publish_scenario_result, publish_topology_and_profiles
 
@@ -177,8 +178,9 @@ class BenchmarkConfig:
     Attributes
     ----------
     scenarios : list[int]
-        Subset of [1, 2, 3, 4, 5] to run.  Always executed in ascending
-        order regardless of the order passed here.  Default: all five.
+        Subset of [1, 2, 3, 4, 5, 6] to run.  Always executed in ascending
+        order regardless of the order passed here.  Default: [1..5] —
+        6 (OPF) is opt-in, since runopp() is validated on CIGRE MV only.
     dry_run : bool
         If True, Scenario 4 skips Arduino serial communication and computes
         Q locally via the pure-Python QVCharacteristic.  Must be True when
@@ -224,8 +226,17 @@ class BenchmarkConfig:
     # for finished scenarios. None (default) disables this — only the final
     # timestamped CSV from _write_csv() is written, as today.
     verbose_opf: bool                    = False
-    v_min:       float                   = V_MIN
-    v_max:       float                   = V_MAX
+    # default_factory, not a bare default: a dataclass default is evaluated
+    # at class-definition time, which would freeze the import-time limit and
+    # ignore a later executor.apply_violation_limits() / direct-script
+    # rebinding of violation_detector.V_MIN / V_MAX.
+    v_min:       float                   = field(default_factory=lambda: _vd.V_MIN)
+    v_max:       float                   = field(default_factory=lambda: _vd.V_MAX)
+    # DER dynamics (Item 4). None selects the central modelling value of the
+    # standard matching the network: VDE-AR-N 4110 on MV, 4105 on LV.
+    # Set either to reach the SLOW / FAST presets in der_dynamics.py.
+    t95_q_s:            Optional[float]  = None
+    ramp_rate_p_frac_s: Optional[float]  = None
     run_hc:      bool                    = True
     # If True, run hosting capacity analysis (baseline + volt_var) after
     # the scenario loop.  Set False to skip HC when time is limited.
@@ -523,6 +534,9 @@ def _build_kwargs(
         kwargs["dry_run"] = config.dry_run
         kwargs["port"]    = config.port
         kwargs["coordination"] = spec.supports_coordination
+        # Scenario 4 is the only runner with a DER dynamics layer.
+        kwargs["t95_q_s"]            = config.t95_q_s
+        kwargs["ramp_rate_p_frac_s"] = config.ramp_rate_p_frac_s
     if spec.supports_opf_verbose:
         kwargs["verbose_opf"] = config.verbose_opf
     kwargs["publish_fn"] = config.publish_fn   # forwarded to all runners; None = no-op
@@ -1158,6 +1172,8 @@ def run_benchmark(
                 verbose_opf      = config.verbose_opf,
                 v_min            = config.v_min,
                 v_max            = config.v_max,
+                t95_q_s            = config.t95_q_s,
+                ramp_rate_p_frac_s = config.ramp_rate_p_frac_s,
                 run_hc           = False,   # no recursion into HC again
                 run_hc_scenarios = False,   # prevent infinite recursion
                 profile_factory  = None,

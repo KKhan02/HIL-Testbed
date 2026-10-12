@@ -78,6 +78,8 @@ from der_dynamics import (
     DERDynamics,
     MV_T95_Q_S,
     MV_RAMP_RATE_P_BASE,
+    LV_T95_Q_S,
+    LV_RAMP_RATE_P_BASE,
 )
 from sensitivity_coordinator import (
     SensitivityCoordinator,
@@ -102,12 +104,16 @@ from scenario_result import (
 from violation_detector import (
     V_MIN,
     V_MAX,
-    LINE_MAX_LOADING,
-    TRAFO_MAX_LOADING,
     VOLTAGE_EPSILON,
     LOADING_EPSILON,
     detect_violations,
 )
+# LINE_MAX_LOADING / TRAFO_MAX_LOADING are read through the module at CALL
+# time, not from-imported: executor.apply_violation_limits() and
+# run_benchmark_script.py rebind them per run, and a from-import would freeze
+# the import-time value, so the per-record violation lists would disagree with
+# detect_violations() (which resolves them late).
+import violation_detector as _vd
 
 CURTAIL_STEP_FRAC: float = 0.10   # linear P reduction per iteration (fraction of p_target)
 MAX_CURTAIL_ITERS: int   = 10     # 10 × 10% → floor at P=0 on final iteration
@@ -115,7 +121,31 @@ MAX_CURTAIL_ITERS: int   = 10     # 10 × 10% → floor at P=0 on final iteratio
 logger = logging.getLogger(__name__)
 
 
-def _build_dynamics(ctrl: VoltVarController, dt_s: float) -> DERDynamics:
+LV_Q_RATIO: float = 0.33   # VDE-AR-N 4105 Qmax / PAmax (cos phi = 0.95)
+
+
+def _is_lv_network(net) -> bool:
+    """
+    True when the network's distribution voltage level is LV (<= 1.0 kV).
+
+    Same inference as benchmark_runner._is_lv_network() and
+    hosting_capacity._infer_dist_voltage(): the statistical mode of
+    net.bus.vn_kv, so the minority HV slack bus does not sway it.
+    """
+    from statistics import mode as _mode
+    try:
+        return float(_mode(net.bus["vn_kv"].tolist())) <= 1.0
+    except Exception:
+        return False
+
+
+def _build_dynamics(
+        ctrl:               VoltVarController,
+        dt_s:               float,
+        t95_q_s:            float | None = None,
+        ramp_rate_p_frac_s: float | None = None,
+        is_lv:              bool = False,
+) -> DERDynamics:
     """
     Construct a DERDynamics instance from the VoltVarController's DER array.
 
@@ -126,13 +156,29 @@ def _build_dynamics(ctrl: VoltVarController, dt_s: float) -> DERDynamics:
     p_rated_mw uses p_installed_mw directly (sn_mva where available, p_mw
     fallback — same resolution logic as VoltVarController._resolve_p_installed).
 
-    Standard preset: MV_T95_Q_S=10 s, MV_RAMP_RATE_P_BASE=0.5%/s.
-    Both are the central modelling values from VDE-AR-N 4110.  Pass
-    alternative presets (MV_T95_Q_SLOW_S, MV_RAMP_RATE_P_FAST etc.) for
-    sensitivity studies.
+    t95_q_s and ramp_rate_p_frac_s default to the central modelling values
+    of the standard matching the network: VDE-AR-N 4110 on MV
+    (MV_T95_Q_S = 10 s, MV_RAMP_RATE_P_BASE = 0.5 %/s, Qmax = Q_RATIO x
+    P_b_inst) and VDE-AR-N 4105 on LV (LV_T95_Q_S, LV_RAMP_RATE_P_BASE,
+    Qmax = 0.33 x PAmax).  Pass either explicitly to run a sensitivity
+    study against the SLOW / FAST presets in der_dynamics.py — until this
+    was threaded through, those six presets had no caller and the study
+    the module documents could not be run.
+
+    Resolution note: at a 15-min profile step both layers are non-binding
+    by construction (alpha -> 1.0, dP_max = 4.5 x P_rated). The P ramp
+    starts to bind near dt = 10-15 s; the Q PT1 only becomes visible below
+    roughly dt = 3 s, or with a slower t95.
     """
+    if t95_q_s is None:
+        t95_q_s = LV_T95_Q_S if is_lv else MV_T95_Q_S
+    if ramp_rate_p_frac_s is None:
+        ramp_rate_p_frac_s = (
+            LV_RAMP_RATE_P_BASE if is_lv else MV_RAMP_RATE_P_BASE
+        )
     p_rated  = ctrl.p_installed_mw                         # shape (n_ders,) [MW]
-    q_max    = _vvc.Q_RATIO * p_rated                      # Q_RATIO × P_b_inst [MVAr] (call-time read)
+    q_ratio  = LV_Q_RATIO if is_lv else _vvc.Q_RATIO       # 4105 on LV, 4110 on MV
+    q_max    = q_ratio * p_rated                           # Qmax [MVAr] (call-time read)
 
     # Guard against zero/negative p_rated that would fail DERDynamics
     # validation — replace with a small positive sentinel (1 W = 1e-6 MW).
@@ -141,8 +187,8 @@ def _build_dynamics(ctrl: VoltVarController, dt_s: float) -> DERDynamics:
 
     return DERDynamics(
         dt_s               = dt_s,
-        t95_q_s            = MV_T95_Q_S,
-        ramp_rate_p_frac_s = MV_RAMP_RATE_P_BASE,
+        t95_q_s            = t95_q_s,
+        ramp_rate_p_frac_s = ramp_rate_p_frac_s,
         q_max_mvar         = q_max,
         p_rated_mw         = p_rated,
     )
@@ -160,6 +206,8 @@ def run_scenario_4(
         publish_fn         = None,
         enable_checkpointing: bool = True,
         live_csv_rewrite_fn = None,
+        t95_q_s:            float | None = None,
+        ramp_rate_p_frac_s: float | None = None,
 ) -> ScenarioResult:
     """
     Run Scenario 4 — Rule-based Volt-Var HIL (main contribution).
@@ -177,12 +225,23 @@ def run_scenario_4(
                  offline testing and CI.
     v_min      : lower voltage planning limit (pu).  Default 0.95.
     v_max      : upper voltage planning limit (pu).  Default 1.05.
+    t95_q_s    : DER reactive-power PT1 settling time (s) — time to reach
+                 95 % of a step setpoint. None selects the standard
+                 matching the network (4110 on MV, 4105 on LV), both 10 s.
+                 VDE allows 6-60 s; der_dynamics.py exposes SLOW/FAST
+                 presets for the sensitivity study.
+    ramp_rate_p_frac_s : maximum active-power change per second as a
+                 fraction of rated power. None selects the standard's
+                 central value (0.005 = 0.50 %/s). VDE range 0.33-0.66 %/s.
 
     Returns
     -------
     ScenarioResult  with scenario_id="volt_var".
     """
     t_start = time.perf_counter()
+    # Selects the VDE standard for the dynamics layer: 4110 on MV, 4105 on
+    # LV (different Qmax ratio, same default time constants).
+    _is_lv = _is_lv_network(net)
     ap: AdaptedProfiles = adapt_profiles(net, profiles)
     _T = len(ap.times)
     if publish_fn is not None:
@@ -275,14 +334,20 @@ def run_scenario_4(
         ctrl.configure()
 
         coordinator = SensitivityCoordinator(net, ctrl)
-        dynamics    = _build_dynamics(ctrl, ap.dt_s)
+        dynamics    = _build_dynamics(
+            ctrl, ap.dt_s,
+            t95_q_s            = t95_q_s,
+            ramp_rate_p_frac_s = ramp_rate_p_frac_s,
+            is_lv              = _is_lv,
+        )
 
         # Q clamp array for q_saturated_count — same formula as _build_dynamics()
         # so the saturation check uses the identical ceiling that DERDynamics clips to.
         # Computed once here to avoid repeating the guarded arithmetic inside the loop.
+        _q_ratio  = LV_Q_RATIO if _is_lv else _vvc.Q_RATIO
         q_max_arr = np.where(
-            _vvc.Q_RATIO * ctrl.p_installed_mw > 0.0,
-            _vvc.Q_RATIO * ctrl.p_installed_mw,
+            _q_ratio * ctrl.p_installed_mw > 0.0,
+            _q_ratio * ctrl.p_installed_mw,
             1e-6,
         )
 
@@ -463,8 +528,8 @@ def run_scenario_4(
 
                 ov_buses  = vm.index[vm > v_max + VOLTAGE_EPSILON].tolist()
                 uv_buses  = vm.index[vm < v_min - VOLTAGE_EPSILON].tolist()
-                ov_lines  = ll.index[ll > LINE_MAX_LOADING  + LOADING_EPSILON].tolist()
-                ov_trafos = tl.index[tl > TRAFO_MAX_LOADING + LOADING_EPSILON].tolist()
+                ov_lines  = ll.index[ll > _vd.LINE_MAX_LOADING  + LOADING_EPSILON].tolist()
+                ov_trafos = tl.index[tl > _vd.TRAFO_MAX_LOADING + LOADING_EPSILON].tolist()
             else:
                 vm = pd.Series(dtype=float)
                 ll = pd.Series(dtype=float)

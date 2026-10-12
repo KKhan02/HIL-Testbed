@@ -1,0 +1,275 @@
+"""
+test_limits_plumbing.py
+=======================
+Regression guards for the runtime-override plumbing.
+
+Every check here corresponds to a defect that was live in the codebase and is
+invisible to the rest of tests/: those are characterisation and smoke scripts
+that print results for a human to read, so a silently wrong limit produced a
+plausible-looking number and nothing failed.
+
+The central one is test_record_agrees_with_report(). Before the fix, the
+scenario runners from-imported LINE_MAX_LOADING / TRAFO_MAX_LOADING, which
+freezes the import-time value, while detect_violations() resolved them at call
+time. On any run with an overridden thermal limit the control decisions used
+the override and the recorded violation lists used 100 %, so the published
+counts disagreed with the behaviour that produced them.
+
+Runs under pytest, or standalone:
+
+    python tests/test_limits_plumbing.py
+"""
+
+from __future__ import annotations
+
+import inspect
+import sys
+from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parent.parent
+for _p in (_ROOT, _ROOT / "scenario_runners"):
+    if str(_p) not in sys.path:
+        sys.path.insert(0, str(_p))
+
+import pandas as pd
+import pandapower as pp
+import pandapower.networks as pn
+
+import violation_detector as vd
+
+
+def _solved_mv_net():
+    net = pn.create_cigre_network_mv(with_der="pv_wind")
+    pp.runpp(net, voltage_depend_loads=False)
+    return net
+
+
+# ---------------------------------------------------------------------------
+# The core invariant
+# ---------------------------------------------------------------------------
+
+def test_record_agrees_with_report():
+    """
+    A TimestepRecord's violation lists must be built against the SAME limits
+    detect_violations() used. Any from-import of a limit constant in a runner
+    breaks this.
+    """
+    from scenario_result import make_record_from_report
+
+    net = _solved_mv_net()
+    worst = float(net.res_line["loading_percent"].max())
+
+    vd.reset_limits()
+    try:
+        # A limit strictly below the worst line, so something IS overloaded.
+        vd.set_limit("LINE_MAX_LOADING", worst * 0.5,
+                     0.0, vd.THERMAL_LOADING_PLAUSIBLE_MAX, "%", warn=print)
+
+        report = vd.detect_violations(net)
+        record = make_record_from_report(
+            0, pd.Timestamp("2016-01-01"), net, converged=True,
+        )
+
+        assert report.n_overloaded_lines > 0, (
+            "test setup is wrong: the tightened limit produced no overload"
+        )
+        assert len(record.overloaded_lines) == report.n_overloaded_lines, (
+            f"record counted {len(record.overloaded_lines)} overloaded lines "
+            f"but the report counted {report.n_overloaded_lines} — a limit "
+            f"constant is frozen at import somewhere in the record path"
+        )
+    finally:
+        vd.reset_limits()
+
+
+def test_no_runner_from_imports_a_thermal_limit():
+    """
+    Static guard: a from-import of LINE_MAX_LOADING / TRAFO_MAX_LOADING freezes
+    the value, so the override silently stops propagating. Read them through
+    the module instead (`import violation_detector as _vd`).
+    """
+    offenders = []
+    for path in sorted((_ROOT / "scenario_runners").glob("*.py")):
+        text = path.read_text(encoding="utf-8")
+        if "from violation_detector import" not in text:
+            continue
+        block = text.split("from violation_detector import", 1)[1].split(")", 1)[0]
+        for name in ("LINE_MAX_LOADING", "TRAFO_MAX_LOADING"):
+            if name in block:
+                offenders.append(f"{path.name}: {name}")
+
+    assert not offenders, (
+        "these modules freeze a thermal limit at import time: "
+        + ", ".join(offenders)
+    )
+
+
+def test_reset_limits_restores_everything():
+    """set_limit() mutates module globals process-wide; reset must undo all."""
+    # Named explicitly rather than iterating _LIMIT_DEFAULTS: that dict is the
+    # thing under test, so looping over it would pass by construction for any
+    # constant missing from it.
+    guarded = (
+        "V_MIN", "V_MAX", "LINE_MAX_LOADING", "TRAFO_MAX_LOADING",
+        "VA_DIFF_MAX_DEGREE", "UNBALANCE_MAX_PERCENT",
+        "THERMAL_LOADING_PLAUSIBLE_MAX",
+    )
+
+    vd.reset_limits()
+    before = {k: getattr(vd, k) for k in guarded}
+    try:
+        vd.set_limit("LINE_MAX_LOADING", 55.0, 0.0, 300.0, "%", warn=print)
+        vd.set_limit("VA_DIFF_MAX_DEGREE", 11.0, 0.0, 180.0, "deg", warn=print)
+        vd.THERMAL_LOADING_PLAUSIBLE_MAX = 999.0
+        vd.reset_limits()
+        after = {k: getattr(vd, k) for k in guarded}
+        missing = [k for k in guarded if k not in vd._LIMIT_DEFAULTS]
+        assert not missing, f"_LIMIT_DEFAULTS does not cover: {missing}"
+        assert after == before, f"reset_limits() left {after} != {before}"
+    finally:
+        vd.reset_limits()
+
+
+def test_benchmark_config_voltage_defaults_are_late_bound():
+    """
+    A bare dataclass default is evaluated at class-definition time, so it would
+    pin the import-time voltage band and ignore a later override.
+    """
+    from benchmark_runner import BenchmarkConfig
+
+    vd.reset_limits()
+    try:
+        vd.V_MIN, vd.V_MAX = 0.90, 1.10
+        cfg = BenchmarkConfig()
+        assert (cfg.v_min, cfg.v_max) == (0.90, 1.10), (
+            f"BenchmarkConfig froze the band at {cfg.v_min}/{cfg.v_max}"
+        )
+    finally:
+        vd.reset_limits()
+
+
+def test_scenario_5_reads_q_ratio_late():
+    """set_qv_parameters() must reach the OPF reactive bound."""
+    import scenario_5_opf as s5
+
+    assert not hasattr(s5, "Q_RATIO"), (
+        "scenario_5_opf from-imports Q_RATIO, so a per-run override never "
+        "reaches q_vde in _write_timestep_opf_state()"
+    )
+    assert hasattr(s5, "_vvc")
+
+
+def test_cyipopt_import_is_guarded():
+    """
+    benchmark_runner imports scenario_5_opf at top level, so an unguarded
+    cyipopt ImportError would make all six scenarios unrunnable.
+    """
+    import scenario_5_opf as s5
+    assert hasattr(s5, "_HAS_CYIPOPT")
+
+
+# ---------------------------------------------------------------------------
+# DER dynamics parameterisation
+# ---------------------------------------------------------------------------
+
+def test_dynamics_presets_are_reachable_and_differ():
+    """
+    The SLOW / FAST presets in der_dynamics.py had no caller at all: the ramp
+    parameters were pinned inside _build_dynamics().
+    """
+    import numpy as np
+    from der_dynamics import DERDynamics, MV_T95_Q_S, MV_T95_Q_SLOW_S, MV_RAMP_RATE_P_BASE
+
+    kw = dict(dt_s=10.0, ramp_rate_p_frac_s=MV_RAMP_RATE_P_BASE,
+              q_max_mvar=np.array([1.0]), p_rated_mw=np.array([2.0]))
+    base = DERDynamics(t95_q_s=MV_T95_Q_S, **kw)
+    slow = DERDynamics(t95_q_s=MV_T95_Q_SLOW_S, **kw)
+
+    assert slow.alpha < base.alpha / 2, (
+        f"the slow preset barely changed the filter: {slow.alpha:.4f} vs "
+        f"{base.alpha:.4f} — is t95_q_s actually being used?"
+    )
+
+
+def test_scenario_4_accepts_dynamics_kwargs():
+    import scenario_4_volt_var as s4
+
+    sig = inspect.signature(s4.run_scenario_4).parameters
+    for name in ("t95_q_s", "ramp_rate_p_frac_s"):
+        assert name in sig, f"run_scenario_4 does not accept {name}"
+
+
+def test_build_kwargs_forwards_dynamics_only_where_supported():
+    """
+    Scenarios 1-3 would raise TypeError on an unexpected kwarg, so the
+    injection must stay gated on the ScenarioSpec flag.
+    """
+    from benchmark_runner import BenchmarkConfig, SCENARIO_REGISTRY, _build_kwargs
+
+    cfg = BenchmarkConfig(t95_q_s=60.0, ramp_rate_p_frac_s=0.0033)
+    assert _build_kwargs(SCENARIO_REGISTRY[4], cfg, "n")["t95_q_s"] == 60.0
+    assert "t95_q_s" not in _build_kwargs(SCENARIO_REGISTRY[1], cfg, "n")
+
+
+def test_scenario_1_clears_its_timing_accumulator():
+    """
+    _RUNPP_TIMING is module-level and _timed_runpp accumulates into it, so a
+    second baseline run in one process reported the sum of both.
+    """
+    import scenario_1_baseline as s1
+    assert "_RUNPP_TIMING.clear()" in inspect.getsource(s1.run_scenario_1)
+
+
+def test_profile_builder_does_not_silence_warnings_globally():
+    """
+    An unqualified filterwarnings("ignore") here hid the Arduino fallback and
+    empty-result-table warnings from every other module.
+    """
+    import warnings
+    import profile_builder  # noqa: F401  (importing it is the point)
+
+    # Inspect the installed filters directly. A catch_warnings block with
+    # simplefilter("always") would reset them and pass regardless, which is
+    # exactly how this defect stayed invisible.
+    catch_all = [
+        f for f in warnings.filters
+        if f[0] == "ignore" and f[2] is Warning and f[1] is None and not f[3]
+    ]
+    assert not catch_all, (
+        "an unqualified filterwarnings('ignore') is installed — it silences "
+        "the Arduino fallback and empty-result-table warnings from every "
+        "other module, process-wide"
+    )
+
+
+def test_dwd_discovery_handles_five_minute_files():
+    """The default glob was pinned to PT10M and to the hyphenated RAD-G code."""
+    import profile_builder as pb
+
+    src = inspect.getsource(pb.find_dwd_file)
+    assert "PT*M" in src, "the DWD glob still cannot see PT5M files"
+    assert 'replace("-", "")' in src, "RAD-G will not match a ...RADG_<id>.csv file"
+
+
+# ---------------------------------------------------------------------------
+
+def _main() -> int:
+    tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
+    failed = []
+    for fn in tests:
+        try:
+            fn()
+            print(f"  PASS  {fn.__name__}")
+        except AssertionError as exc:
+            failed.append(fn.__name__)
+            print(f"  FAIL  {fn.__name__}\n        {exc}")
+        except Exception as exc:                     # noqa: BLE001
+            failed.append(fn.__name__)
+            print(f"  ERROR {fn.__name__}\n        {type(exc).__name__}: {exc}")
+    print("-" * 60)
+    print(f"{len(tests) - len(failed)}/{len(tests)} passed")
+    return 1 if failed else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(_main())

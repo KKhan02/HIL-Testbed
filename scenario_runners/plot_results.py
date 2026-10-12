@@ -112,8 +112,16 @@ SCENARIO_COLORS = {
 
 SGEN_TYPE_COLORS = {"pv": "#f4a261", "wind": "#457b9d", "other": "#8d99ae"}
 
-V_MIN = 0.95
-V_MAX = 1.05
+# Read through the module at call time, not copied: the dashboard
+# (publisher.build_topology) already resolves these late, and hardcoding
+# them here made the static figures disagree with it on any run that
+# overrode the voltage band.
+import violation_detector as _vd
+
+
+def _v_limits() -> tuple[float, float]:
+    """Current (v_min, v_max) planning limits, resolved at call time."""
+    return _vd.V_MIN, _vd.V_MAX
 
 # Voltage-level palette — highest kV first
 # Red for HV slack (110 kV), blue for MV (20 kV) — immediately distinguishable
@@ -485,8 +493,8 @@ def fig05_voltage_heatmap(scenarios: dict, out_dir: Path,
         aspect="auto",
         interpolation="nearest",
         cmap="RdYlGn_r",
-        vmin=V_MIN - 0.02,
-        vmax=V_MAX + 0.02,
+        vmin=_vd.V_MIN - 0.02,
+        vmax=_vd.V_MAX + 0.02,
         origin="upper",
     )
     fig.colorbar(im, ax=ax, label="Voltage (pu)", shrink=0.85)
@@ -561,8 +569,8 @@ def fig06_voltage_vs_feeder_dist(topology: dict, scenarios: dict,
         ax.plot(bin_mid, bin_med, color=color, label=label, linewidth=1.2,
                 marker=marker, markersize=3, markevery=markevry)
 
-    ax.axhline(V_MIN, color="red",    linestyle="--", lw=0.8)
-    ax.axhline(V_MAX, color="orange", linestyle="--", lw=0.8)
+    ax.axhline(_vd.V_MIN, color="red",    linestyle="--", lw=0.8)
+    ax.axhline(_vd.V_MAX, color="orange", linestyle="--", lw=0.8)
     ax.set_xlabel("Feeder distance from slack (km)")
     ax.set_ylabel("Bus voltage (pu)")
     ax.set_title("Voltage vs Feeder Distance (median ± 5th–95th pct)")
@@ -644,8 +652,8 @@ def fig08_timeseries_panels(scenarios: dict, profiles: dict,
                     "Max line loading (%)", "Tap position",
                     "Network losses (MW)", "Grid exchange (MW)\n(−ve = export)"]
     panel_hlims  = {
-        "max_vm_pu":            (V_MAX, "red"),
-        "min_vm_pu":            (V_MIN, "red"),
+        "max_vm_pu":            (_vd.V_MAX, "red"),
+        "min_vm_pu":            (_vd.V_MIN, "red"),
         "max_line_loading_pct": (100.0, "orange"),
     }
     # Tap position is a state, not a peak — use last value per window
@@ -861,8 +869,8 @@ def fig10_qv_scatter(topology: dict, scenarios: dict, out_dir: Path):
 
         ax.scatter(vm_all, q_all, s=1.5, alpha=0.3,
                    color=SCENARIO_COLORS.get(sid, "#888888"), rasterized=True)
-        ax.axvline(V_MIN, color="red",     linestyle="--", lw=0.7)
-        ax.axvline(V_MAX, color="orange",  linestyle="--", lw=0.7)
+        ax.axvline(_vd.V_MIN, color="red",     linestyle="--", lw=0.7)
+        ax.axvline(_vd.V_MAX, color="orange",  linestyle="--", lw=0.7)
         ax.axhline(0,     color="#888888", linestyle="-",  lw=0.5)
         ax.set_xlabel("Bus voltage (pu)")
         ax.set_title(SCENARIO_LABELS.get(sid, sid))
@@ -914,8 +922,8 @@ def fig11_hc_sweep(hc: Optional[dict], out_dir: Path):
             if vbind is not None:
                 ax.scatter([hc_mw], [vbind], color=color, s=60, zorder=5)
 
-    ax.axhline(V_MAX, color="red", linestyle="--", lw=0.8,
-               label=f"V_max = {V_MAX} pu")
+    ax.axhline(_vd.V_MAX, color="red", linestyle="--", lw=0.8,
+               label=f"V_max = {_vd.V_MAX} pu")
     ax.set_xlabel("Added PV capacity (MW)")
     ax.set_ylabel("Max network voltage (pu)")
     gain = hc.get("gain_mw", 0.0)
@@ -968,8 +976,8 @@ def fig12_coordination_scatter(topology: dict, scenarios: dict, out_dir: Path):
                    color=SCENARIO_COLORS["volt_var_coord"],
                    label="Coordinator active", rasterized=True, zorder=4)
 
-    ax.axvline(V_MIN, color="red",     linestyle="--", lw=0.7)
-    ax.axvline(V_MAX, color="orange",  linestyle="--", lw=0.7)
+    ax.axvline(_vd.V_MIN, color="red",     linestyle="--", lw=0.7)
+    ax.axvline(_vd.V_MAX, color="orange",  linestyle="--", lw=0.7)
     ax.axhline(0,     color="#888888", linestyle="-",  lw=0.5)
 
     coord_steps = sum(1 for r in sc_coord["timeseries"]

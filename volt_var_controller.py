@@ -134,7 +134,9 @@ U1_PU   = 0.96    # lower saturation  -- full Q injection at or below this
 U2_PU   = 0.99    # deadband lower edge
 U3_PU   = 1.01    # deadband upper edge
 U4_PU   = 1.04    # upper saturation  -- full Q absorption at or above this
-Q_RATIO = 0.25    # Q_max / P_b_inst  (VDE-AR-N 4110 Bild 8). Modifying to 0.15 from 0.48 to check control response
+Q_RATIO = 0.25    # Q_max / P_b_inst  (VDE-AR-N 4110 Bild 8). Confirmed value
+                  # for the benchmark results; override per run with
+                  # set_qv_parameters() rather than editing this line.
 PLAUSIBLE_PU_RANGE = (0.5, 2.5)
 
 
@@ -598,7 +600,7 @@ class ArduinoSerialInterface:
         places, matching the firmware's float parsing resolution.
 
         Boot noise resilience: open() calls reset_input_buffer() after the
-        2-second reset wait. configure() calls it again immediately before
+        ARDUINO_RESET_DELAY_S reset wait. configure() calls it again immediately before
         sending INIT to discard any bytes that arrived in the gap. The
         _read_ack() helper additionally skips non-ACK/ERR lines, handling
         any residual bootloader output that slipped through both flushes.
@@ -1023,14 +1025,14 @@ class VoltVarController:
             if fin.any():
                 # where the limit is finite, apply it; where it is NaN/Inf (not set for this DER), leave q_out unchanged.
                 q_out = np.where(fin, np.minimum(q_out, max_q), q_out)
-        # Layer 2: apparent power limit |Q| <= sqrt(sn_mva^2 - p_mw^2)
+        # Layer 1 (lower bound): explicit min_q_mvar column, where finite.
         if "min_q_mvar" in sgens.columns:
             min_q = sgens.loc[self._sgen_idx, "min_q_mvar"].values.astype(float)
             fin   = np.isfinite(min_q)
             if fin.any():
                 q_out = np.where(fin, np.maximum(q_out, min_q), q_out)
 
-        # Apparent power cap
+        # Layer 2: apparent power limit |Q| <= sqrt(sn_mva^2 - p_mw^2)
         sn    = sgens.loc[self._sgen_idx, "sn_mva"].values.astype(float)
         p_now = sgens.loc[self._sgen_idx, "p_mw"].values.astype(float)
         fin   = np.isfinite(sn) & (sn > 0.0) & np.isfinite(p_now)

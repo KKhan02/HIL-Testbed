@@ -43,7 +43,11 @@ from sensitivity_coordinator import (
     run_coordinated_timestep,
 )
 from violation_detector import ViolationReport
-from volt_var_controller import VoltVarController, Q_RATIO
+# Q_RATIO through the module: a from-import freezes the import-time value,
+# so a session that called set_qv_parameters() first would assert against a
+# stale number — failing a correct implementation or passing a broken one.
+from volt_var_controller import VoltVarController
+import volt_var_controller as _vvc
 
 
 def _case_name(prefix: str, net_name: str, label: str | None = None) -> str:
@@ -268,9 +272,9 @@ def run_sensitivity_coordinator_tests(
                     coord.curtailment_needed is False,
                     f"curtailment_needed={coord.curtailment_needed}")
                 tc.record("qmax_formula",
-                    np.allclose(coord._q_max, Q_RATIO * ctrl.p_installed_mw,
+                    np.allclose(coord._q_max, _vvc.Q_RATIO * ctrl.p_installed_mw,
                                 atol=1e-9),
-                    "max|_q_max - Q_RATIO×p_inst| out of tolerance")
+                    "max|_q_max - _vvc.Q_RATIO×p_inst| out of tolerance")
                 tc.record("qmax_shape",
                     coord._q_max.shape == (ctrl.n_ders,),
                     f"shape={coord._q_max.shape}, expected=({ctrl.n_ders},)")
@@ -334,7 +338,7 @@ def run_sensitivity_coordinator_tests(
                 tc.record("q_adj_finite",
                     bool(np.isfinite(result.q_adjusted).all()),
                     f"{int((~np.isfinite(result.q_adjusted)).sum())} non-finite values")
-                _qmax = Q_RATIO * ctrl.p_installed_mw
+                _qmax = _vvc.Q_RATIO * ctrl.p_installed_mw
                 tc.record("q_adj_clip_bound",
                     bool((np.abs(result.q_adjusted) <= _qmax + 1e-9).all()),
                     f"max excess = "
@@ -427,7 +431,7 @@ def run_sensitivity_coordinator_tests(
                 tc.record("hw_q_adj_finite",
                     bool(np.isfinite(result.q_adjusted).all()),
                     f"max|q_adj|={float(np.abs(result.q_adjusted).max()):.4f}")
-                _qmax = Q_RATIO * ctrl_hw.p_installed_mw
+                _qmax = _vvc.Q_RATIO * ctrl_hw.p_installed_mw
                 tc.record("hw_q_adj_clipped",
                     bool((np.abs(result.q_adjusted) <= _qmax + 1e-9).all()),
                     "q_adjusted exceeds ±q_max bounds")

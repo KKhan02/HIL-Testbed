@@ -26,7 +26,7 @@ At every timestep the SVC reads the voltage at its host bus and computes:
 
 where:
     Q_MAX = SVC_Q_MAX_RATIO  × net.trafo.sn_mva.sum()   (= 0.20 × Σ sn_mva)
-    k_q   = Q_MAX / SVC_FULL_ACTION_DV                   (= Q_MAX / 0.03)
+    k_q   = Q_MAX / (SVC_FULL_ACTION_DV − SVC_DEADBAND)  (= Q_MAX / 0.03)
 
 Sign convention: q_mvar > 0 injects reactive power (raises voltage).
 
@@ -90,17 +90,31 @@ from scenario_result import (
 from violation_detector import (
     V_MIN,
     V_MAX,
-    LINE_MAX_LOADING,
-    TRAFO_MAX_LOADING,
     VOLTAGE_EPSILON,
     LOADING_EPSILON,
 )
+# LINE_MAX_LOADING / TRAFO_MAX_LOADING are read through the module at CALL
+# time, not from-imported: executor.apply_violation_limits() and
+# run_benchmark_script.py rebind them per run, and a from-import would freeze
+# the import-time value, so the per-record violation lists would disagree with
+# detect_violations() (which resolves them late).
+import violation_detector as _vd
 
+# stress.py lives inside the hiltest package, so a bare `from stress import`
+# only resolves when hiltest/ itself happens to be on sys.path — which it is
+# NOT under the normal invocation pattern (CWD = scenario_runners/). Both
+# spellings are tried so SVC bus selection uses the stress-based method
+# rather than silently degrading to the 7-day first-violation scan, which
+# picks a DIFFERENT bus and therefore produces a different SVC result.
 try:
-    from stress import apply_overvoltage_stress
+    from hiltest.stress import apply_overvoltage_stress
     _HAS_STRESS = True
 except ImportError:
-    _HAS_STRESS = False
+    try:
+        from stress import apply_overvoltage_stress
+        _HAS_STRESS = True
+    except ImportError:
+        _HAS_STRESS = False
 
 logger = logging.getLogger(__name__)
 
@@ -170,8 +184,13 @@ def _select_svc_bus_stress(net, mv_buses: pd.Index) -> Optional[int]:
     Returns None if stress is unavailable or runpp diverges.
     """
     if not _HAS_STRESS:
-        logger.debug(
-            "_select_svc_bus_stress: stress module unavailable — skipping."
+        # WARNING, not debug: this silently changes which bus the SVC is
+        # placed at, and therefore the whole Scenario 3 result.
+        logger.warning(
+            "_select_svc_bus_stress: stress module could not be imported — "
+            "falling back to the first-violation scan. The SVC will be "
+            "placed at a DIFFERENT bus than a stress-based selection would "
+            "choose; Scenario 3 results are not comparable across the two."
         )
         return None
 
@@ -208,7 +227,8 @@ def _select_svc_bus_first_violation(
 
     Returns None if no violation is found in the scan window.
     """
-    scan_steps = min(len(ap.times), 7 * 24 * 6)   # up to 7 days at 10-min
+    scan_steps = min(len(ap.times), 7 * 24 * 6)   # 1008 steps: 7 days at
+    # 10-min resolution, but 10.5 days at SimBench's native 15-min step.
     probe_net  = copy.deepcopy(net)
 
     for t in range(scan_steps):
@@ -543,8 +563,8 @@ def run_scenario_3(
 
                 ov_buses  = vm.index[vm > v_max + VOLTAGE_EPSILON].tolist()
                 uv_buses  = vm.index[vm < v_min - VOLTAGE_EPSILON].tolist()
-                ov_lines  = ll.index[ll > LINE_MAX_LOADING  + LOADING_EPSILON].tolist()
-                ov_trafos = tl.index[tl > TRAFO_MAX_LOADING + LOADING_EPSILON].tolist()
+                ov_lines  = ll.index[ll > _vd.LINE_MAX_LOADING  + LOADING_EPSILON].tolist()
+                ov_trafos = tl.index[tl > _vd.TRAFO_MAX_LOADING + LOADING_EPSILON].tolist()
 
                 losses_mw_t      = float(net.res_line["pl_mw"].sum()
                                          + net.res_trafo["pl_mw"].sum())

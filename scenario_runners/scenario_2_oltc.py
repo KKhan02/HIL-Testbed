@@ -71,11 +71,15 @@ from scenario_result import (
 from violation_detector import (
     V_MIN,
     V_MAX,
-    LINE_MAX_LOADING,
-    TRAFO_MAX_LOADING,
     VOLTAGE_EPSILON,
     LOADING_EPSILON,
 )
+# LINE_MAX_LOADING / TRAFO_MAX_LOADING are read through the module at CALL
+# time, not from-imported: executor.apply_violation_limits() and
+# run_benchmark_script.py rebind them per run, and a from-import would freeze
+# the import-time value, so the per-record violation lists would disagree with
+# detect_violations() (which resolves them late).
+import violation_detector as _vd
 
 logger = logging.getLogger(__name__)
 
@@ -883,6 +887,16 @@ def run_scenario_2(
         # [6] Build TimestepRecord from settled state
         converged = converged_post
 
+        # Initialised before the branch: der_gen_mw_t and load_mw_t are read
+        # unconditionally when the record is built, and the non-converged
+        # branch below does not set them. Previously this raised
+        # UnboundLocalError on the first timestep where BOTH the post-tap PF
+        # and the rollback PF diverged, and silently reused the previous
+        # timestep's values on any later one.
+        losses_mw_t = grid_import_mw_t = None
+        der_gen_mw_t = float(ap.der_p.iloc[t].sum())  if not ap.der_p.empty  else 0.0
+        load_mw_t    = float(ap.load_p.iloc[t].sum()) if not ap.load_p.empty else 0.0
+
         if converged:
             vm  = net.res_bus["vm_pu"].copy()
             ll  = net.res_line["loading_percent"].copy()
@@ -890,12 +904,10 @@ def run_scenario_2(
 
             ov_buses  = vm.index[vm > v_max + VOLTAGE_EPSILON].tolist()
             uv_buses  = vm.index[vm < v_min - VOLTAGE_EPSILON].tolist()
-            ov_lines  = ll.index[ll > LINE_MAX_LOADING  + LOADING_EPSILON].tolist()
-            ov_trafos = tl.index[tl > TRAFO_MAX_LOADING + LOADING_EPSILON].tolist()
+            ov_lines  = ll.index[ll > _vd.LINE_MAX_LOADING  + LOADING_EPSILON].tolist()
+            ov_trafos = tl.index[tl > _vd.TRAFO_MAX_LOADING + LOADING_EPSILON].tolist()
             losses_mw_t      = float(net.res_line["pl_mw"].sum() + net.res_trafo["pl_mw"].sum())
             grid_import_mw_t = float(net.res_ext_grid["p_mw"].sum())
-            der_gen_mw_t     = float(ap.der_p.iloc[t].sum()) if not ap.der_p.empty else 0.0
-            load_mw_t        = float(ap.load_p.iloc[t].sum()) if not ap.load_p.empty else 0.0
         else:
             vm = ll = tl = _empty_series()
             ov_buses = uv_buses = ov_lines = ov_trafos = []

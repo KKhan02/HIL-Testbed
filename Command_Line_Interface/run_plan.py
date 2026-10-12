@@ -40,6 +40,13 @@ class ParameterConfig:
     # volt_var_controller.set_qv_parameters(), which updates the dry-run
     # curve, the coordinator q_max sizing, AND the CFG: message pushed to
     # the Arduino at session startup — one value, three consumers.
+    # DER dynamics (VDE-AR-N 4110/4105 Item 4). None = the central modelling
+    # value of the standard matching the network (both 10 s / 0.50 %/s).
+    # Only bite at fine time resolution: at a 15-min step both layers are
+    # non-binding by construction.
+    t95_q_s: float = None            # Q PT1 settling time to 95 % [s], VDE range 6-60
+    ramp_rate_p_frac_s: float = None # max dP/dt as a fraction of rated [1/s], VDE 0.0033-0.0066
+
     q_ratio: float = None # Q_max / P_installed ratio, must satisfy 0 < q <= 1
     u1_pu:   float = None # lower saturation breakpoint [pu]
     u2_pu:   float = None # deadband lower edge [pu]
@@ -98,6 +105,8 @@ class ParameterConfig:
             der_scaling  = {(None if k == "null" else k): v for k, v in data.get("der_scaling",  {None: 1.0}).items()},
             load_scaling = {(None if k == "null" else k): v for k, v in data.get("load_scaling", {None: 1.0}).items()},
             timestep_resolution = data.get("timestep_resolution",15),
+            t95_q_s = data.get("t95_q_s", None),
+            ramp_rate_p_frac_s = data.get("ramp_rate_p_frac_s", None),
             q_ratio = data.get("q_ratio", None),
             u1_pu   = data.get("u1_pu", None),
             u2_pu   = data.get("u2_pu", None),

@@ -1,5 +1,7 @@
 '''
-Builds annual 10-min time-series profiles for load, PV, and wind for any pandapower network
+Builds annual time-series profiles for load, PV, and wind for any pandapower network.
+Resolution follows the source: SimBench native profiles are 15-min; the DWD
+fallback inherits whatever cadence the CSVs carry (PT5M, PT10M, ...).
 
 For Simbench networks, sb.get_absolute_values() provides native 15-min annual profiles
 
@@ -18,7 +20,9 @@ T2M   : °C     (no conversion needed)
 
 PV conversion: pvlib POA (Erbs decomposition) + NOCT temperature correction (need DWD temperature data)
 
-Wind conversion: piecewise cubic with effective Cp factor. Uses mean wind speed
+Wind conversion: normalised piecewise cubic between cut-in and rated. NOTE: there
+is no Cp factor and no hub-height extrapolation — DWD F is a 10 m wind speed fed
+directly into the curve, which under-predicts output for a real turbine.
 
 Load fallback:   BDEW 2025 updated SLPs via oemof.demand >= 0.2.2 (H25 / G25 / L25). Per-load type assignment from 
 net.load.name / net.load.type fields. Holidays via workalendar (optional — graceful fallback to empty list).
@@ -41,7 +45,17 @@ import warnings
 import numpy as np
 import pandas as pd
 
-warnings.filterwarnings("ignore")
+# Scoped deliberately. An unqualified filterwarnings("ignore") here applies
+# process-wide the moment this module is imported — which every entry point
+# does — and silenced the hardware diagnostics in volt_var_controller
+# (Arduino protocol error -> Q=0 fallback, serial timeout, non-finite
+# p_installed) and violation_detector (empty res_line/res_trafo, so thermal
+# violations cannot be detected). Matches the scoping the other modules use.
+warnings.filterwarnings(
+    "ignore",
+    category=FutureWarning,
+    module=r"simbench\.converter\.csv_pp_converter",
+)
 
 # ===========================================================================
 # Station / site constants  (DWD station 691 — Bremen)
@@ -172,7 +186,10 @@ def find_dwd_file(data_dir:str,
     Resolution Order:
         If file_map is provided and contains parameter_code as a key, use that filename directly. 
         This will hopefully support any datasource naming convention (ERA5, DWD, metmast etc.)
-        Otherwise, fall back to DWD CDC glob pattern i.e. data_OBS_DEU_PT10M_{parameter_code}*.csv  
+        Otherwise, fall back to the DWD CDC glob pattern
+        data_OBS_DEU_PT*M_{parameter_code}*.csv, which matches any reporting
+        cadence (PT5M, PT10M, ...). The code is also tried with hyphens
+        stripped, since DWD writes RAD-G into filenames as RADG.
 
     Parameters:
         data_dir        : Folder containing the weather CSV files
@@ -207,18 +224,29 @@ def find_dwd_file(data_dir:str,
         return fpath
     
     # Path 2 - DWD CDC default glob pattern
-    pattern = os.path.join(data_dir,f"data_OBS_DEU_PT10M_{parameter_code}*.csv")
+    # PT*M, not a hardcoded PT10M: DWD CDC publishes 5-minute (PT5M) and
+    # 10-minute (PT10M) products, and the old pattern silently could not see
+    # the PT5M files at all. The hyphen-stripped alias is needed because the
+    # solar parameter code is "RAD-G" while DWD names the file ...RADG_<id>.
+    codes = [parameter_code]
+    if "-" in parameter_code:
+        codes.append(parameter_code.replace("-", ""))
+
+    matches = []
+    for code in codes:
+        pattern = os.path.join(data_dir, f"data_OBS_DEU_PT*M_{code}*.csv")
+        matches.extend(glob.glob(pattern))
+    pattern = os.path.join(data_dir, f"data_OBS_DEU_PT*M_{parameter_code}*.csv")
 
     # glob.glob(pattern) searches the filesystem for all files matching the pattern 
     # and returns a list of matching file paths. The * wildcard means "anything can be here"
 
-    matches = glob.glob(pattern)
     if matches:
         return sorted(matches)[0] # If two files match, always get the same file irrespective of OS file ordering  
     raise FileNotFoundError(
         f"DWD file not found for parameter '{parameter_code}' in '{data_dir}'.\n"
-        f"Expected a file matching: "
-        f"data_OBS_DEU_PT10M_{parameter_code}*.csv\n"
+        f"Expected a file matching any of: "
+        f"{[os.path.basename(p) for p in (f'data_OBS_DEU_PT*M_{c}*.csv' for c in codes)]}\n"
         f"For a non-DWD datasource, pass a file_map dict to "
         f"build_annual_profiles().\n"
         f"DWD datasets: https://cdc.dwd.de/portal/202209231028/searchview"
@@ -349,6 +377,26 @@ def load_dwd_temperature(data_dir: str,
 # 3.  PV power conversion  (pvlib POA + NOCT temperature correction)
 # ===========================================================================
 
+def _night_mask(index: pd.DatetimeIndex) -> np.ndarray:
+    '''
+    Boolean mask of timestamps when the sun is below the horizon at the
+    configured site, so PV output is physically zero.
+
+    Uses pvlib apparent zenith > 90 deg. Resolution-independent, and correct
+    at high latitude in midsummer where an hour-of-day rule is not.
+    Falls back to the old clock-hour rule if pvlib is unavailable.
+    '''
+    try:
+        import pvlib
+        loc = pvlib.location.Location(
+            latitude=LATITUDE, longitude=LONGITUDE, tz=TIMEZONE
+        )
+        zenith = loc.get_solarposition(index)["apparent_zenith"]
+        return (zenith > 90.0).values
+    except Exception:
+        return ((index.hour >= 22) | (index.hour <= 4))
+
+
 def compute_pv_profile(solar_df:pd.DataFrame,
                        p_rated_mw:float,
                        temp_series:pd.Series = None) -> pd.Series:
@@ -435,6 +483,10 @@ def compute_wind_profile(wind_df: pd.DataFrame,
                          p_rated_mw: float) -> pd.Series:
     '''
     Converts 10-min mean wind speed to wind power output
+
+    No Cp factor and no shear correction: v is the 10 m measurement as
+    reported. A hub-height extrapolation (log or power law) would raise
+    output materially for a real turbine.
 
     Power curve:
         P = 0                                           v < v_cut_in
@@ -769,8 +821,11 @@ def build_annual_profiles(
         # Zero out physically impossible night-time PV generation.
         # SimBench commercial/semiurb networks contain small non-zero
         # PV values at night due to profile scaling.
-        night_mask = (pv_df.index.hour >= 22) | (pv_df.index.hour <= 4)
-        pv_df.loc[night_mask] = 0.0
+        # Zero sub-horizon PV from solar geometry rather than clock hours.
+        # The old (hour >= 22) | (hour <= 4) rule zeroed the whole 04:00
+        # hour, clipping genuine midsummer irradiance at 53 N, and did not
+        # sharpen at finer time resolution.
+        pv_df.loc[_night_mask(pv_df.index)] = 0.0
 
         wind_df = sgen_prof[
             [i for i in wind_idx if i in sgen_prof.columns]
@@ -861,9 +916,9 @@ def build_annual_profiles(
             pv_series = pv_series[~pv_series.index.duplicated(keep="first")]
             pv_df[idx] = pv_series.reindex(times).fillna(0.0)
         
-            # Zero out night-time PV (physically impossible generation)
-            night_mask = (pv_df.index.hour >= 22) | (pv_df.index.hour <= 4)
-            pv_df.loc[night_mask] = 0.0
+        # Zero sub-horizon PV once, after the loop — the old code re-masked
+        # the whole frame on every DER iteration.
+        pv_df.loc[_night_mask(pv_df.index)] = 0.0
     else:
         print("[profile_builder] No PV sgens found in network.")
 

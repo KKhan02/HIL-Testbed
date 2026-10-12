@@ -615,6 +615,47 @@ def _ask_parameters() -> ParameterConfig:
     # updates the dry-run curve, the coordinator sizing, AND the CFG:
     # message pushed to the Arduino — one value, all consumers.
     q_ratio = u1 = u2 = u3 = u4 = None
+    # --- DER dynamics (VDE-AR-N 4110/4105 Item 4) ---------------------------
+    # Only worth offering because they are otherwise unreachable: the six
+    # SLOW/FAST presets in der_dynamics.py had no caller at all before this.
+    # At a 15-min step both layers are non-binding by construction, so the
+    # prompt says so rather than implying the defaults matter at that scale.
+    t95_q_s = None
+    ramp_rate_p_frac_s = None
+    override_dyn = Confirm.ask(
+        "Override the DER dynamics (Q PT1 settling time and P ramp rate)? "
+        "Both are non-binding at 15-min resolution",
+        default=False,
+        console=console,
+    )
+    if override_dyn:
+        while True:
+            t95_q_s = _ask_value(
+                "t95 — time for Q to reach 95 % of a step setpoint [s] (VDE 6–60)",
+                default=10.0, cast=float,
+            )
+            ramp_rate_p_frac_s = _ask_value(
+                "P ramp rate as a fraction of rated power per second (VDE 0.0033–0.0066)",
+                default=0.005, cast=float,
+            )
+            if not (0.0 < t95_q_s):
+                console.print("[error]t95 must be > 0 s.[/error]")
+                continue
+            if not (0.0 < ramp_rate_p_frac_s):
+                console.print("[error]Ramp rate must be > 0.[/error]")
+                continue
+            if not (6.0 <= t95_q_s <= 60.0):
+                console.print(
+                    f"[warning]t95={t95_q_s} s is outside the VDE-AR-N "
+                    f"4110/4105 adjustable range 6–60 s.[/warning]"
+                )
+            if not (0.0033 <= ramp_rate_p_frac_s <= 0.0066):
+                console.print(
+                    f"[warning]Ramp rate {ramp_rate_p_frac_s} is outside "
+                    f"the VDE range 0.0033–0.0066 /s.[/warning]"
+                )
+            break
+
     override_qv = Confirm.ask(
         "Override the Q(V) characteristic parameters for this run?",
         default=False,
@@ -657,6 +698,8 @@ def _ask_parameters() -> ParameterConfig:
         der_scaling=der_scaling,
         load_scaling=load_scaling,
         timestep_resolution=timestep_resolution,
+        t95_q_s=t95_q_s,
+        ramp_rate_p_frac_s=ramp_rate_p_frac_s,
         q_ratio=q_ratio,
         u1_pu=u1, u2_pu=u2, u3_pu=u3, u4_pu=u4,
     )

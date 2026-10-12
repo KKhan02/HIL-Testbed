@@ -85,10 +85,12 @@ The original net is never modified.  Callers do not need to deepcopy.
 
 Scope
 -----
-- Voltage violations only (0.95–1.05 pu band per VDE-AR-N 4110/4105).
-- Thermal loading violations are NOT assessed — this is a voltage HC
-  analysis, consistent with the primary constraint in distribution grids
-  with high PV penetration.
+- ALL constraint classes terminate the sweep: voltage (0.95-1.05 pu per
+  VDE-AR-N 4110/4105), line and transformer thermal loading, and line
+  angle difference — whatever detect_violations() reports. Voltage is the
+  usual binding constraint under high PV, but a thermally-bound result is
+  reported as such rather than silently ignored; HCResult.binding_bus and
+  binding_vm_pu are NaN/-1 in that case and binding_element names it.
 - Monte Carlo placement: SP7 (post-semester).
 - QSTS sweep: not in scope for semester benchmark.
 """
@@ -106,7 +108,7 @@ import pandapower as pp
 import pandapower.topology as pptop
 import pandas as pd
 
-from violation_detector import V_MIN, V_MAX, detect_violations
+from violation_detector import detect_violations
 from volt_var_controller import QVCharacteristic, VoltVarController
 
 logger = logging.getLogger(__name__)
@@ -155,7 +157,14 @@ class HCResult:
     binding_bus     : bus index where the first violation appeared.
                       -1 if no violation was found.
     binding_vm_pu   : vm_pu at binding_bus at the violating step.
-                      NaN if no violation was found.
+                      NaN if no violation was found, or if the binding
+                      constraint was thermal or angular rather than voltage.
+    binding_element : human-readable description of what actually stopped
+                      the sweep ("overvoltage at bus 42", "line 7 at 104.2 %
+                      loading", "none"). The sweep terminates on ANY
+                      violation class, so this is the only field that
+                      distinguishes a voltage-bound from a thermally-bound
+                      hosting capacity.
     n_steps         : number of sweep steps executed.
     hc_limit_reached: True if the sweep reached max without any violation.
     qv_converged    : True if Q(V) iteration converged in all steps (Case B).
@@ -172,6 +181,7 @@ class HCResult:
     violated_at_mw:    float
     binding_bus:       int
     binding_vm_pu:     float
+    binding_element:   str
     n_steps:           int
     hc_limit_reached:  bool
     endoffeeder_bus:   int
@@ -190,6 +200,7 @@ class HCResult:
             "violated_at_mw":   self.violated_at_mw,
             "binding_bus":      self.binding_bus,
             "binding_vm_pu":    self.binding_vm_pu,
+            "binding_element":  self.binding_element,
             "n_steps":          self.n_steps,
             "hc_limit_reached": self.hc_limit_reached,
             "endoffeeder_bus":  self.endoffeeder_bus,
@@ -361,27 +372,40 @@ def _build_runpp_kwargs(extra: Optional[dict]) -> dict:
     return kwargs
 
 
-def _extract_binding(report) -> tuple[int, float]:
+def _extract_binding(report) -> tuple[int, float, str]:
     """
-    Return (binding_bus, binding_vm_pu) from a ViolationReport.
+    Return (binding_bus, binding_vm_pu, binding_element) from a
+    ViolationReport.
 
-    Uses the most_severe_over_voltage_buses property — the bus with the
-    highest positive deviation from V_MAX.  Under-voltage violations are
-    not expected in an HC overvoltage sweep but are captured by
-    any_violations; only the OV binding bus is returned here.
+    The sweep stops on ANY violation class, so a result can be bound by a
+    thermal or angle constraint rather than a voltage one. Previously those
+    cases returned (-1, nan) with no indication of why, which read as a
+    lookup failure. binding_element now names the class and the element so a
+    thermally-bound hosting capacity is not mistaken for a voltage one.
     """
     if not report.over_voltage.empty:
         binding_bus = int(report.most_severe_over_voltage_buses[0])
         binding_vm  = float(report.over_voltage.at[binding_bus, "vm_pu"])
-        return binding_bus, binding_vm
-    # Fallback: under-voltage (should not occur in OV sweep but be safe)
+        return binding_bus, binding_vm, f"overvoltage at bus {binding_bus}"
     if not report.under_voltage.empty:
         binding_bus = int(
             report.under_voltage.sort_values("deviation_pu", ascending=False).index[0]
         )
         binding_vm = float(report.under_voltage.at[binding_bus, "vm_pu"])
-        return binding_bus, binding_vm
-    return -1, float("nan")
+        return binding_bus, binding_vm, f"undervoltage at bus {binding_bus}"
+    if not report.overloaded_lines.empty:
+        line = report.overloaded_lines["loading_percent"].idxmax()
+        pct  = float(report.overloaded_lines.at[line, "loading_percent"])
+        return -1, float("nan"), f"line {int(line)} at {pct:.1f} % loading"
+    if not report.overloaded_trafos.empty:
+        tr  = report.overloaded_trafos["loading_percent"].idxmax()
+        pct = float(report.overloaded_trafos.at[tr, "loading_percent"])
+        return -1, float("nan"), f"trafo {int(tr)} at {pct:.1f} % loading"
+    if not report.angle_violations.empty:
+        ln  = report.angle_violations["va_diff_degree"].idxmax()
+        deg = float(report.angle_violations.at[ln, "va_diff_degree"])
+        return -1, float("nan"), f"line {int(ln)} angle diff {deg:.1f} deg"
+    return -1, float("nan"), "none"
 
 
 def _qv_converge(
@@ -501,6 +525,7 @@ def run_baseline_hc(
     violated_at_mw   = float("nan")
     binding_bus      = -1
     binding_vm_pu    = float("nan")
+    binding_element  = "none"
     hc_limit_reached = False
     n_steps          = 0
     sweep_curve: list = []
@@ -527,6 +552,7 @@ def run_baseline_hc(
             violated_at_mw = total_mw
             binding_bus    = -1
             binding_vm_pu  = float("nan")
+            binding_element = "power flow did not converge"
             net.sgen.drop(index=last_added_idx, inplace=True)
             break
 
@@ -541,7 +567,7 @@ def run_baseline_hc(
 
         if report.any_violations:
             violated_at_mw            = total_mw
-            binding_bus, binding_vm_pu = _extract_binding(report)
+            binding_bus, binding_vm_pu, binding_element = _extract_binding(report)
             net.sgen.drop(index=last_added_idx, inplace=True)
             sweep_curve.append({
                 "mw":        total_mw,
@@ -567,8 +593,8 @@ def run_baseline_hc(
 
     logger.info(
         "[HC-baseline | %s] HC=%.3f MW | violated_at=%.3f MW | "
-        "binding_bus=%d | binding_vm=%.4f pu | steps=%d",
-        network_id, hc_mw, violated_at_mw, binding_bus, binding_vm_pu, n_steps,
+        "bound by: %s | binding_vm=%.4f pu | steps=%d",
+        network_id, hc_mw, violated_at_mw, binding_element, binding_vm_pu, n_steps,
     )
 
     return (
@@ -579,6 +605,7 @@ def run_baseline_hc(
             violated_at_mw   = violated_at_mw,
             binding_bus      = binding_bus,
             binding_vm_pu    = binding_vm_pu,
+            binding_element  = binding_element,
             n_steps          = n_steps,
             hc_limit_reached = hc_limit_reached,
             endoffeeder_bus  = eof_bus,
@@ -649,6 +676,7 @@ def run_hc_with_volt_var(
     violated_at_mw   = float("nan")
     binding_bus      = -1
     binding_vm_pu    = float("nan")
+    binding_element  = "none"
     hc_limit_reached = False
     n_steps          = 0
     sweep_curve: list = []
@@ -695,6 +723,7 @@ def run_hc_with_volt_var(
             violated_at_mw = total_mw
             binding_bus    = -1
             binding_vm_pu  = float("nan")
+            binding_element = "power flow did not converge"
             break
 
         report = detect_violations(net)
@@ -710,7 +739,7 @@ def run_hc_with_volt_var(
 
         if report.any_violations:
             violated_at_mw             = total_mw
-            binding_bus, binding_vm_pu = _extract_binding(report)
+            binding_bus, binding_vm_pu, binding_element = _extract_binding(report)
             sweep_curve.append({
                 "mw":        total_mw,
                 "max_vm_pu": float(net.res_bus["vm_pu"].max()),
@@ -733,9 +762,9 @@ def run_hc_with_volt_var(
 
     logger.info(
         "[HC-voltvar | %s] HC=%.3f MW | violated_at=%.3f MW | "
-        "binding_bus=%d | binding_vm=%.4f pu | steps=%d | "
+        "bound by: %s | binding_vm=%.4f pu | steps=%d | "
         "qv_converged=%s | qv_iters_max=%d",
-        network_id, hc_mw, violated_at_mw, binding_bus, binding_vm_pu,
+        network_id, hc_mw, violated_at_mw, binding_element, binding_vm_pu,
         n_steps, all_qv_converged, qv_iters_max,
     )
 
@@ -746,6 +775,7 @@ def run_hc_with_volt_var(
         violated_at_mw   = violated_at_mw,
         binding_bus      = binding_bus,
         binding_vm_pu    = binding_vm_pu,
+        binding_element  = binding_element,
         n_steps          = n_steps,
         hc_limit_reached = hc_limit_reached,
         endoffeeder_bus  = eof_bus,
