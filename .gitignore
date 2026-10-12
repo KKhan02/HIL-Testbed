@@ -15,3 +15,6 @@ __pycache__/
 /sync-repos.ps1
 /cigre_mv_day_profiles.mat
 /network_plugin_bundle.zip
+
+void/
+README_old.md
