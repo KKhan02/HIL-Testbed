@@ -32,10 +32,15 @@ Sign convention: q_mvar > 0 injects reactive power (raises voltage).
 
 SVC bus selection
 -----------------
-Primary: the in-service MV bus with the lowest mean voltage under stress
-         conditions (apply_overvoltage_stress → runpp → rank buses).
-Fallback: the MV bus with the worst voltage at the first timestep with any
-          voltage violation during a brief pre-scan.
+The device is centralised at the substation: one compensator at the point of
+common coupling regulating the whole MV group, as opposed to the distributed
+inverter control of Scenarios 4 and 5.  Placement is therefore read from the
+topology, not inferred from a voltage ranking.
+
+Primary: the MV-side busbar of the in-service step-down substation
+         transformer (net.trafo.lv_bus).
+Fallback: the eligible MV bus with the fewest branches to the slack.
+Last resort: the lowest-index eligible MV bus.
 Guard: only MV buses (vn_kv matching the dominant MV voltage level) are
        eligible.  HV slack buses are excluded.
 
@@ -72,7 +77,6 @@ end of the run so the net object is left in a clean state for the caller.
 
 from __future__ import annotations
 
-import copy
 import logging
 import time
 from typing import Optional
@@ -99,22 +103,6 @@ from violation_detector import (
 # the import-time value, so the per-record violation lists would disagree with
 # detect_violations() (which resolves them late).
 import violation_detector as _vd
-
-# stress.py lives inside the hiltest package, so a bare `from stress import`
-# only resolves when hiltest/ itself happens to be on sys.path — which it is
-# NOT under the normal invocation pattern (CWD = scenario_runners/). Both
-# spellings are tried so SVC bus selection uses the stress-based method
-# rather than silently degrading to the 7-day first-violation scan, which
-# picks a DIFFERENT bus and therefore produces a different SVC result.
-try:
-    from hiltest.stress import apply_overvoltage_stress
-    _HAS_STRESS = True
-except ImportError:
-    try:
-        from stress import apply_overvoltage_stress
-        _HAS_STRESS = True
-    except ImportError:
-        _HAS_STRESS = False
 
 logger = logging.getLogger(__name__)
 
@@ -173,112 +161,189 @@ def _eligible_mv_buses(net) -> pd.Index:
     return net.bus.index[mask]
 
 
-def _select_svc_bus_stress(net, mv_buses: pd.Index) -> Optional[int]:
+def _substation_lv_buses(net) -> list[int]:
     """
-    Select the SVC bus by applying overvoltage stress and ranking bus voltages.
+    Return the MV-side busbars of the step-down substation transformers, in
+    preference order.
 
-    Returns the MV bus index with the lowest mean vm_pu under stress, i.e.
-    the bus most likely to suffer undervoltage under high load conditions
-    (which corresponds to the electrically weakest / highest impedance bus).
+    A bus qualifies if it is the lv_bus of an in-service two-winding
+    transformer whose hv_bus sits at a strictly higher nominal voltage. That
+    is the substation busbar — the point of common coupling between the HV
+    system and the MV feeders.
 
-    Returns None if stress is unavailable or runpp diverges.
+    Ordering
+    --------
+    1. Transformers fed directly from an in-service ext_grid (the infeed
+       actually carrying the substation) before any others.
+    2. Descending sn_mva (the larger of two parallel transformers).
+    3. Ascending bus index, so the choice is deterministic for a network
+       whose busbars are otherwise identical (SimBench MV networks pair
+       busbar1.1 / busbar1.2 at the same voltage level).
+
+    Returns an empty list for a network with no step-down transformer, e.g.
+    an LV feeder model supplied directly by an ext_grid.
     """
-    if not _HAS_STRESS:
-        # WARNING, not debug: this silently changes which bus the SVC is
-        # placed at, and therefore the whole Scenario 3 result.
-        logger.warning(
-            "_select_svc_bus_stress: stress module could not be imported — "
-            "falling back to the first-violation scan. The SVC will be "
-            "placed at a DIFFERENT bus than a stress-based selection would "
-            "choose; Scenario 3 results are not comparable across the two."
-        )
-        return None
+    if net.trafo.empty:
+        return []
 
-    probe_net = copy.deepcopy(net)
-    try:
-        apply_overvoltage_stress(probe_net)
-        pp.runpp(probe_net, voltage_depend_loads=False)
-    except Exception as exc:
-        logger.warning(
-            "_select_svc_bus_stress: stress runpp failed (%s) — "
-            "falling back to first-violation method.", exc,
-        )
-        return None
+    vn = net.bus["vn_kv"]
+    slack: set = set()
+    if not net.ext_grid.empty:
+        in_svc = net.ext_grid["in_service"] == True        # noqa: E712
+        slack = {int(b) for b in net.ext_grid.loc[in_svc, "bus"].values}
 
-    vm = probe_net.res_bus.loc[mv_buses, "vm_pu"]
-    selected = int(vm.idxmin())
-    logger.info(
-        "_select_svc_bus_stress: SVC bus selected = %d "
-        "(vm_pu=%.4f under stress).", selected, float(vm.min()),
-    )
-    return selected
-
-
-def _select_svc_bus_first_violation(
-        net,
-        ap: AdaptedProfiles,
-        mv_buses: pd.Index,
-        v_max: float,
-        v_min: float,
-) -> Optional[int]:
-    """
-    Select the SVC bus from the worst-voltage MV bus at the first timestep
-    with any voltage violation in a lightweight pre-scan (first 7 days).
-
-    Returns None if no violation is found in the scan window.
-    """
-    scan_steps = min(len(ap.times), 7 * 24 * 6)   # 1008 steps: 7 days at
-    # 10-min resolution, but 10.5 days at SimBench's native 15-min step.
-    probe_net  = copy.deepcopy(net)
-
-    for t in range(scan_steps):
-        if not ap.load_p.empty:
-            probe_net.load.loc[ap.load_idx, "p_mw"]   = ap.load_p.iloc[t].values
-            probe_net.load.loc[ap.load_idx, "q_mvar"] = ap.load_q.iloc[t].values
-        if not ap.der_p.empty:
-            probe_net.sgen.loc[ap.der_p.columns, "p_mw"]   = ap.der_p.iloc[t].values
-            probe_net.sgen.loc[ap.der_p.columns, "q_mvar"] = 0.0
-
-        try:
-            pp.runpp(probe_net, voltage_depend_loads=False)
-        except Exception:
+    ranked: list[tuple[int, float, int]] = []
+    for idx in net.trafo.index[net.trafo["in_service"] == True]:   # noqa: E712
+        hv = int(net.trafo.at[idx, "hv_bus"])
+        lv = int(net.trafo.at[idx, "lv_bus"])
+        if hv not in vn.index or lv not in vn.index:
             continue
+        if not bool(net.bus.at[lv, "in_service"]):
+            continue
+        if float(vn.at[hv]) <= float(vn.at[lv]):
+            continue                      # not a step-down transformer
+        sn = net.trafo.at[idx, "sn_mva"]
+        sn = float(sn) if pd.notna(sn) else 0.0
+        ranked.append((0 if hv in slack else 1, -sn, lv))
 
-        vm = probe_net.res_bus.loc[mv_buses, "vm_pu"]
-        violated = vm[(vm > v_max + VOLTAGE_EPSILON) | (vm < v_min - VOLTAGE_EPSILON)]
-        if not violated.empty:
-            # Worst bus = largest absolute deviation from 1.0
-            worst = int((violated - 1.0).abs().idxmax())
+    ranked.sort()
+    ordered: list[int] = []
+    for _, _, lv in ranked:
+        if lv not in ordered:
+            ordered.append(lv)
+    return ordered
+
+
+def _select_svc_bus_substation(net, mv_buses: pd.Index) -> Optional[int]:
+    """
+    Primary selection: place the SVC at the substation MV busbar.
+
+    This is the centralised-compensation configuration the scenario is
+    designed to benchmark — one device at the point of common coupling,
+    regulating the whole MV group, as distinct from the distributed
+    inverter-based control of Scenarios 4 and 5. Placement is therefore a
+    topological fact about the network, not something to be inferred from a
+    voltage ranking: it is read straight from net.trafo and does not depend
+    on a power flow, on the profile data, or on which stress case happens
+    to be applied.
+
+    Returns None only if the network has no in-service step-down transformer
+    whose MV busbar is in the eligible set.
+    """
+    for bus in _substation_lv_buses(net):
+        if bus in mv_buses:
             logger.info(
-                "_select_svc_bus_first_violation: SVC bus selected = %d "
-                "(first violation at t=%d, vm_pu=%.4f).",
-                worst, t, float(vm.loc[worst]),
+                "_select_svc_bus_substation: SVC bus selected = %d "
+                "(substation MV busbar, centralised placement).", bus,
             )
-            return worst
+            return bus
 
     logger.warning(
-        "_select_svc_bus_first_violation: no violation found in %d-step scan.",
-        scan_steps,
+        "_select_svc_bus_substation: no step-down transformer with an "
+        "eligible MV busbar found (net.trafo has %d rows) — falling back to "
+        "the eligible MV bus nearest the slack.", len(net.trafo),
     )
     return None
 
 
-def _select_svc_bus(
-        net,
-        ap: AdaptedProfiles,
-        v_min: float,
-        v_max: float,
-) -> int:
+def _select_svc_bus_nearest_slack(net, mv_buses: pd.Index) -> Optional[int]:
     """
-    Select the fixed SVC bus using stress analysis with fallback to first
-    violation scan.
+    Fallback selection: the eligible MV bus electrically nearest the infeed.
+
+    Counts branches from the slack bus over the connectivity graph —
+    transformers included, switches respected — and returns the eligible MV
+    bus with the fewest. For a radial distribution network that is the
+    substation busbar or its immediate neighbour, so the result stays
+    consistent with _select_svc_bus_substation().
+
+    This is used only when the transformer table does not expose a
+    step-down busbar. A voltage ranking is deliberately NOT used here: under
+    the overvoltage stress case the minimum-voltage bus is the stiffest bus
+    only while every feeder is generation-dominated. On a network with one
+    load-dominated feeder (CIGRE MV: buses 12-14 carry almost no DER) the
+    minimum lands at the far end of that feeder instead, which is remote
+    placement wearing the label of the centralised case.
+
+    Returns None if the graph cannot be built or no eligible bus is reachable
+    from the slack.
+    """
+    if net.ext_grid.empty:
+        logger.warning(
+            "_select_svc_bus_nearest_slack: network has no ext_grid, so "
+            "there is no infeed to measure distance from."
+        )
+        return None
+
+    try:
+        import networkx as nx
+        import pandapower.topology as top
+        graph = top.create_nxgraph(net, respect_switches=True)
+    except Exception as exc:                              # noqa: BLE001
+        logger.warning(
+            "_select_svc_bus_nearest_slack: could not build the "
+            "connectivity graph (%s).", exc,
+        )
+        return None
+
+    in_svc = net.ext_grid["in_service"] == True           # noqa: E712
+    slack_buses = [int(b) for b in net.ext_grid.loc[in_svc, "bus"].values]
+
+    best: Optional[tuple[int, int]] = None                # (hops, bus)
+    for slack in slack_buses:
+        if slack not in graph:
+            continue
+        hops = nx.single_source_shortest_path_length(graph, slack)
+        for bus in mv_buses:
+            d = hops.get(int(bus))
+            if d is None:
+                continue
+            cand = (int(d), int(bus))
+            if best is None or cand < best:
+                best = cand
+
+    if best is None:
+        logger.warning(
+            "_select_svc_bus_nearest_slack: no eligible MV bus is reachable "
+            "from any in-service ext_grid."
+        )
+        return None
+
+    hops, selected = best
+    logger.info(
+        "_select_svc_bus_nearest_slack: SVC bus selected = %d "
+        "(%d branch(es) from the slack — nearest eligible MV bus).",
+        selected, hops,
+    )
+    return selected
+
+
+def _select_svc_bus(net) -> int:
+    """
+    Select the fixed SVC bus. Centralised placement: the substation MV
+    busbar.
 
     Priority
     --------
-    1. Stress analysis (apply_overvoltage_stress + runpp).
-    2. First-violation pre-scan (lightweight 7-day forward pass).
-    3. Last resort: bus with lowest nominal voltage in the MV set
-       (most electrically remote heuristic).
+    1. net.trafo: the MV-side busbar of the step-down substation
+       transformer.
+    2. The eligible MV bus with the fewest branches to the slack, for a
+       network that exposes no step-down transformer.
+    3. Last resort: the lowest-index eligible MV bus. In pandapower and
+       SimBench networks the substation busbars carry the lowest MV bus
+       indices, so this is the closest guess available from the bus table
+       alone.
+
+    All three are topological and need no power flow, no profile data and no
+    stress case, so the placement is reproducible and independent of the run
+    configuration. Every path targets the same location, so a failure of
+    path 1 lowers the confidence in the placement but does not change the
+    configuration being benchmarked.
+
+    The previous chain mixed objectives: it ranked buses by voltage under an
+    overvoltage stress case and fell back to the largest deviation at the
+    first violating timestep, which placed the device at the most remote
+    feeder bus and silently reported a single-point distributed compensator
+    as the centralised case.
 
     Raises
     ------
@@ -291,19 +356,18 @@ def _select_svc_bus(
             "Check net.bus.vn_kv and net.bus.in_service."
         )
 
-    # Primary: stress-based selection
-    bus = _select_svc_bus_stress(net, mv_buses)
+    # Primary: the substation MV busbar, read from the transformer table
+    bus = _select_svc_bus_substation(net, mv_buses)
     if bus is not None:
         return bus
 
-    # Fallback: first violation scan
-    bus = _select_svc_bus_first_violation(net, ap, mv_buses, v_max, v_min)
+    # Fallback: the eligible MV bus nearest the infeed
+    bus = _select_svc_bus_nearest_slack(net, mv_buses)
     if bus is not None:
         return bus
 
-    # Last resort: use the last bus in the MV set
-    # (typically the highest-index = most remote bus in pandapower networks)
-    bus = int(mv_buses[-1])
+    # Last resort: lowest-index eligible MV bus (nearest the infeed)
+    bus = int(mv_buses[0])
     logger.warning(
         "_select_svc_bus: using last-resort bus %d — verify placement.", bus,
     )
@@ -423,7 +487,7 @@ def run_scenario_3(
 
     if start_t >= len(ap.times) and resumed_records:
         q_max, k_q = _compute_svc_params(net)
-        svc_bus    = _select_svc_bus(net, ap, v_min, v_max)
+        svc_bus    = _select_svc_bus(net)
         logger.info(
             "[Scenario 3 | %s] Checkpoint already covers all %d steps — skipping simulation.",
             network_id, len(ap.times),
@@ -451,7 +515,7 @@ def run_scenario_3(
     # SVC parameters
     # ------------------------------------------------------------------
     q_max, k_q = _compute_svc_params(net)
-    svc_bus    = _select_svc_bus(net, ap, v_min, v_max)
+    svc_bus    = _select_svc_bus(net)
 
     # Create SVC as a static generator with p_mw=0
     svc_idx = pp.create_sgen(

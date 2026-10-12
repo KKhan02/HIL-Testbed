@@ -242,6 +242,54 @@ def test_profile_builder_does_not_silence_warnings_globally():
     )
 
 
+def test_svc_placement_is_centralised_and_paths_agree():
+    """
+    Scenario 3 benchmarks a single centralised SVC at the substation MV
+    busbar, so every selection path must target that bus. The old chain
+    ranked its fallback by largest voltage deviation, which placed the
+    device at the most remote feeder bus whenever the stress module was
+    unavailable — a different configuration reported under the same name.
+    """
+    import scenario_3_svc as s3
+
+    net      = pn.create_cigre_network_mv(with_der="pv_wind")
+    mv_buses = s3._eligible_mv_buses(net)
+    busbars  = set(net.trafo["lv_bus"].astype(int))
+
+    assert not hasattr(s3, "_select_svc_bus_first_violation"), (
+        "the largest-deviation selector is back; it places the SVC at a "
+        "remote feeder bus, not at the substation"
+    )
+
+    chosen = s3._select_svc_bus(net)
+    assert chosen in busbars, (
+        f"SVC placed at bus {chosen}, which is not a transformer LV busbar "
+        f"{sorted(busbars)} — placement is no longer centralised"
+    )
+
+    by_trafo = s3._select_svc_bus_substation(net, mv_buses)
+    by_hops  = s3._select_svc_bus_nearest_slack(net, mv_buses)
+    assert by_trafo in busbars
+    assert by_hops in busbars, (
+        f"the fallback chose bus {by_hops}, outside the busbar set "
+        f"{sorted(busbars)} — it disagrees with the primary path"
+    )
+
+    # A voltage ranking must not come back as the fallback: under the
+    # overvoltage stress case CIGRE MV's load-dominated feeder 2 puts the
+    # minimum at bus 14, the far end, not at a busbar.
+    assert not hasattr(s3, "_select_svc_bus_stress"), (
+        "placement is ranking buses by voltage again"
+    )
+
+    # The last resort must not reach for the far end of the feeder either.
+    assert int(mv_buses[0]) < int(mv_buses[-1])
+    assert "mv_buses[0]" in inspect.getsource(s3._select_svc_bus), (
+        "the last-resort branch still takes the highest-index (most remote) "
+        "MV bus"
+    )
+
+
 def test_dwd_discovery_handles_five_minute_files():
     """The default glob was pinned to PT10M and to the hyphenated RAD-G code."""
     import profile_builder as pb
