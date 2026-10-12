@@ -348,7 +348,7 @@ else:
 # Set TIME_SLICE to None for the full annual run, or to a (period, index) pair
 # for a fast iteration: ("day", 172) | ("week", 28) | ("month", 6)
 # ===========================================================================
-TIME_SLICE = None
+TIME_SLICE = ("day", 172)
 
 profiles_run = (
     slice_profiles(profiles, period=TIME_SLICE[0], index=TIME_SLICE[1])
