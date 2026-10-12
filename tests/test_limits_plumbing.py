@@ -31,6 +31,7 @@ for _p in (_ROOT, _ROOT / "scenario_runners"):
     if str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
 
+import numpy as np
 import pandas as pd
 import pandapower as pp
 import pandapower.networks as pn
@@ -288,6 +289,91 @@ def test_svc_placement_is_centralised_and_paths_agree():
         "the last-resort branch still takes the highest-index (most remote) "
         "MV bus"
     )
+
+
+def test_hc_snapshot_leaves_the_qv_headroom_it_promises():
+    """
+    The worst-case snapshot set p_mw = sn_mva, i.e. P = S, so the controller's
+    apparent-power clamp left |Q| <= sqrt(S^2 - P^2) = 0 on every pre-placed
+    DER. Case B then had no reactive capability to deploy and was identical to
+    Case A by construction, on any network.
+    """
+    import math
+
+    import hosting_capacity as hc
+    import volt_var_controller as vvc
+
+    net = pn.create_cigre_network_mv(with_der="pv_wind")
+    hc._set_worst_case_snapshot(net)
+
+    sn = net.sgen["sn_mva"].astype(float).to_numpy()
+    p  = net.sgen["p_mw"].astype(float).to_numpy()
+    ok = (sn > 0) & ~pd.isna(sn) & ~pd.isna(p)
+    assert ok.any(), "test setup: CIGRE MV should have rated sgens"
+
+    q_lim = (sn[ok] ** 2 - p[ok] ** 2).clip(min=0.0) ** 0.5
+    assert q_lim.sum() > 0.0, (
+        "the snapshot leaves zero fleet Q headroom — p_mw is still being set "
+        "to the apparent rating"
+    )
+
+    # Headroom must be exactly the Q(V) characteristic's own ratio, and must
+    # follow a per-run override of it rather than a hardcoded factor.
+    expected = float(vvc.Q_RATIO) * p[ok]
+    assert np.allclose(q_lim, expected, rtol=1e-6), (
+        "fleet Q headroom is not Q_RATIO x P — the derating factor and the "
+        "Q(V) characteristic have drifted apart"
+    )
+    assert math.isclose(
+        hc._p_at_max_irradiance(1.0),
+        1.0 / math.sqrt(1.0 + float(vvc.Q_RATIO) ** 2),
+        rel_tol=1e-12,
+    )
+
+
+def test_hc_gain_is_measurable_where_the_method_applies():
+    """
+    CIGRE MV has pre-placed DER and a compliant snapshot, so it is the case
+    where an HC gain is meaningful. Before the headroom fix both sweeps were
+    byte-identical and the gain was exactly +0.000 MW.
+    """
+    import hosting_capacity as hc
+
+    net = pn.create_cigre_network_mv(with_der="pv_wind")
+    base, _ = hc.run_baseline_hc(net, "test")
+    vv      = hc.run_hc_with_volt_var(net, "test")
+
+    assert base.hc_mw == base.hc_mw, "baseline HC is NaN: snapshot infeasible"
+    assert vv.hc_mw > base.hc_mw, (
+        f"HC gain is {vv.hc_mw - base.hc_mw:+.3f} MW — Q(V) bought nothing, "
+        f"so the controlled fleet has no reactive headroom"
+    )
+
+
+def test_hc_reports_nan_not_zero_when_the_snapshot_already_violates():
+    """
+    hc_mw was left at params["start"] (0.0) when the very first step violated,
+    so a network already non-compliant under the snapshot published a flat
+    0.00 MW that read like a measurement.
+    """
+    import math
+
+    import hosting_capacity as hc
+
+    net = pn.create_cigre_network_mv(with_der="pv_wind")
+    # Force the premise to fail: a band this tight is violated by the snapshot.
+    vd.reset_limits()
+    try:
+        vd.set_limit("V_MAX", 1.0001, 0.5, 1.5, "pu", warn=print)
+        res, _ = hc.run_baseline_hc(net, "test")
+        assert math.isnan(res.hc_mw), (
+            f"hc_mw came back as {res.hc_mw}, not NaN — an infeasible "
+            f"snapshot is still reported as a measured hosting capacity"
+        )
+        assert "already violating" in res.binding_element, res.binding_element
+        assert res.n_steps == 0
+    finally:
+        vd.reset_limits()
 
 
 def test_dwd_discovery_handles_five_minute_files():

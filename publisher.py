@@ -775,10 +775,20 @@ def build_hc_payload(hc_results: list) -> dict:
         return {"error": "HC results unavailable"}
 
     hc_b, hc_v = hc_results[0], hc_results[1]
+
+    # gain_mw is null, not NaN, when either case is undefined (the worst-case
+    # snapshot was already violating at 0 MW added, so there is no compliant
+    # starting point to measure additional capacity from). NaN is not valid
+    # strict JSON and a 0.0 fallback would read as a measured zero; consumers
+    # already branch on `gain is not None`.
+    gain_mw: Optional[float] = None
+    if math.isfinite(hc_v.hc_mw) and math.isfinite(hc_b.hc_mw):
+        gain_mw = round(hc_v.hc_mw - hc_b.hc_mw, 4)
+
     return {
         "baseline": _hc_dict(hc_b),
         "volt_var": _hc_dict(hc_v),
-        "gain_mw":  round(hc_v.hc_mw - hc_b.hc_mw, 4),
+        "gain_mw":  gain_mw,
     }
 
 

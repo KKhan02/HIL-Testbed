@@ -38,6 +38,7 @@ from __future__ import annotations
 import enum
 import importlib.util
 import json
+import math
 import sys
 import time
 from pathlib import Path
@@ -1314,9 +1315,24 @@ def _build_summary(result, network_id: str, elapsed_s: float,
             summary[label] = f"{status.upper()} | {row['error_message']}"
     if result.hc_results:
         hc_b, hc_v = result.hc_results
-        summary["hosting capacity (baseline)"] = f"{hc_b.hc_mw:.3f} MW"
-        summary["hosting capacity (volt-var)"] = f"{hc_v.hc_mw:.3f} MW"
-        summary["hosting capacity gain"] = f"{hc_v.hc_mw - hc_b.hc_mw:+.3f} MW"
+
+        def _hc_cell(r) -> str:
+            # NaN means the worst-case snapshot was already violating at 0 MW
+            # added, so hosting capacity is undefined rather than zero.
+            if not math.isfinite(r.hc_mw):
+                return f"n/a — {r.binding_element}"
+            return f"{r.hc_mw:.3f} MW ({r.binding_element})"
+
+        summary["hosting capacity (baseline)"] = _hc_cell(hc_b)
+        summary["hosting capacity (volt-var)"] = _hc_cell(hc_v)
+        if math.isfinite(hc_v.hc_mw) and math.isfinite(hc_b.hc_mw):
+            summary["hosting capacity gain"] = (
+                f"{hc_v.hc_mw - hc_b.hc_mw:+.3f} MW"
+            )
+        else:
+            summary["hosting capacity gain"] = (
+                "n/a — no compliant starting point to measure from"
+            )
     if result.hc_error:
         summary["hosting capacity"] = (
             "FAILED | " + result.hc_error.splitlines()[-1]

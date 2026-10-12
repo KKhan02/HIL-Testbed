@@ -31,6 +31,33 @@ This is applied once before the sweep begins and held fixed across all
 steps.  A QSTS sweep per step would multiply runtime by ~52,560 (annual
 10-min resolution) and is not justified for a baseline benchmark.
 
+"PV output = 1.0 p.u." is 1.0 p.u. of rated ACTIVE power, not of sn_mva.
+sn_mva is the inverter's apparent rating, so setting p_mw = sn_mva forces
+cos φ = 1 and leaves |Q| ≤ sqrt(sn² − p²) = 0; Case B would then have no
+reactive capability to deploy and would be identical to Case A on every
+network.  The snapshot therefore sets p_mw = sn_mva / sqrt(1 + Q_RATIO²),
+which leaves exactly the Q_RATIO × P capability the Q(V) characteristic
+asks for — see _p_at_max_irradiance().
+
+Validity of the starting point
+------------------------------
+HC is ADDITIONAL capacity, so the snapshot must be compliant before the
+sweep begins.  Where a network's pre-placed DER already breaches a limit
+under min load × max irradiance, HC is undefined for that network, and
+hc_mw is reported as NaN with binding_element naming the pre-existing
+violation (see _infeasible_snapshot()).  It is not reported as 0.00 MW,
+which would read as a measurement.  End-of-feeder incremental HC was
+specified for networks with no pre-placed DER (Kerber, Dickert, CIGRE LV,
+Synthetic Voltage Control LV); on those the snapshot is compliant by
+construction.
+
+Conversely, on a network with NO pre-placed DER no element is Q(V)-
+controlled — the swept HC sgens are deliberately excluded, see
+run_hc_with_volt_var() — so Case B reduces to Case A and the HC gain is
+zero by construction rather than by measurement.  A non-zero HC gain
+therefore requires a network that has pre-placed DER AND a compliant
+snapshot; CIGRE MV (with_der="pv_wind") satisfies both.
+
 DER placement
 -------------
 New PV sgens are added at the end-of-feeder bus — the bus with the
@@ -110,6 +137,12 @@ import pandas as pd
 
 from violation_detector import detect_violations
 from volt_var_controller import QVCharacteristic, VoltVarController
+
+# Q_RATIO through the module, not from-imported: set_qv_parameters() rebinds it
+# per run, and a from-import would freeze the import-time value, so the
+# snapshot's active-power derating would stop matching the Q(V) capability the
+# controller actually applies.
+import volt_var_controller as _vvc
 
 logger = logging.getLogger(__name__)
 
@@ -287,6 +320,32 @@ def _find_endoffeeder_bus(net: pp.pandapowerNet, dist_voltage_kv: float) -> int:
     return endoffeeder
 
 
+def _p_at_max_irradiance(sn_mva: float) -> float:
+    """
+    Rated ACTIVE power of an inverter whose rated APPARENT power is sn_mva,
+    given the Q(V) capability the controller applies.
+
+        P = sn_mva / sqrt(1 + Q_RATIO²)      ⇒  sqrt(sn² − P²) = Q_RATIO × P
+
+    "PV output = 1.0 p.u." in the worst-case snapshot means 1.0 p.u. of rated
+    active power, which is what an irradiance of 1000 W/m² delivers. It does
+    NOT mean P = sn_mva: sn_mva is the apparent rating, so P = sn_mva forces
+    cos φ = 1 and leaves |Q| ≤ sqrt(sn² − P²) = 0. Under that reading the
+    Case B sweep has exactly zero reactive capability to deploy and is
+    identical to Case A by construction — no Q(V) action, no HC gain,
+    whatever the network.
+
+    The factor is derived from volt_var_controller.Q_RATIO rather than being
+    a constant of its own, so the derating and the Q(V) characteristic cannot
+    drift apart: at Q_RATIO = 0.25 (VDE-AR-N 4110 Bild 8) it is 0.9701, and
+    the resulting headroom is exactly Q_RATIO × P — the full capability the
+    characteristic asks for, available at rated active power as
+    VDE-AR-N 4110 §10.2.2 requires over 0.05 < P_mom/P_b,inst < 1.
+    """
+    q_ratio = float(_vvc.Q_RATIO)
+    return float(sn_mva) / np.sqrt(1.0 + q_ratio ** 2)
+
+
 def _set_worst_case_snapshot(net: pp.pandapowerNet) -> None:
     """
     Set the network to the worst-case overvoltage snapshot in place:
@@ -306,9 +365,14 @@ def _set_worst_case_snapshot(net: pp.pandapowerNet) -> None:
     the same priority chain as _compute_sn_rated() in scenario_5_opf.py and
     _resolve_p_installed() in volt_var_controller.py:
 
-        1. sn_mva — inverter rated apparent power (P = S at unity p.f.)
+        1. sn_mva — inverter rated apparent power.  Maximum output is the
+                    corresponding rated ACTIVE power, sn_mva / sqrt(1 +
+                    Q_RATIO²), leaving the Q(V) headroom the controller
+                    needs — see _p_at_max_irradiance().
         2. p_mw   — current active power output (fallback when sn_mva absent
-                    or non-positive)
+                    or non-positive).  Used as-is: with no apparent rating
+                    the controller's apparent-power clamp does not bind, so
+                    no derating is required.
         3. leave p_mw unchanged if both are degenerate (zero or NaN)
     """
     # Minimum load: 10% of rated
@@ -323,7 +387,7 @@ def _set_worst_case_snapshot(net: pp.pandapowerNet) -> None:
         if has_sn_mva:
             sn = net.sgen.at[idx, "sn_mva"]
             if pd.notna(sn) and sn > 0.0:
-                rated_p = sn
+                rated_p = _p_at_max_irradiance(sn)
 
         if not (pd.notna(rated_p) and rated_p > 0.0):
             # Fallback: current p_mw as proxy for rated output
@@ -370,6 +434,72 @@ def _build_runpp_kwargs(extra: Optional[dict]) -> dict:
         kwargs.update(extra)
         kwargs["voltage_depend_loads"] = False   # never allow override
     return kwargs
+
+
+def _infeasible_snapshot(
+        net:        pp.pandapowerNet,
+        kwargs:     dict,
+        network_id: str,
+        case:       str,
+        eof_bus:    int,
+        dist_kv:    float,
+        params:     dict,
+) -> Optional[HCResult]:
+    """
+    Guard the sweep's premise: the worst-case snapshot must itself be
+    compliant before any capacity is added.
+
+    Hosting capacity is defined as ADDITIONAL PV the feeder can absorb, so it
+    is only meaningful from a violation-free starting point. On a network
+    whose pre-placed DER already breaches a limit under min-load × max-
+    irradiance, the first sweep step violates and hc_mw is left at
+    params["start"] — reported as a flat 0.00 MW, which reads like a measured
+    result rather than an undefined one. The HC gain then shows +0.000 MW for
+    both cases and looks like Volt-Var achieving nothing.
+
+    Returns an HCResult carrying hc_mw = NaN and a binding_element naming the
+    pre-existing violation when the snapshot is already non-compliant, or
+    None when the sweep may proceed.
+
+    Note this is a property of the network under this snapshot definition,
+    not an error: end-of-feeder incremental HC was specified for networks
+    with no pre-placed DER, and the result for a network whose installed DER
+    already exceeds its compliant limit is correctly "undefined", not zero.
+    """
+    try:
+        pp.runpp(net, **kwargs)
+    except Exception as exc:                                  # noqa: BLE001
+        reason = f"snapshot power flow did not converge ({exc})"
+    else:
+        report = detect_violations(net)
+        if not report.any_violations:
+            return None
+        _, _, what = _extract_binding(report)
+        reason = f"snapshot already violating at 0 MW added: {what}"
+
+    logger.warning(
+        "[HC-%s | %s] %s — hosting capacity is undefined for this network "
+        "under the worst-case snapshot (min load x max irradiance). "
+        "Reporting NaN rather than %.2f MW.",
+        case, network_id, reason, params["start"],
+    )
+    return HCResult(
+        network_id       = network_id,
+        case             = case,
+        hc_mw            = float("nan"),
+        violated_at_mw   = float(params["start"]),
+        binding_bus      = -1,
+        binding_vm_pu    = float("nan"),
+        binding_element  = reason,
+        n_steps          = 0,
+        hc_limit_reached = False,
+        endoffeeder_bus  = eof_bus,
+        dist_voltage_kv  = dist_kv,
+        params           = dict(params),
+        qv_converged     = None,
+        qv_iters_max     = None,
+        sweep_curve      = [],
+    )
 
 
 def _extract_binding(report) -> tuple[int, float, str]:
@@ -521,6 +651,12 @@ def run_baseline_hc(
         params["start"], params["max"], params["step"],
     )
 
+    infeasible = _infeasible_snapshot(
+        net, kwargs, network_id, "baseline", eof_bus, dist_kv, params,
+    )
+    if infeasible is not None:
+        return infeasible, net
+
     hc_mw            = params["start"]
     violated_at_mw   = float("nan")
     binding_bus      = -1
@@ -671,6 +807,26 @@ def run_hc_with_volt_var(
         network_id, dist_kv, eof_bus, ctrl.n_ders,
         params["start"], params["max"], params["step"],
     )
+
+    if ctrl.n_ders == 0:
+        # Not an error, but the gain it feeds is structurally zero: the swept
+        # HC sgens are deliberately excluded from control (see below), so with
+        # no pre-placed DER there is nothing for Q(V) to act on and Case B
+        # reduces to Case A. Say so rather than letting a +0.000 MW gain read
+        # as "Volt-Var achieved nothing".
+        logger.warning(
+            "[HC-voltvar | %s] network has no pre-placed DER, so no element "
+            "is Q(V)-controlled and this sweep is identical to the baseline. "
+            "The HC gain for this network is zero by construction, not by "
+            "measurement — do not quote it as a Volt-Var result.",
+            network_id,
+        )
+
+    infeasible = _infeasible_snapshot(
+        net, kwargs, network_id, "volt_var", eof_bus, dist_kv, params,
+    )
+    if infeasible is not None:
+        return infeasible
 
     hc_mw            = params["start"]
     violated_at_mw   = float("nan")

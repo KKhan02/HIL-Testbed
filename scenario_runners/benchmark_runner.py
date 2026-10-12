@@ -76,6 +76,7 @@ from __future__ import annotations
 
 import copy
 import logging
+import math
 import re
 import time
 import traceback
@@ -1125,14 +1126,23 @@ def run_benchmark(
             hc_baseline, net_hc = run_baseline_hc(net, network_id)
             hc_voltvar           = run_hc_with_volt_var(net, network_id)
             hc_results_list = [hc_baseline, hc_voltvar]
+            # NaN hc_mw means the worst-case snapshot was already violating
+            # before the sweep added anything, so HC is undefined for this
+            # network rather than zero — log it as such instead of "0.000 MW".
+            _hc_defined = (
+                math.isfinite(hc_baseline.hc_mw) and math.isfinite(hc_voltvar.hc_mw)
+            )
             logger.info(
                 "[Benchmark | %s] HC done in %.1f s | "
-                "baseline=%.3f MW | volt_var=%.3f MW | gain=%.3f MW",
+                "baseline=%s | volt_var=%s | gain=%s",
                 network_id,
                 time.perf_counter() - t_hc,
-                hc_baseline.hc_mw,
-                hc_voltvar.hc_mw,
-                hc_voltvar.hc_mw - hc_baseline.hc_mw,
+                f"{hc_baseline.hc_mw:.3f} MW" if math.isfinite(hc_baseline.hc_mw)
+                else f"n/a ({hc_baseline.binding_element})",
+                f"{hc_voltvar.hc_mw:.3f} MW" if math.isfinite(hc_voltvar.hc_mw)
+                else f"n/a ({hc_voltvar.binding_element})",
+                f"{hc_voltvar.hc_mw - hc_baseline.hc_mw:+.3f} MW" if _hc_defined
+                else "n/a",
             )
         except Exception:
             hc_error = traceback.format_exc()
