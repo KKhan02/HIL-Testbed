@@ -345,10 +345,15 @@ else:
 
 # ===========================================================================
 # ── Optional: time-slice (faster iteration — comment out for full annual run)
+# Set TIME_SLICE to None for the full annual run, or to a (period, index) pair
+# for a fast iteration: ("day", 172) | ("week", 28) | ("month", 6)
 # ===========================================================================
-# profiles_run = slice_profiles(profiles, period="month", index=6)
-# profiles_run = slice_profiles(profiles, period="week", index=28)
-# profiles_run = slice_profiles(profiles, period="day", index=172)
+TIME_SLICE = None
+
+profiles_run = (
+    slice_profiles(profiles, period=TIME_SLICE[0], index=TIME_SLICE[1])
+    if TIME_SLICE else profiles
+)
 
 # ===========================================================================
 # ── Network inspection — topology + profiles
@@ -435,9 +440,9 @@ handle_hc_stressed = PublishHandle(
 # ── Benchmark configuration
 # ===========================================================================
 config = BenchmarkConfig(
-    scenarios   = [],   # all six; pass [1, 5] to run a subset
+    scenarios   = [1, 2, 3, 4, 5],   # all six; pass [1, 5] to run a subset
     dry_run     = True,               # no Arduino; set False + port= for hardware
-    write_csv   = False,               # writes CSV to current directory
+    write_csv   = True,               # writes CSV to current directory
     output_dir = str(_root / "outputs" / "benchmarks"),
     # voltage_limits from the plugin YAML (defaults 0.95/1.05 otherwise)
     v_min = vd.V_MIN,
@@ -497,7 +502,7 @@ print(f"[SCALING CHECK] {net_name}: "
 
 # ── Publish topology + profiles once, at network-load time ──────────────
 publish_topology_and_profiles(
-    net_os, profiles,
+    net_os, profiles_run,
     output_dir = str(_root / "outputs" / "publisher" / (net_name + RUN_NAME)),
     network_id = net_name,
 )
@@ -517,7 +522,7 @@ if _args.controller:
     custom_result, result = register_and_run(
         _args.controller,
         net_os,         
-        profiles,     # profiles_run for a slice of time series
+        profiles_run,     # profiles_run for a slice of time series
         network_id       = net_name,
         benchmark_config = config,
         return_benchmark = True,
@@ -528,7 +533,7 @@ if _args.controller:
 else:
     result = run_benchmark(
         net_os,
-        profiles, # profiles_run for a slice of time series
+        profiles_run, # profiles_run for a slice of time series
         network_id = net_name,
         config     = config,
     )
