@@ -76,8 +76,13 @@ Robustness decisions made here:
 * **Timestep resolution is inferred, never assumed** (`_step_hours()`): the publisher
   docstring says 10-min, the SimBench annual runs are 15-min (35,136 steps). Every
   energy integration and daily grouping uses the inferred value or the actual
-  timestamps (`.groupby(index.normalize())`), so a hard-coded 144-steps/day bug (as in
-  `fig09` of `plot_results.py`, which assumes 10-min) cannot occur.
+  timestamps (`.groupby(index.normalize())`), so a hard-coded 144-steps/day bug
+  cannot occur. `fig09` of `plot_results.py` carried exactly that bug — `step = 144`
+  labelled "Day of simulation period", so at 15-min each column spanned 36 h and an
+  annual run produced 243 columns for 365 days. It has since been fixed to group by
+  calendar date, the same approach used here. Each scenario summary now also publishes
+  `dt_s`, so `_step_hours()` has an authoritative value to cross-check its inference
+  against (older runs omit the key — keep the inference as the fallback).
 
 ### Cell 3 — Scalar comparison table
 Builds one row per scenario per run with the 31 columns of
@@ -163,7 +168,8 @@ need `networkx`, which would break the numpy/pandas/matplotlib-only constraint.
   heatmap PDF is enormous.
 * **E2 Violation heatmap** (fig09): day × scenario `violation_flag`, **all** discovered
   scenarios — plugin scenarios appear as extra rows automatically; date-based
-  day-grouping instead of fig09's hard-coded 144 steps/day.
+  day-grouping, which `fig09` itself now also uses (it previously hard-coded 144
+  steps/day).
 * **E3 Curtailed energy** (fig13): per-timestep curtailed MW = `der_gen_mw` −
   Σ`p_mw_by_sgen` (fig13's exact definition: profile target minus applied), integrated
   with the inferred timestep length to MWh/day, 4A vs 4B × both runs; prints curtailed
@@ -238,6 +244,8 @@ listed default; say the word and any of them can be reverted to the literal read
 5. **Timestep resolution inferred from timestamps** everywhere (energy integration,
    daily/monthly grouping) instead of assuming the publisher docstring's 10-min or the
    SimBench 15-min. Protects subset runs and future LV runs at other resolutions.
+   `summary.dt_s` is now published per scenario and is the authoritative value where
+   present; the timestamp inference remains the fallback for older runs.
 6. **`t = 0` exclusion generalised** in Cell 6 exactly as specified, plus percentile
    clipping of the bin range (0.1–99.5 %) so a single pandapower cache-growth outlier
    (Sec. 6.3 of the knowledge base) cannot flatten the histogram.
@@ -252,8 +260,9 @@ listed default; say the word and any of them can be reverted to the literal read
    only "if present in the JSON") — dry-run vs HIL is the normal case, and the overlay
    simply doesn't appear for runs where the field is null.
 10. **Extension figures** (E1–E4) selected from `plot_results.py` per the extension
-    request, adapted to the two-run layout, with `fig09`'s hard-coded 144 steps/day
-    replaced by timestamp-based day grouping.
+    request, adapted to the two-run layout, with `fig09`'s then-hard-coded 144
+    steps/day replaced by timestamp-based day grouping. `fig09` has since been fixed
+    the same way upstream, so the two now agree.
 
 Not implemented (needs your call): per-figure PNG twins for every PDF (only
 `voltage_envelope` has both, per spec), and `hc.json`-based HC sweep comparison — HC

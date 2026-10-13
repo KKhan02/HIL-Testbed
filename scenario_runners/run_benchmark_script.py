@@ -429,12 +429,14 @@ logging.info(
 # ===========================================================================
 handle = PublishHandle(
     output_dir     = str(_root / "outputs" / "publisher" / (net_name + RUN_NAME)),
-    update_every_k = 6,   # one JSONL frame per hour at 10-min resolution
+    update_every_k = 6,   # one frame per 6 timesteps: 90 min at SimBench's 15-min
+                          # step (k=4 is hourly there; k=6 is hourly only at 10-min)
 )
 
 handle_hc_stressed = PublishHandle(
     output_dir     = str(_root / "outputs" / "publisher" / (net_name + "_hc_stressed" + RUN_NAME)),
-    update_every_k = 6,   # one JSONL frame per hour at 10-min resolution
+    update_every_k = 6,   # one frame per 6 timesteps: 90 min at SimBench's 15-min
+                          # step (k=4 is hourly there; k=6 is hourly only at 10-min)
 )
 # ===========================================================================
 # ── Benchmark configuration

@@ -6,8 +6,9 @@ flow_s3.py — Scenario 3 (SVC) flow diagrams. Same template as flow_s4.
   2. flow_s3_loop  — per-timestep deadbanded-droop control loop
 
 Verified against scenario_3_svc.py, scenario_result.py, violation_detector.py.
-Facts: single SVC sgen (p=0, controllable q) at one fixed MV bus chosen by
-stress analysis; deadbanded droop toward 1.00 pu; Q_MAX=0.20xSUM(sn_mva),
+Facts: single SVC sgen (p=0, controllable q) at one fixed MV bus chosen
+topologically (the substation MV busbar, net.trafo.lv_bus); deadbanded
+droop toward 1.00 pu; Q_MAX=0.20xSUM(sn_mva),
 k_q=Q_MAX/0.03; DER sgen Q forced 0; SVC sgen removed in a finally block.
 """
 from graphviz import Digraph
@@ -63,7 +64,7 @@ def build_init():
         ("i2", "align profiles to this net -> ap", F["m"]),
         ("i3", "drop stale controllers, clear results", F["m"]),
         ("i4", "compute SVC params\\lQ_MAX = 0.20 x SUM(trafo sn_mva)\\lk_q = Q_MAX / 0.03", F["m"]),
-        ("i5", "select fixed SVC bus\\lstress -> lowest mean-vm MV bus\\l(fallback: violation scan, last MV bus)", F["m"]),
+        ("i5", "select fixed SVC bus\\lnet.trafo -> substation MV busbar\\l(fallback: fewest hops to slack, then lowest-index MV)", F["m"]),
         ("i6", "create SVC sgen at bus\\lp=0, q=0, type=SVC", F["m"]),
         ("t0", "== per-timestep loop ==  (Diagram 2)", F["gate"]),
         ("t2", "finally: remove SVC sgen (clean net)", F["gate"]),
@@ -73,11 +74,11 @@ def build_init():
     lane(g, "s", "Python sub-modules", F["s"], [
         ("s1", "adapt_profiles()", F["s"]),
         ("s2", "_compute_svc_params()", F["s"]),
-        ("s3", "_select_svc_bus()\\l+ stress.apply_overvoltage_stress", F["s"]),
+        ("s3", "_select_svc_bus()\\l+ net.trafo substation busbar", F["s"]),
         ("s4", "ScenarioResult.from_records()", F["s"]),
     ])
     lane(g, "solv", "Solver", F["solv"], [
-        ("pp", "pandapower runpp\\lstress solve for bus ranking", F["solv"]),
+        ("pp", "pandapower runpp\\lper-timestep solve", F["solv"]),
     ])
     lane(g, "pub", "Publisher", F["pub"], [
         ("p1", "on_scenario_start", F["pub"]),
