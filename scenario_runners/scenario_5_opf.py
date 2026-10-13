@@ -465,7 +465,7 @@ def run_scenario_5(
         raise ImportError(
             "Scenario 5 (OPF) needs cyipopt, which failed to import: "
             f"{_CYIPOPT_IMPORT_ERROR!r}. Install it in hil_env, or exclude\n"
-            "scenario 5 from BenchmarkConfig.scenarios -- the other four\n"
+            "scenario 6 from BenchmarkConfig.scenarios -- the other five\n"
             "scenarios do not need it."
         )
 

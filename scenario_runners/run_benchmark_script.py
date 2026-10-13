@@ -218,7 +218,7 @@ vd.set_limit("UNBALANCE_MAX_PERCENT", _args.unbalance_max_percent, 0.0, 100.0,  
 # Note: unbalance_max_percent currently reaches no result — no runner in the
 # benchmark stack calls detect_violations_3ph().
 
-RUN_NAME = "_HC_Run"
+RUN_NAME = "_annual_test_CIGRE"
 OVERSIZE_FACTOR = None   # set to None to disable oversizing for this run
 LOAD_SCALE = 1.0    # 0.5 = halve all loads
 
@@ -263,9 +263,9 @@ else:
     # ── Network selector — change only this block ───────────────────────────
     #
     # SimBench MV rural (primary HIL network 1-MV-rural--2-sw)
-    net        = sb.get_simbench_net("1-MV-rural--2-sw")
-    net_name   = "1-MV-rural--2-sw"         # triggers SimBench profile path
-    sb_code    = "1-MV-rural--2-sw"         # required for SimBench only
+    # net        = sb.get_simbench_net("1-MV-rural--2-sw")
+    # net_name   = "1-MV-rural--2-sw"         # triggers SimBench profile path
+    # sb_code    = "1-MV-rural--2-sw"         # required for SimBench only
 
     # ── Synthetic LV suburb (best for coordinator validation — dense DERs) ──────
     # net        = pn.create_synthetic_voltage_control_lv_network("suburb_1")
@@ -278,9 +278,9 @@ else:
     # sb_code    = None
 
     # CIGRE MV with DER  — uncomment to use
-    # net        = pn.create_cigre_network_mv(with_der="pv_wind")
-    # net_name   = "cigre_mv_pv_wind"       # "cigre" in name → DWD path
-    # sb_code    = None
+    net        = pn.create_cigre_network_mv(with_der="pv_wind")
+    net_name   = "cigre_mv_pv_wind"       # "cigre" in name → DWD path
+    sb_code    = None
 
     # CIGRE LV  — uncomment to use
     # net        = pn.create_cigre_network_lv()
@@ -348,7 +348,7 @@ else:
 # Set TIME_SLICE to None for the full annual run, or to a (period, index) pair
 # for a fast iteration: ("day", 172) | ("week", 28) | ("month", 6)
 # ===========================================================================
-TIME_SLICE = ("day", 172)
+TIME_SLICE = None
 
 profiles_run = (
     slice_profiles(profiles, period=TIME_SLICE[0], index=TIME_SLICE[1])

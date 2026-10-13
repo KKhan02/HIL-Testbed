@@ -171,8 +171,6 @@ def main() -> None:
 
     print_run_plan(plan)
 
-    print_run_plan(plan)
-
     proceed = Confirm.ask("Proceed?", default=True, console=console)
 
     if not proceed:
