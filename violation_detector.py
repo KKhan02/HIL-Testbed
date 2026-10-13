@@ -983,7 +983,13 @@ def detect_violations(
     if trafo_max   is None: trafo_max   = TRAFO_MAX_LOADING
     if va_diff_max is None: va_diff_max = VA_DIFF_MAX_DEGREE
     if not _runpp_converged(net):
-        return ViolationReport(converged=False)
+        # Pass the resolved limits: the dataclass defaults are V_MIN/V_MAX
+        # evaluated at class-definition time, so a non-converged report
+        # would otherwise print the import-time band in its summary rather
+        # than the override in force for this run.
+        return ViolationReport(
+            converged=False, v_min_used=v_min, v_max_used=v_max,
+        )
 
     over_v, under_v   = _check_voltage(net, v_min, v_max)
     overloaded_lines  = _check_lines(net, line_max)
@@ -1059,7 +1065,12 @@ def detect_violations_3ph(
     if trafo_max     is None: trafo_max     = TRAFO_MAX_LOADING
     if unbalance_max is None: unbalance_max = UNBALANCE_MAX_PERCENT
     if not _runpp_3ph_converged(net):
-        return ViolationReport3ph(converged=False)
+        # Same reason as detect_violations(): the dataclass defaults freeze the
+        # import-time band and unbalance limit.
+        return ViolationReport3ph(
+            converged=False, v_min_used=v_min, v_max_used=v_max,
+            unbalance_max_used=unbalance_max,
+        )
 
     over_v, under_v   = _check_voltage_3ph(net, v_min, v_max)
     unbalance_viols   = _check_unbalance(net, unbalance_max)

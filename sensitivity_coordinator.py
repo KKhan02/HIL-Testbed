@@ -167,6 +167,10 @@ class CoordinatorResult:
     t_total_ms:         float = 0.0
     mode:               str = "coordinated"   # "local" for 4A, "coordinated" for 4B
     t_exchange_ms:      float = 0.0
+    rank_deficient:     bool = False
+    # True when the sensitivity solve could not reach every violated bus from
+    # the available DERs (rank(S_viol) < min(n_resid, n_ders)). Distinct from
+    # curtailment_needed, which means "violations remain after the post-PF".
 
     @property
     def dq_correction(self) -> np.ndarray:
@@ -260,6 +264,12 @@ class SensitivityCoordinator:
         self._rank_warning_examples = []
 
         self.curtailment_needed: bool = False
+
+        # Set by coordinate() when S_viol is rank-deficient: at least one
+        # violated bus is not controllable from the available DERs. Kept
+        # separate from curtailment_needed, which run_coordinated_timestep
+        # overwrites from the post-PF violation state.
+        self.rank_deficient: bool = False
 
         # q_max mirrors Item 2: Q_RATIO × p_installed, same source (_resolve_p_installed)
         self._q_max: np.ndarray = _vvc.Q_RATIO * self._p_installed  # (n_ders,) [MVAr] (call-time read)
@@ -564,6 +574,18 @@ class SensitivityCoordinator:
             pd_bus_int = int(pd_bus)
             sgen_label = self._sgen_idx[j]
 
+            # Zero reactive capability — exclude, as __init__ already warns.
+            # Left in, such a DER keeps a column in X and absorbs part of the
+            # least-squares correction, which the ±q_max clip then zeroes, so
+            # the DERs that CAN act end up under-correcting.
+            if not np.isfinite(self._q_max[j]) or self._q_max[j] <= 0.0:
+                logger.debug(
+                    "sgen %s: q_max=0, excluded from the sensitivity solve.",
+                    sgen_label,
+                )
+                der_col_positions.append(None)
+                continue
+
             if pd_bus_int < 0 or pd_bus_int >= len(pd2ppc):
                 logger.warning(
                     "sgen %s: pd_bus %d out of pd2ppc range [0, %d). Excluded.",
@@ -710,6 +732,10 @@ class SensitivityCoordinator:
         q_adjusted : ndarray (n_ders,) [MVAr], clipped to ±q_max.
         """
 
+        # Per-call state: a stale True from a previous timestep would be
+        # reported against this one.
+        self.rank_deficient = False
+
         # Step 1 — Input validation
         if len(q_initial) != self._n_ders:
             raise ValueError(
@@ -799,9 +825,27 @@ class SensitivityCoordinator:
 
         rank = np.linalg.matrix_rank(S_viol)
 
-        rank_limit = min(n_resid, self._n_ders)
+        # Count only DERs that actually have a column. Excluded DERs (no PQ
+        # bus, out of service, zero q_max) carry an all-zero column, so
+        # rank(S_viol) can never exceed the number of included DERs —
+        # comparing against self._n_ders would report rank deficiency purely
+        # because a DER was excluded.
+        n_eff_ders = sum(1 for col in der_col_positions if col is not None)
+        rank_limit = min(n_resid, n_eff_ders)
 
-        if rank < rank_limit:
+        # Two distinct ways the least-squares system cannot drive every
+        # violated bus to target, both of which the rank_deficient flag
+        # reports:
+        #   under-determined : fewer controllable DERs than violated buses.
+        #   rank-deficient   : enough DERs, but their voltage sensitivities
+        #                      are collinear over the violated buses.
+        # Before n_eff_ders was introduced the comparison used self._n_ders,
+        # which folded the first case into the second and also fired whenever
+        # a DER was merely excluded. Keeping them separate makes the flag mean
+        # exactly "no Q allocation can clear all of these buses".
+        under_determined = n_eff_ders < n_resid
+
+        if rank < rank_limit or under_determined:
             self._rank_warning_count += 1
 
             if len(self._rank_warning_examples) < 5:
@@ -811,18 +855,22 @@ class SensitivityCoordinator:
                         "rank_limit": int(rank_limit),
                         "n_resid": int(n_resid),
                         "n_ders": int(self._n_ders),
+                        "n_eff_ders": int(n_eff_ders),
+                        "under_determined": bool(under_determined),
                     }
                 )
 
             if self._rank_warning_count == 1 or self._rank_warning_count % 96 == 0:
                 logger.warning(
-                    "S_viol rank-deficient in %d timestep(s) so far. "
-                    "Latest: rank=%d < min(n_resid=%d, n_ders=%d)=%d. "
-                    "Some violated buses may be weakly controllable from available DERs.",
+                    "S_viol under-determined or rank-deficient in %d "
+                    "timestep(s) so far. "
+                    "Latest: rank=%d, n_resid=%d, n_controllable_ders=%d, "
+                    "rank_limit=%d. Some violated buses cannot be driven to "
+                    "target by any Q allocation across the available DERs.",
                     self._rank_warning_count,
                     rank,
                     n_resid,
-                    self._n_ders,
+                    n_eff_ders,
                     rank_limit,
                 )
             else:
@@ -830,14 +878,19 @@ class SensitivityCoordinator:
                     "S_viol rank %d < min(%d, %d).",
                     rank,
                     n_resid,
-                    self._n_ders,
+                    n_eff_ders,
                 )
-            # Rank-deficient: some violated buses are weakly controllable.
-            # The early return that used to pass q_initial through unchanged
-            # was removed deliberately — lstsq now proceeds on a
-            # rank-deficient S_viol and the flag below marks the timestep.
-            self.curtailment_needed = True
-        # return np.clip(q_initial, -self._q_max, self._q_max)   # ← THIS LINE
+            # Rank-deficient: at least one violated bus is not controllable
+            # from the available DERs. The early return that used to pass
+            # q_initial through unchanged was removed deliberately — lstsq
+            # proceeds on a rank-deficient S_viol, and rank_deficient marks
+            # the timestep.
+            #
+            # curtailment_needed is NOT set here: Step 11 below overwrites it
+            # unconditionally and run_coordinated_timestep step [8] overwrites
+            # it again from the post-PF violation state, so a value set here
+            # never reached a record. rank_deficient survives to the result.
+            self.rank_deficient = True
 
         # Step 9 — Residual voltage gap (pu)
         dV_residual: np.ndarray = V_TARGET_PU - vm_pu_predicted[resid_mask]
@@ -982,6 +1035,7 @@ def run_coordinated_timestep(
             post_pf_ok         = False,
             t_total_ms         = (time.perf_counter() - t0) * 1e3,
             t_exchange_ms = t_exchange_ms,
+            rank_deficient = False,      # coordination never ran
         )
 
     # ── GATE ──────────────────────────────────────────────────────────────
@@ -1009,6 +1063,7 @@ def run_coordinated_timestep(
             # anomaly" diagnose_outliers.py hunts for.
             t_total_ms         = (time.perf_counter() - t0) * 1e3,
             t_exchange_ms      = t_exchange_ms,
+            rank_deficient     = False,   # gated out, coordination never ran
         )
     # ── END GATE ───────────────────────────────────────────────────────────
 
@@ -1107,7 +1162,9 @@ def run_coordinated_timestep(
         n_retries          = n_retries,
         t_total_ms         = (time.perf_counter() - t0) * 1e3,
         mode               = "coordinated" if coordination else "local",
-        t_exchange_ms      = t_exchange_ms,   
+        t_exchange_ms      = t_exchange_ms,
+        rank_deficient     = bool(coordinator.rank_deficient) if coordination
+                             else False,
 
     )
 

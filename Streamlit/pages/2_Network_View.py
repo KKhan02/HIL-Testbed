@@ -50,9 +50,12 @@ has_coords = bool(buses_df["x"].notna().any() and buses_df["y"].notna().any())
 v_min = topo.get("voltage_limits", {}).get("v_min", 0.95)
 v_max = topo.get("voltage_limits", {}).get("v_max", 1.05)
 
-RESOLUTION_STEPS = {
-    "Every step (10 min)": 1, "Hourly": 6, "Every 3 hours": 18,
-    "Every 6 hours": 36, "Daily": 144,
+# Downsample options in TIME units. The step in samples is derived from the
+# run's own dt_s below — the old fixed {1, 6, 18, 36, 144} assumed 10-min data,
+# so on 15-min SimBench "Hourly" was 90 min and "Daily" was 36 h.
+RESOLUTION_HOURS = {
+    "Every step": None, "Hourly": 1, "Every 3 hours": 3,
+    "Every 6 hours": 6, "Daily": 24,
 }
 MAX_FRAMES_WARNING = 1000
 
@@ -62,16 +65,24 @@ if has_coords:
     with c1:
         scenario_id = st.selectbox("Scenario", scenario_ids, format_func=_data.scenario_label)
     with c2:
-        resolution_label = st.selectbox("Resolution (downsample)", list(RESOLUTION_STEPS), index=2)
+        resolution_label = st.selectbox("Resolution (downsample)", list(RESOLUTION_HOURS), index=2)
     with c3:
         animate_lines = st.toggle("Animate line loading too (heavier)", value=False)
-    step = RESOLUTION_STEPS[resolution_label]
 else:
     scenario_id = st.selectbox("Scenario", scenario_ids, format_func=_data.scenario_label)
-    step, animate_lines = 1, False
+    resolution_label, animate_lines = "Every step", False
 
 scenario = _data.load_scenario(run_dir, scenario_id)
 full_ts = scenario["timeseries"]
+
+# Samples per downsample interval, from the resolution this run was simulated
+# at. Falls back to every step when the run predates dt_s being published.
+dt_s  = (scenario.get("summary") or {}).get("dt_s")
+hours = RESOLUTION_HOURS[resolution_label]
+if hours is None or not dt_s:
+    step = 1
+else:
+    step = max(1, int(round(hours * 3600.0 / float(dt_s))))
 
 # ===========================================================================
 # MAP (coordinate networks) — fast native-Plotly animation

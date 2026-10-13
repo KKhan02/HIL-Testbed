@@ -714,6 +714,13 @@ class TimestepRecord:
     # clamp at this timestep.  Indicates inverter reactive capability
     # exhaustion.  None for scenarios without DER reactive control.
 
+    coordination_rank_deficient: Optional[bool] = None
+    # True when the coordinator's residual-violation submatrix S_viol was
+    # rank-deficient at this timestep: at least one violated bus is not
+    # controllable from the available DERs, so no Q allocation can clear it.
+    # Distinguishes "cannot reach" from "ran out of Q" (q_saturated_count).
+    # None for scenarios without sensitivity coordination.
+
     curtail_exhausted: Optional[bool] = None
     # True if the curtailment loop reached MAX_CURTAIL_ITERS without clearing
     # violations (or hit P=0 and violations persisted). Distinguishes
@@ -763,6 +770,7 @@ class TimestepRecord:
             # Scenario 4 — control effort
             "coordination_active": self.coordination_active,
             "q_saturated_count": self.q_saturated_count,
+            "coordination_rank_deficient": self.coordination_rank_deficient,
             "curtail_exhausted": self.curtail_exhausted,
             # Timing
             "hil_latency_ms": self.hil_latency_ms,
@@ -815,6 +823,7 @@ class TimestepRecord:
             load_mw=d.get("load_mw"),
             coordination_active=d.get("coordination_active"),
             q_saturated_count=d.get("q_saturated_count"),
+            coordination_rank_deficient=d.get("coordination_rank_deficient"),
             curtail_exhausted=d.get("curtail_exhausted"),
             hil_latency_ms=d.get("hil_latency_ms"),
             t_total_ms=d.get("t_total_ms"),
@@ -918,6 +927,19 @@ class ScenarioResult:
 
     elapsed_s : float
         Total wall-clock time for the scenario run in seconds.
+
+    dt_s : float
+        Timestep duration in seconds used to compute every energy and
+        duration integral in this result.  Recorded so a published run states
+        the resolution its MWh/MVArh figures were integrated at; two runs at
+        different resolutions are otherwise indistinguishable in the output.
+        NaN when the result was built without one.
+
+    rank_deficient_steps : int
+    rank_deficient_rate : Optional[float]
+        Converged timesteps where the sensitivity coordinator's S_viol was
+        rank-deficient, and that count as a fraction of converged steps.
+        None/0 outside Scenario 4's coordinated mode.
 
     n_timesteps : int
         Total number of timesteps attempted (converged or not).
@@ -1040,6 +1062,18 @@ class ScenarioResult:
     elapsed_s:      float
 
     # Derived fields — populated by from_records(), not set by caller directly.
+    dt_s:                         float = field(default=float("nan"))
+    # Timestep duration in seconds that produced every × dt_s/3600 integral
+    # below (violation_duration_h, reactive_energy_mvarh, curtailed_energy_mwh,
+    # total_losses_mwh, grid_import/export_mwh, der_gen_mwh, load_demand_mwh).
+    # NaN, not 900.0, when unset: a silent 15-min default would make a run at
+    # another resolution report plausible but wrong energies.
+
+    rank_deficient_steps:         int   = field(default=0)
+    rank_deficient_rate:          Optional[float] = field(default=None)
+    # Converged timesteps where the sensitivity solve could not reach every
+    # violated bus from the available DERs. None outside Scenario 4.
+
     n_timesteps:                  int   = field(default=0)
     n_converged:                  int   = field(default=0)
     n_violation_steps:            int   = field(default=0)
@@ -1083,7 +1117,7 @@ class ScenarioResult:
             network_id:   str,
             records:      List[TimestepRecord],
             elapsed_s:    float,
-            dt_s:         float = 900.0,
+            dt_s:         float,
             svc_bus:      Optional[int]   = None,
             svc_q_max:    Optional[float] = None,
     ) -> "ScenarioResult":
@@ -1095,9 +1129,12 @@ class ScenarioResult:
         scenario_id, network_id : identifiers.
         records     : list of TimestepRecord, one per timestep.
         elapsed_s   : total wall-clock time for the run.
-        dt_s        : timestep duration in seconds.  Used only for
-                      curtailed_energy_mwh calculation.  Defaults to 900 s
-                      (15-min SimBench resolution).
+        dt_s        : timestep duration in seconds.  Scales every energy and
+                      duration integral: violation_duration_h,
+                      reactive_energy_mvarh, curtailed_energy_mwh,
+                      total_losses_mwh, grid_import_mwh, grid_export_mwh,
+                      der_gen_mwh and load_demand_mwh.  Required — pass
+                      AdaptedProfiles.dt_s.
         svc_bus     : fixed SVC bus index (Scenario 3 only).  None for all
                       other scenarios.
         svc_q_max   : Q_MAX used by the SVC droop (MVAr).  None for all
@@ -1269,11 +1306,29 @@ class ScenarioResult:
             if sat_recs and converged else None
         )
 
+        # Rank deficiency — Scenario 4 coordinated mode only.  Separate from
+        # q_saturation_rate: a rank-deficient step means at least one violated
+        # bus is not reachable from the DERs at all, which no amount of
+        # remaining Q capability would fix.
+        rank_recs = [
+            r for r in converged if r.coordination_rank_deficient is not None
+        ]
+        rank_deficient_steps = sum(
+            1 for r in rank_recs if r.coordination_rank_deficient
+        )
+        rank_deficient_rate: Optional[float] = (
+            rank_deficient_steps / len(converged)
+            if rank_recs and converged else None
+        )
+
         result = cls(
             scenario_id   = scenario_id,
             network_id    = network_id,
             records       = records,
             elapsed_s     = elapsed_s,
+            dt_s          = dt_s,
+            rank_deficient_steps = rank_deficient_steps,
+            rank_deficient_rate  = rank_deficient_rate,
             n_timesteps                  = n_timesteps,
             n_converged                  = n_converged,
             n_violation_steps            = n_violation_steps,
@@ -1353,4 +1408,7 @@ class ScenarioResult:
             "coordination_rate":             self.coordination_rate,
             "q_saturation_rate":             self.q_saturation_rate,
             "elapsed_s":                     self.elapsed_s,
+            "dt_s":                          self.dt_s,
+            "rank_deficient_steps":          self.rank_deficient_steps,
+            "rank_deficient_rate":           self.rank_deficient_rate,
         }

@@ -108,6 +108,22 @@ _ACTIVE_POWER_EPS = 1e-9
 _DISABLED_THERMAL_LIMIT = 1e6
 
 
+def _steps_per_day(dt_s: float) -> int:
+    """
+    Timesteps in one simulated day at this resolution.
+
+    Used for the once-a-day progress line and the live-CSV rewrite cadence.
+    A hardcoded 96 assumed SimBench's 15-min step, so at a finer resolution
+    those fired many times per simulated day — at 10 s, every 16 minutes of
+    simulated time, which for the CSV rewrite is 90x the file I/O.
+    """
+    try:
+        spd = int(round(86400.0 / float(dt_s)))
+    except (TypeError, ValueError, ZeroDivisionError):
+        return 96
+    return max(1, spd)
+
+
 def _clear_poly_cost(net) -> None:
     """Remove stale OPF costs from previous runs."""
     if hasattr(net, "poly_cost") and not net.poly_cost.empty:
@@ -449,7 +465,7 @@ def run_scenario_5(
         raise ImportError(
             "Scenario 5 (OPF) needs cyipopt, which failed to import: "
             f"{_CYIPOPT_IMPORT_ERROR!r}. Install it in hil_env, or exclude\n"
-            "scenario 6 from BenchmarkConfig.scenarios -- the other five\n"
+            "scenario 5 from BenchmarkConfig.scenarios -- the other four\n"
             "scenarios do not need it."
         )
 
@@ -466,6 +482,7 @@ def run_scenario_5(
     create_continuous_bus_index(net, start=0)
 
     ap: AdaptedProfiles = adapt_profiles(net, profiles)
+    _log_every = _steps_per_day(ap.dt_s)   # one progress line per sim day
     if ap.der_p.empty:
         raise ValueError(
             "Scenario 5 requires at least one profiled DER in ap.der_p. "
@@ -640,7 +657,7 @@ def run_scenario_5(
         if publish_fn is not None:
             publish_fn.on_timestep(rec)
 
-        if t % 96 == 0:
+        if t % _log_every == 0:
             if live_csv_rewrite_fn is not None:
                     partial = ScenarioResult.from_records(
                         scenario_id="opf", network_id=network_id,

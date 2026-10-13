@@ -26,13 +26,19 @@ import matplotlib
 matplotlib.use("Agg")  # no GUI backend — just write files
 import matplotlib.pyplot as plt
 
-RESOLUTION_STEPS = {"10min": 1, "1h": 6, "3h": 18, "6h": 36, "daily": 144}
+# Downsample options in TIME units; the step in samples is derived from the
+# run's own dt_s inside render(). The old fixed {1, 6, 18, 36, 144} assumed
+# 10-min data, so on 15-min SimBench "1h" was 90 min and "daily" was 36 h.
+# "step" is the honest name for every-sample; "10min" is kept as an alias so
+# existing commands and frame folders keep working.
+RESOLUTION_HOURS = {
+    "step": None, "10min": None, "1h": 1, "3h": 3, "6h": 6, "daily": 24,
+}
 
 
 def render(run_dir: Path, scenario_id: str, resolution: str, dpi: int = 90):
-    if resolution not in RESOLUTION_STEPS:
-        raise ValueError(f"resolution must be one of {list(RESOLUTION_STEPS)}")
-    step = RESOLUTION_STEPS[resolution]
+    if resolution not in RESOLUTION_HOURS:
+        raise ValueError(f"resolution must be one of {list(RESOLUTION_HOURS)}")
 
     topo_path = run_dir / "topology.json"
     scenario_path = run_dir / "scenarios" / f"{scenario_id}.json"
@@ -47,6 +53,15 @@ def render(run_dir: Path, scenario_id: str, resolution: str, dpi: int = 90):
 
     topo = json.loads(topo_path.read_text(encoding="utf-8"))
     scenario = json.loads(scenario_path.read_text(encoding="utf-8"))
+
+    # Samples per interval, from the resolution this run was simulated at.
+    # Falls back to every step when the run predates dt_s being published.
+    dt_s  = (scenario.get("summary") or {}).get("dt_s")
+    hours = RESOLUTION_HOURS[resolution]
+    step  = 1 if (hours is None or not dt_s) else max(
+        1, int(round(hours * 3600.0 / float(dt_s)))
+    )
+
     timeseries = scenario["timeseries"][::step]
 
     bus_xy = {b["index"]: (b["x"], b["y"]) for b in topo["buses"] if b.get("x") is not None}
@@ -122,7 +137,7 @@ if __name__ == "__main__":
     parser.add_argument("--run-dir", required=True,
                         help="Path to a publisher run folder (contains topology.json + scenarios/).")
     parser.add_argument("--scenario", required=True, help="scenario id, e.g. baseline / oltc / volt_var_coord")
-    parser.add_argument("--resolution", default="6h", choices=list(RESOLUTION_STEPS))
+    parser.add_argument("--resolution", default="6h", choices=list(RESOLUTION_HOURS))
     parser.add_argument("--dpi", type=int, default=90)
     args = parser.parse_args()
 

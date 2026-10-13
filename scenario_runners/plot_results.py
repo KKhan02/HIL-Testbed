@@ -52,6 +52,7 @@ Optional : contextily  (map tile basemap for SimBench; degrades gracefully)
 from __future__ import annotations
 
 import argparse
+import itertools
 import json
 import math
 from pathlib import Path
@@ -806,10 +807,36 @@ def fig09_violation_heatmap(scenarios: dict, out_dir: Path,
     min_len = min(len(v) for v in cols.values())
     mat = np.column_stack([cols[sid][:min_len] for sid in scenario_ids
                            if sid in cols])
-    step   = 144   # 144 × 10-min steps per day
-    n_days = mat.shape[0] // step
-    mat_ds = np.array([mat[i*step:(i+1)*step].max(axis=0)
-                       for i in range(n_days)])
+
+    # Group by calendar date from the published timestamps, not by a fixed
+    # step count. The old `step = 144` assumed 10-min data; at SimBench's
+    # native 15-min cadence each column spanned 36 h, and an annual run
+    # produced 243 columns labelled "day" for a 365-day period.
+    ref      = next(scenarios[sid] for sid in scenario_ids if sid in cols)
+    stamps   = [r.get("timestamp") for r in ref["timeseries"][:min_len]]
+    day_keys = [s[:10] if isinstance(s, str) else None for s in stamps]
+
+    if any(k is None for k in day_keys):
+        # No timestamps published — fall back to dt_s, then to one column.
+        dt_s = (ref.get("summary") or {}).get("dt_s")
+        step = int(round(86400.0 / float(dt_s))) if dt_s else min_len
+        step = max(1, step)
+        n_days = mat.shape[0] // step
+        mat_ds = np.array([mat[i * step:(i + 1) * step].max(axis=0)
+                           for i in range(n_days)])
+        day_labels = [str(i) for i in range(n_days)]
+    else:
+        rows, day_labels = [], []
+        for day, group in itertools.groupby(enumerate(day_keys),
+                                            key=lambda pair: pair[1]):
+            idx = [i for i, _ in group]
+            rows.append(mat[idx].max(axis=0))
+            day_labels.append(day)
+        mat_ds = np.array(rows)
+
+    if mat_ds.size == 0:
+        print("  fig09 skipped — fewer than one full day of data")
+        return
 
     fig, ax = plt.subplots(figsize=(7, 3.5))
     ax.imshow(mat_ds.T, aspect="auto", cmap="Reds",

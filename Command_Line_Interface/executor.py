@@ -92,6 +92,9 @@ def _configure_cli_logging(log_path: Path | None = None) -> None:
         WARNING and above so genuine issues are never suppressed.
 
         every_n=96 means one message per simulated day at 15-min resolution.
+        It is a fixed sample count, not a duration: this filter is installed
+        before any profile is loaded, so it cannot derive one from dt_s. At a
+        finer resolution it simply passes more messages through.
         """
         def __init__(self, every_n: int = 96):
             super().__init__()

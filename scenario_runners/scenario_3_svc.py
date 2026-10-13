@@ -120,6 +120,22 @@ SVC_Q_MAX_RATIO:    float = 0.20   # Q_MAX = 0.20 × net.trafo.sn_mva.sum()
 # Internal helpers
 # ---------------------------------------------------------------------------
 
+def _steps_per_day(dt_s: float) -> int:
+    """
+    Timesteps in one simulated day at this resolution.
+
+    Used for the once-a-day progress line and the live-CSV rewrite cadence.
+    A hardcoded 96 assumed SimBench's 15-min step, so at a finer resolution
+    those fired many times per simulated day — at 10 s, every 16 minutes of
+    simulated time, which for the CSV rewrite is 90x the file I/O.
+    """
+    try:
+        spd = int(round(86400.0 / float(dt_s)))
+    except (TypeError, ValueError, ZeroDivisionError):
+        return 96
+    return max(1, spd)
+
+
 def _mv_kv(net) -> float:
     """
     Return the dominant MV voltage level in kV.
@@ -474,6 +490,7 @@ def run_scenario_3(
     """
     t_start = time.perf_counter()
     ap: AdaptedProfiles = adapt_profiles(net, profiles)
+    _log_every = _steps_per_day(ap.dt_s)   # one progress line per sim day
     _T = len(ap.times)
     if publish_fn is not None:
         publish_fn.on_scenario_start("svc", "SVC", _T)
@@ -660,7 +677,7 @@ def run_scenario_3(
                 publish_fn.on_timestep(rec)
             records.append(rec)
 
-            if t % 96 == 0:
+            if t % _log_every == 0:
                 if live_csv_rewrite_fn is not None:
                     partial = ScenarioResult.from_records(
                         scenario_id="svc", network_id=network_id,

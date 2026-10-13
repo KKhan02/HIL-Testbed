@@ -126,6 +126,21 @@ from volt_var_controller import VoltVarController
 logger = logging.getLogger(__name__)
 
 
+def _steps_per_day(dt_s: float) -> int:
+    """
+    Timesteps in one simulated day at this resolution.
+
+    Drives the progress line and the live-CSV rewrite cadence. A hardcoded 96
+    assumed SimBench's 15-min step; at 10 s it rewrote the whole CSV every 16
+    minutes of simulated time, 90x the file I/O per simulated day.
+    """
+    try:
+        spd = int(round(86400.0 / float(dt_s)))
+    except (TypeError, ValueError, ZeroDivisionError):
+        return 96
+    return max(1, spd)
+
+
 def _validate_controller_output(
         q_raw,
         n_ders:      int,
@@ -222,6 +237,7 @@ def run_custom_controller_scenario(
     t_start = time.perf_counter()
 
     ap: AdaptedProfiles = adapt_profiles(net, profiles)
+    _log_every = _steps_per_day(ap.dt_s)   # one line / rewrite per sim day
     _T = len(ap.times)
 
     if ap.der_p.empty:
@@ -370,14 +386,14 @@ def run_custom_controller_scenario(
             if publish_fn is not None:
                 publish_fn.on_timestep(rec)
             records.append(rec)
-            if live_csv_rewrite_fn is not None and t % 96 == 0:
+            if live_csv_rewrite_fn is not None and t % _log_every == 0:
                 partial = ScenarioResult.from_records(
                     scenario_id=scenario_id, network_id=network_id,
                     records=records, elapsed_s=(publish_fn.cumulative_elapsed_s() if publish_fn is not None else time.perf_counter() - t_start),
                     dt_s=ap.dt_s,
                 )
                 live_csv_rewrite_fn(partial)
-            _periodic_log(scenario_id, network_id, t, _T, records)
+            _periodic_log(scenario_id, network_id, t, _T, records, _log_every)
             continue
         # ── END GATE ─────────────────────────────────────────────────────────
 
@@ -437,7 +453,7 @@ def run_custom_controller_scenario(
         if publish_fn is not None:
             publish_fn.on_timestep(rec)
         records.append(rec)
-        if live_csv_rewrite_fn is not None and t % 96 == 0:
+        if live_csv_rewrite_fn is not None and t % _log_every == 0:
             partial = ScenarioResult.from_records(
                 scenario_id=scenario_id, network_id=network_id,
                 records=records, elapsed_s=(publish_fn.cumulative_elapsed_s() if publish_fn is not None else time.perf_counter() - t_start),
@@ -445,7 +461,7 @@ def run_custom_controller_scenario(
             )
             live_csv_rewrite_fn(partial)
 
-        _periodic_log(scenario_id, network_id, t, _T, records)
+        _periodic_log(scenario_id, network_id, t, _T, records, _log_every)
 
     elapsed = publish_fn.cumulative_elapsed_s() if publish_fn is not None else time.perf_counter() - t_start
 
@@ -477,9 +493,15 @@ def _periodic_log(
         t:           int,
         T:           int,
         records:     list,
+        steps_per_day: int = 96,
 ) -> None:
-    """Daily progress line at 15-min resolution (every 96 timesteps)."""
-    if t % 96 != 0:
+    """
+    One progress line per simulated day.
+
+    steps_per_day comes from _steps_per_day(ap.dt_s); the 96 default is only
+    the 15-min SimBench value for callers that do not pass it.
+    """
+    if steps_per_day <= 0 or t % steps_per_day != 0:
         return
     q_so_far = sum(
         float(np.abs(r.q_applied_mvar).sum())

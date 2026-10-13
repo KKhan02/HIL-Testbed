@@ -124,6 +124,22 @@ logger = logging.getLogger(__name__)
 LV_Q_RATIO: float = 0.33   # VDE-AR-N 4105 Qmax / PAmax (cos phi = 0.95)
 
 
+def _steps_per_day(dt_s: float) -> int:
+    """
+    Timesteps in one simulated day at this resolution.
+
+    Used for the once-a-day progress line and the live-CSV rewrite cadence.
+    A hardcoded 96 assumed SimBench's 15-min step, so at a finer resolution
+    those fired many times per simulated day — at 10 s, every 16 minutes of
+    simulated time, which for the CSV rewrite is 90x the file I/O.
+    """
+    try:
+        spd = int(round(86400.0 / float(dt_s)))
+    except (TypeError, ValueError, ZeroDivisionError):
+        return 96
+    return max(1, spd)
+
+
 def _is_lv_network(net) -> bool:
     """
     True when the network's distribution voltage level is LV (<= 1.0 kV).
@@ -243,6 +259,7 @@ def run_scenario_4(
     # LV (different Qmax ratio, same default time constants).
     _is_lv = _is_lv_network(net)
     ap: AdaptedProfiles = adapt_profiles(net, profiles)
+    _log_every = _steps_per_day(ap.dt_s)   # one progress line per sim day
     _T = len(ap.times)
     if publish_fn is not None:
         publish_fn.on_scenario_start(
@@ -441,12 +458,16 @@ def run_scenario_4(
                 q_saturated_count_t = int(
                     np.sum(np.abs(result.q_applied) >= q_max_arr - 1e-6)
                 )
+                rank_deficient_t = (
+                    bool(result.rank_deficient) if coordination else None
+                )
             else:
                 q_ser = None
                 p_ser = None
                 losses_mw_t = grid_import_mw_t = None
                 coordination_active_t = None
                 q_saturated_count_t   = None
+                rank_deficient_t      = None
 
             # [E] Active power curtailment — fires when Q coordination was
             #     insufficient to clear violations (curtailment_needed=True).
@@ -554,6 +575,7 @@ def run_scenario_4(
                 load_mw=load_mw_t,
                 coordination_active=coordination_active_t,
                 q_saturated_count=q_saturated_count_t,
+                coordination_rank_deficient=rank_deficient_t,
                 hil_latency_ms=result.t_exchange_ms,
                 t_total_ms=result.t_total_ms,
             )
@@ -562,7 +584,7 @@ def run_scenario_4(
 
             records.append(rec)
 
-            if t % 96 == 0:
+            if t % _log_every == 0:
                 if live_csv_rewrite_fn is not None:
                     partial = ScenarioResult.from_records(
                         scenario_id=scenario_id_for_resume, network_id=network_id,
